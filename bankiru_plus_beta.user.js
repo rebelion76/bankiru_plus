@@ -14,21 +14,12 @@
 
 function loadjscssfile(filename, filetype)
 {
-    var fileref
-    if (filetype==="js")
-    { 
-        fileref=document.createElement('script');
-        fileref.setAttribute("type","text/javascript");
-        fileref.setAttribute("src", filename);
+    if (filetype==="js") { 
+        $('head').append('<script type="text/javascript" src="'+filename+'"></script>');
     }
-    else if (filetype==="css")
-         {
-            fileref=document.createElement("link");
-            fileref.setAttribute("rel", "stylesheet");
-            fileref.setAttribute("type", "text/css");
-            fileref.setAttribute("href", filename);
-         }
-    if (typeof fileref!="undefined")  { document.getElementsByTagName("head")[0].appendChild(fileref); }
+    else if (filetype==="css") {
+        $('head').append('<link href="'+filename+'" type="text/css" rel="stylesheet" />')
+    }
 }
 
 
@@ -965,8 +956,11 @@ function banki_ru_version() {
 {
     
     var windowLocation = window.location.href;
-     
     
+    loadjscssfile('//raw.github.com/rebelion76/bankiru_plus/master/version.js','js');
+    
+    //alert(banki_ru_last_version());
+        
     page = new (ClassBankiRuPage);
     
     if (!/http:\/\/.*banki\.ru\/friends\/group\/.*?\/forum\/edit\/.*/.test(windowLocation)) { 
