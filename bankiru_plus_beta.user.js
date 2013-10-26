@@ -948,7 +948,7 @@ function ClassBankiRuPage() {
     this.MID = this.params['MID'];
 }*/
 
-function banki_ru_user_script_version() {
+function user_script_version() {
     return '4.84';
 }
 
@@ -957,9 +957,12 @@ function banki_ru_user_script_version() {
     
     var windowLocation = window.location.href;
     
-    loadjscssfile('http://rawgithub.com/rebelion76/bankiru_plus/master/version.js','js');
+    loadjscssfile('http://raw.github.com/rebelion76/bankiru_plus/master/version.js','js');
+   
+    var user_version=$("div.bankiruplus_version").text();
+    if (user_version!==user_script_version()) { alert( 'NOT equal!!!'); }
+    else { alert( 'equal!!!'); } 
     
-    alert(banki_ru_version);
         
     page = new (ClassBankiRuPage);
     
