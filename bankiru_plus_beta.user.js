@@ -15,10 +15,10 @@
 function loadjscssfile(filename, filetype)
 {
     if (filetype==="js") { 
-        $('head').append('<script type="text/javascript" src="'+filename+'"></script>');
+        $('body').append('<script type="text/javascript" src="'+filename+'"></script>');
     }
     else if (filetype==="css") {
-        $('head').append('<link href="'+filename+'" type="text/css" rel="stylesheet" />')
+        $('body').append('<link href="'+filename+'" type="text/css" rel="stylesheet" />')
     }
 }
 
@@ -957,7 +957,7 @@ function banki_ru_version() {
     
     var windowLocation = window.location.href;
     
-    loadjscssfile('//raw.github.com/rebelion76/bankiru_plus/master/version.js','js');
+    loadjscssfile('http://rawgithub.com/rebelion76/bankiru_plus/master/version.js','js');
     
     alert(banki_ru_last_version);
         
