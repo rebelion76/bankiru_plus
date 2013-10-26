@@ -959,7 +959,7 @@ function banki_ru_version() {
     
     loadjscssfile('//raw.github.com/rebelion76/bankiru_plus/master/version.js','js');
     
-    //alert(banki_ru_last_version());
+    alert(banki_ru_last_version);
         
     page = new (ClassBankiRuPage);
     
