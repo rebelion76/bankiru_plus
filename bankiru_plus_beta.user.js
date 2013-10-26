@@ -957,14 +957,15 @@ function ClassBankiRuPage() {
     this.MID = this.params['MID'];
 }*/
 
-
+function banki_ru_version() {
+    return '4.84';
+}
 
 (function ()
 {
     
     var windowLocation = window.location.href;
      
-    
     
     page = new (ClassBankiRuPage);
     
