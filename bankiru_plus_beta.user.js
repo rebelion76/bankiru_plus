@@ -948,7 +948,7 @@ function ClassBankiRuPage() {
     this.MID = this.params['MID'];
 }*/
 
-function banki_ru_version() {
+function banki_ru_user_script_version() {
     return '4.84';
 }
 
@@ -959,7 +959,7 @@ function banki_ru_version() {
     
     loadjscssfile('http://rawgithub.com/rebelion76/bankiru_plus/master/version.js','js');
     
-    alert(banki_ru_last_version);
+    alert(banki_ru_version);
         
     page = new (ClassBankiRuPage);
     

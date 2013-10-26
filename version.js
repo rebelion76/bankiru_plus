@@ -1,3 +1,1 @@
-function banki_ru_version() {
-    return '4.85';
-}
+banki_ru_version = '4.85';
