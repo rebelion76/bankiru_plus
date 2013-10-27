@@ -1,2 +1,2 @@
 var version = '4.85';
-$('<div>'+version+'</div>').appendTo('body').addClass('bankiruplus_version').css('display','none');
+$('<div>'+version+'</div>').appendTo('body').addClass('banki_ru_plus_version').css('display','none');
