@@ -970,8 +970,7 @@ function ClassBankiRuPage() {
 function update() {
     
     var new_version = $("div."+prefix+"version").text();
-    console.log(new_version);
-    alert(new_version); 
+    
     if (new_version!='') {
         var today = new Date;
         var dayX = getParam('dayX');
@@ -979,7 +978,7 @@ function update() {
         else dayX = new Date(dayX);
     
   
-        /*if ((dayX.getTime()<=today.getTime()) && (new_version!==user_version)) {
+        if ((dayX.getTime()<=today.getTime()) && (new_version!==user_version)) {
             confirmed = window.confirm('Вышла новая версия Банки.ру+ '+new_version+'! Хотите скачать и установить?');
             if (confirmed) {
                 window.open('https://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js',prefix+'_update');
@@ -987,7 +986,7 @@ function update() {
             }
             else dayX.setDate(dayX.getDate()+7);  
         }   
-        */
+        
         saveParam('dayX', dayX.toString());
     }
     else { setTimeout(update, 100); }
