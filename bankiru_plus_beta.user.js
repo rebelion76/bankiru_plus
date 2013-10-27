@@ -980,7 +980,7 @@ function update() {
         if ((dayX.getTime()<=today.getTime()) && (new_version!==user_version)) {
             confirmed = window.confirm('Вышла новая версия Банки.ру+ '+new_version+'! Хотите скачать и установить?');
             if (confirmed) {
-                window.open('https://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js',prefix+'_update');
+                window.open('http://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js',prefix+'_update');
                 dayX.setDate(dayX.getDate()+1);
             }
             else dayX.setDate(dayX.getDate()+7);  
