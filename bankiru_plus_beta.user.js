@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.84b
+// @version        0.84
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru: улучшенные BB-коды в отзывах в HP, автораскрытие и расширение отзывов в НР, RSS-каналы на отзывы и ответы в НР, ГЛ. Дальше - больше!
@@ -12,7 +12,7 @@
 
 // --------------------- Основные переменные --------------------------------------
 var prefix = "banki_ru_plus_"; 
-var user_version = "4.84"; 
+var user_version = "0.84"; 
 
 // ------------------- Вспомогательные функции ------------------------------------
 // Подключим jquery
@@ -972,8 +972,6 @@ function update() {
     var new_version = $("div."+prefix+"version").text();
     
     if (new_version!='') {
-        alert(new_version);
-        alert(user_version);
         var today = new Date;
         var dayX = getParam('dayX');
         if (dayX===null) { saveParam('dayX', today.toString()); }
