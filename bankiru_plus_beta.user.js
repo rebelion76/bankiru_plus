@@ -12,7 +12,7 @@
 
 // --------------------- Основные переменные --------------------------------------
 var prefix = "banki_ru_plus_"; 
-var user_version = "4.85"; 
+var user_version = "4.84"; 
 
 // ------------------- Вспомогательные функции ------------------------------------
 // Подключим jquery
@@ -972,12 +972,13 @@ function update() {
     var new_version = $("div."+prefix+"version").text();
     
     if (new_version!='') {
+        alert(new_version);
+        alert(user_version);
         var today = new Date;
         var dayX = getParam('dayX');
         if (dayX===null) { saveParam('dayX', today.toString()); }
         else dayX = new Date(dayX);
     
-  
         if ((dayX.getTime()<=today.getTime()) && (new_version!==user_version)) {
             confirmed = window.confirm('Вышла новая версия Банки.ру+ '+new_version+'! Хотите скачать и установить?');
             if (confirmed) {
