@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.85
+// @version        0.85.1
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru: улучшенные BB-коды в отзывах в HP, автораскрытие и расширение отзывов в НР, RSS-каналы на отзывы и ответы в НР, ГЛ. Дальше - больше!
@@ -12,7 +12,7 @@
 
 // --------------------- Основные переменные --------------------------------------
 var prefix = "banki_ru_plus_"; 
-var user_version = "0.85"; 
+var user_version = "0.85.1"; 
 
 // ------------------- Вспомогательные функции ------------------------------------
 // Подключим jquery
@@ -603,13 +603,9 @@ function addHrefToQuotes() {
     $(".forum-action-quote a").attr('onmousedown', function(index, val) {
         if (/message_text_(\d+)/.test(val)) {
             messageID = /message_text_(\d+)/.exec(val)[1];
-            console.log(messageID);
             messageHref = $(".forum-post-number>noindex>a[href*='"+messageID+"']").attr('href');
-            console.log(messageHref);
             messagePostID = $(".forum-post-number>noindex>a[href*='"+messageID+"']").text();
-            console.log(val);
             val = val.replace(/quoteMessageEx\('(.*?)',/,"quoteMessageEx('$1 в сообщении [URL="+messageHref+"]"+messagePostID+"[/URL]',"); 
-            console.log(val);
         }
         return val;  
     });
