@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.85.1
+// @version        0.85.2
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru: улучшенные BB-коды в отзывах в HP, автораскрытие и расширение отзывов в НР, RSS-каналы на отзывы и ответы в НР, ГЛ. Дальше - больше!
@@ -12,7 +12,7 @@
 
 // --------------------- Основные переменные --------------------------------------
 var prefix = "banki_ru_plus_"; 
-var user_version = "0.85.1"; 
+var user_version = "0.85.2"; 
 
 // ------------------- Вспомогательные функции ------------------------------------
 // Подключим jquery
@@ -554,8 +554,6 @@ function addLinksToHiddenUserInfo()
 {
     $(".b-el-dropDown>ul").css('width', 180);
   
-    var arrayOfUserInfo = document.getElementsByClassName("forum-user-info");
-    var length = arrayOfUserInfo.length;
     var tempUl;
     var oppId;
     var userNameAndId = getLoginedUserNameAndId();
@@ -563,13 +561,11 @@ function addLinksToHiddenUserInfo()
     var userName = userNameAndId.name;
     var userId = userNameAndId.id; 
     var oppName;
-    for ( i=0; i<length; i++) 
-    { 
-        tempUl=arrayOfUserInfo[i].children[0].children[1];
-        oppId = getUserIdFromUrl(tempUl.children[0].innerHTML);
+    $(".b-el-dropDown ul").each(function(index, element){
+        oppId = getUserIdFromUrl($(element).find(".mail").attr('href'));
         oppAboutUserA = document.createElement("li");
         oppAboutUserA.class="first";
-        oppName = arrayOfUserInfo[i].children[2].children[0].title;
+        oppName = $(".forum-user-name>a[href*='UID="+oppId+"']").attr('title');
         oppAboutUserA.innerHTML = '<a href="'+getSearchInUserCommentsHref(userName, oppId)+'"><i style="background: url(/favicon.ico)"></i>Комментарии тебе</a>';
         userAboutOppA = document.createElement("li");
         userAboutOppA.class="first";
@@ -580,11 +576,11 @@ function addLinksToHiddenUserInfo()
         oppThanksUserA = document.createElement("li");
         oppThanksUserA.class="first";
         oppThanksUserA.innerHTML = '<a href="'+getUserProfileHref(oppId, userId, userName)+'"><i style="background: url(/bitrix/components/custom/user.thank.forum/templates/.default/images/f_icon.png) -118px 0"></i>Спасибо ему(ей)</a>';
-        tempUl.insertBefore(oppAboutUserA,tempUl.children[1]);
-        tempUl.insertBefore(userAboutOppA,tempUl.children[1]);
-        tempUl.insertBefore(userThanksOppA,tempUl.children[1]);
-        tempUl.insertBefore(oppThanksUserA,tempUl.children[1]);
-    }
+        element.insertBefore(oppAboutUserA, element.children[1]);
+        element.insertBefore(userAboutOppA, element.children[1]);
+        element.insertBefore(userThanksOppA, element.children[1]);
+        element.insertBefore(oppThanksUserA, element.children[1]);
+    });
 }
 
 // Добавляет ссылку на комментарии пользователя в теме
