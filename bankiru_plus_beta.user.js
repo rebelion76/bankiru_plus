@@ -1,18 +1,19 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.85.2
+// @version        0.85.3
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru: улучшенные BB-коды в отзывах в HP, автораскрытие и расширение отзывов в НР, RSS-каналы на отзывы и ответы в НР, ГЛ. Дальше - больше!
 // @include        http://*banki.ru/*
+// @include        https://*banki.ru/*
 // @match          *://banki.ru/*   
 // @match          *://*.banki.ru/*   
 // ==/UserScript==
 
 // --------------------- Основные переменные --------------------------------------
 var prefix = "banki_ru_plus_"; 
-var user_version = "0.85.2"; 
+var user_version = "0.85.3"; 
 
 // ------------------- Вспомогательные функции ------------------------------------
 // Подключим jquery
@@ -860,7 +861,9 @@ function addAditionalSearch (type)
     var titlePiece=page.title;
     switch (type) { 
         case 'forum_search': 
-            var searchElemsHTML = "<input name='bankiruplus_input_search' placeholder='Поиск по теме' size=30>&nbsp;<input type='button' value='Найти' name='bankiruplus_button_search'>&nbsp;&nbsp;&nbsp;&nbsp;";           
+            //<input type="text" size="30" placeholder="Поиск по теме" name="bankiruplus_input_search" class="input--search" style="height: 24px;">
+            var searchElemsHTML = "<input name='bankiruplus_input_search' placeholder='Поиск по теме' type='text' class='input--search' style='height: 24px;' size=30>&nbsp;&nbsp;&nbsp;&nbsp;";
+            // &nbsp;<input type='button' value='Найти' name='bankiruplus_button_search'>           
             $(".forum-header-options").first().prepend(searchElemsHTML);
             searchQuery = searchQuery + 'inurl:TID=' + page.params['TID']+' '; 
             break;
