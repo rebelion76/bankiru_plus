@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.85.3
+// @version        0.85.4
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru: улучшенные BB-коды в отзывах в HP, автораскрытие и расширение отзывов в НР, RSS-каналы на отзывы и ответы в НР, ГЛ. Дальше - больше!
@@ -13,7 +13,7 @@
 
 // --------------------- Основные переменные --------------------------------------
 var prefix = "banki_ru_plus_"; 
-var user_version = "0.85.3"; 
+var user_version = "0.85.4"; 
 
 // ------------------- Вспомогательные функции ------------------------------------
 // Подключим jquery
@@ -1022,58 +1022,58 @@ function update() {
         
     page = new (ClassBankiRuPage);
         
-    if (!/http:\/\/.*banki\.ru\/friends\/group\/.*?\/forum\/edit\/.*/.test(windowLocation)) { 
+    if (!/banki\.ru\/friends\/group\/.*?\/forum\/edit\/.*/.test(windowLocation)) { 
         page.deleteAutoSave(); // РАБОТАЕТ
     }
     
     /* отзывы в НР */
-    if (/http:\/\/.*banki\.ru\/services\/responses\/bank\/.*responseID.*/.test(windowLocation)) 
+    if (/banki\.ru\/services\/responses\/bank\/.*responseID.*/.test(windowLocation)) 
     { 
     	// исправление ошибки http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=1758235#message1758235
     	//$("table.respcomment tr td").css("font-size",12);
     	//deleteHRRigthBlock(); // РАБОТАЕТ
         oneResponse(); //РАБОТАЕТ
     }
-    else if (/http:\/\/.*banki\.ru\/services\/responses\/bank\/.*?/.test(windowLocation)) { 
+    else if (/banki\.ru\/services\/responses\/bank\/.*?/.test(windowLocation)) { 
         //deleteHRRigthBlock(); // РАБОТАЕТ
         addRSS('responces'); // ИСПРАВИЛ
         listOfResponses(); // РАБОТАЕТ
         addAditionalSearch('responces');  // ИСПРАВИЛ
     }
-    else if (/http:\/\/.*banki\.ru\/services\/responses\/bank\/#add/.test(windowLocation)) { 
+    else if (/banki\.ru\/services\/responses\/bank\/#add/.test(windowLocation)) { 
         //deleteHRRigthBlock(); // РАБОТАЕТ
     }
-    else if (/http:\/\/.*banki\.ru\/services\/responses/.test(windowLocation)) { 
+    else if (/banki\.ru\/services\/responses/.test(windowLocation)) { 
         addRSSToListOfBanks(); // ИСПРАВИЛ
     }
     /* ВИО */ 
-    else if (/http:\/\/.*banki\.ru\/services\/questions-answers/.test(windowLocation)) {
+    else if (/banki\.ru\/services\/questions-answers/.test(windowLocation)) {
         addRSS('qa'); //ИСПРАВИЛ /*addAditionalSearch('qa');*/ 
     }
     /* новости  */
-    else if (/http:\/\/.*banki\.ru\/news\/lenta\/.+\/$/.test(windowLocation)) { 
+    else if (/banki\.ru\/news\/lenta\/.+\/$/.test(windowLocation)) { 
         addRSS('lenta');  // ИСПРАВИЛ
     }
-    else if (/http:\/\/.*banki\.ru\/banks\/bank\/.*?\/news\/$/.test(windowLocation)) {
+    else if (/banki\.ru\/banks\/bank\/.*?\/news\/$/.test(windowLocation)) {
         addRSS('banknews');
     }
     /* профиль */
-    else if (/http:\/\/.*banki\.ru\/profile\/\?UID=\d/.test(windowLocation)) {
+    else if (/banki\.ru\/profile\/\?UID=\d/.test(windowLocation)) {
         addHrefsToProfile(windowLocation); // ИСПРАВИЛ
         repairTownInProfile(); // ОТКЛЮЧИТЬ, ИСПРАВЛЕНО НА САЙТЕ
         change10ThanksToAll(); // РАБОТАЕТ
-        if (/http:\/\/.*banki\.ru\/profile\/\?UID=\d+#\d/.test(windowLocation)) { /* ИСПРАВИЛ */
+        if (/banki\.ru\/profile\/\?UID=\d+#\d/.test(windowLocation)) { /* ИСПРАВИЛ */
             filterThanksByUserId(window.location.hash.substr(1)); 
         } 
     }
     /* форум */ 
-    else if ((/http:\/\/.*banki\.ru\/forum\/.*?PAGE_NAME=read.*/.test(windowLocation)) ||
-    (/http:\/\/.*banki\.ru\/forum\/.*?PAGE_NAME=message.*/.test(windowLocation)))
+    else if ((/banki\.ru\/forum\/.*?PAGE_NAME=read.*/.test(windowLocation)) ||
+    (/banki\.ru\/forum\/.*?PAGE_NAME=message.*/.test(windowLocation)))
     { 
 
        repairForumEditLastMessage(); // ПРОВЕРИТЬ 
-       /* РАБОТАЕТ */ if (/http:\/\/.*banki\.ru\/forum\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*/.test(windowLocation)) { addUrlToRecovery(windowLocation); }
-       if (/http:\/\/.*banki\.ru\/(.*)FID=72/.test(windowLocation)) { addCommentFormToForum(); }
+       /* РАБОТАЕТ */ if (/banki\.ru\/forum\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*/.test(windowLocation)) { addUrlToRecovery(windowLocation); }
+       if (/banki\.ru\/(.*)FID=72/.test(windowLocation)) { addCommentFormToForum(); }
        addLinksToHiddenUserInfo(); // ИСПРАВИЛ
        addHotKeysTo('forum', windowLocation); // РАБОТАЕТ
        addGotoPage(); // РАБОТАЕТ
@@ -1083,11 +1083,11 @@ function update() {
        addHrefToQuotes(); 
     }
     /* личные сообщения */ // ПРОВЕРИТЬ
-    else if (/http:\/\/.*banki\.ru\/forum\/.*?PAGE_NAME=pm_edit.*/.test(windowLocation))
+    else if (/banki\.ru\/forum\/.*?PAGE_NAME=pm_edit.*/.test(windowLocation))
     { enableSmilesInPM(); }
     /* друзья */  // ДАВНО НЕ РАБОТАЕТ
-    else if (/http:\/\/.*banki\.ru\/friends\/group\/.*?\/forum\/.*/.test(windowLocation))    { reloadFriendsToForum(windowLocation); }
+    else if (/banki\.ru\/friends\/group\/.*?\/forum\/.*/.test(windowLocation))    { reloadFriendsToForum(windowLocation); }
      /* идеи друзей */ // ОТКЛЮЧИТЬ, ИСПРАВЛЕНО НА САЙТЕ
-    else if (/http:\/\/.*banki\.ru\/friends\/ideas\/.*/.test(windowLocation)) { repairFriendsIdeaPagen(); }
+    else if (/banki\.ru\/friends\/ideas\/.*/.test(windowLocation)) { repairFriendsIdeaPagen(); }
 })();
 
