@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.85.4
+// @version        0.85.5
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru: улучшенные BB-коды в отзывах в HP, автораскрытие и расширение отзывов в НР, RSS-каналы на отзывы и ответы в НР, ГЛ. Дальше - больше!
@@ -13,7 +13,7 @@
 
 // --------------------- Основные переменные --------------------------------------
 var prefix = "banki_ru_plus_"; 
-var user_version = "0.85.4"; 
+var user_version = "0.85.5"; 
 
 // ------------------- Вспомогательные функции ------------------------------------
 // Подключим jquery
@@ -68,6 +68,11 @@ function loadjscssfile(filename, filetype)
     }
 }
 
+// Целое случайное число в промежутке от min до max
+function random(min, max) {
+    var rand = min - 0.5 + Math.random()*(max-min+1)
+    return Math.round(rand);
+}
 // --------------------- Основные функции ----------------------------------------------
 
 function frame(string, type, string_extra, url)
@@ -1017,7 +1022,7 @@ function update() {
     
     var windowLocation = window.location.href;
     
-    loadjscssfile('http://rawgithub.com/rebelion76/bankiru_plus/master/version.js','js');
+    loadjscssfile('http://rawgithub.com/rebelion76/bankiru_plus/master/version.js?'+random(100001, 999999),'js');
     update();
         
     page = new (ClassBankiRuPage);
