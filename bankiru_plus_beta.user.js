@@ -1023,6 +1023,7 @@ function update() {
     else { setTimeout(update, 100); }
 } 
 
+
 // Минимизирует главное меню и вешает ссылки на разделы                                
 function minimazeMainMenu() {
     $(".top-menu__item--main").removeClass('top-menu__item--main');
@@ -1031,7 +1032,6 @@ function minimazeMainMenu() {
        event.stopImmediatePropagation(); 
        location.href = $(this).parent().find("a.top-menu__link").first().attr('href');
     });
-}
 
 (function ()
 {
@@ -1042,7 +1042,7 @@ function minimazeMainMenu() {
     
     loadjscssfile('https://rawgithub.com/rebelion76/bankiru_plus/master/version.js?'+random(100001, 999999),'js');
     update();
-    
+
     page = new (ClassBankiRuPage);
         
     if (!/banki\.ru\/friends\/group\/.*?\/forum\/edit\/.*/.test(windowLocation)) { 
