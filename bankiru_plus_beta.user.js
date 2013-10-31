@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.85.6
+// @version        0.85.7
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru: улучшенные BB-коды в отзывах в HP, автораскрытие и расширение отзывов в НР, RSS-каналы на отзывы и ответы в НР, ГЛ. Дальше - больше!
@@ -13,7 +13,7 @@
 
 // --------------------- Основные переменные --------------------------------------
 var prefix = "banki_ru_plus_"; 
-var user_version = "0.85.6"; 
+var user_version = "0.85.7"; 
 
 // ------------------- Вспомогательные функции ------------------------------------
 // Подключим jquery
@@ -608,15 +608,16 @@ function addUserPostSearch() {
 }
 // Добавляет в функцию вызова цитаты ссылку на сообщение
 function addHrefToQuotes() {
-    $(".forum-action-quote a").attr('onmousedown', function(index, val) {
+    $(".forum-action-quote a").clone().text('Цитировать с ссылкой').each(function(){
+        var val = $(this).attr('onmousedown');
         if (/message_text_(\d+)/.test(val)) {
-            messageID = /message_text_(\d+)/.exec(val)[1];
-            messageHref = $(".forum-post-number>noindex>a[href*='"+messageID+"']").attr('href');
-            messagePostID = $(".forum-post-number>noindex>a[href*='"+messageID+"']").text();
-            val = val.replace(/quoteMessageEx\('(.*?)',/,"quoteMessageEx('$1 в сообщении [URL="+messageHref+"]"+messagePostID+"[/URL]',"); 
-        }
-        return val;  
-    });
+            var messageID = /message_text_(\d+)/.exec(val)[1];
+            $(this).insertBefore(".forum-action-quote:has(a[onmousedown*='"+messageID+"'])");
+            $(this).after("&nbsp;&nbsp;&nbsp;");
+            var messageHref = $(".forum-post-number>noindex>a[href*='"+messageID+"']").attr('href');
+            var messagePostID = $(".forum-post-number>noindex>a[href*='"+messageID+"']").text();
+            $(this).attr('onmousedown', val.replace(/quoteMessageEx\('(.*?)',/,"quoteMessageEx('$1 в сообщении [URL="+messageHref+"]"+messagePostID+"[/URL]',")); 
+    }});
 }
 function addHrefsToProfile(windowLocation)
 {
@@ -1032,7 +1033,7 @@ function minimazeMainMenu() {
        event.stopImmediatePropagation(); 
        location.href = $(this).parent().find("a.top-menu__link").first().attr('href');
     });
-
+}
 (function ()
 {
     
