@@ -966,7 +966,7 @@ function minimazeMainMenu() {
     
     var windowLocation = window.location.href;
     
-    //minimazeMainMenu();
+    minimazeMainMenu();
     
     loadjscssfile('https://rawgithub.com/rebelion76/bankiru_plus/master/version.js?'+random(100001, 999999),'js');
     update();
