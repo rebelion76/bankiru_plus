@@ -15,6 +15,9 @@
 var prefix = "banki_ru_plus_"; 
 var user_version = "0.85.7"; 
 var page = null;
+
+var favicon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23wAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RkI2OTZCMzIzQzlFMTFFM0E5QUNCMTYzQkQ4NUQxNzMiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RkI2OTZCMzMzQzlFMTFFM0E5QUNCMTYzQkQ4NUQxNzMiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpGQjY5NkIzMDNDOUUxMUUzQTlBQ0IxNjNCRDg1RDE3MyIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpGQjY5NkIzMTNDOUUxMUUzQTlBQ0IxNjNCRDg1RDE3MyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PrUsCVIAAAAMUExURf///zSY22y0TfOcErQw86oAAAABdFJOUwBA5thmAAAAIUlEQVQI12NgYAgNdWAAAfLoVWDQQDHNwPD//wGwuWTRAFefRZ32+6jbAAAAAElFTkSuQmCC";
+var favicon2 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAACXBIWXMAAAsSAAALEgHS3X78AAAAaVBMVEX////+//////7+//7///1/vmWAvmRNpOJOpeB/vmT1qTD1qTH3qDBosmB9s0k0mN41mdtttU7znRT2nBMslN0tldpksF9lsF9nsUdntE5ntU9stE5ttEhttE1utUh9sUR9sUXzmQr2mAm6KWwAAAAAFHRSTlMAAQECAt3d3t7e3t7e+/v9/f39/TJ/BkYAAABxSURBVBgZBcFBjoIADADAaakgB2P8/yON2YNrhNaZQMz19nX5+48hAQASAKCSOAE5VBNmxowease55tWss6DuUIn1gPrAcsIHCiQAtcERmA1ix7E/wjzfhXqTvS0v9/6eTSXZPWNaohoCQjcJAJAAAD/KUCxUbNBMYQAAAABJRU5ErkJggg=="; 
 // ------------------- Вспомогательные функции ------------------------------------
 // Подключим jquery
 /*! jQuery v@1.8.1 jquery.com | jquery.org/license */
@@ -255,11 +258,11 @@ function recollapseResponses() {
 // удаляем правый блок в НР
 function deleteHRRigthBlock() {
     $("div.infoMessage").before($("div.b-outer-card-adv"));
-	$("div.infoMessage").before($("div.b-BankShortInfo"));
-	$("div.infoMessage").before($("div.b-BankShortRating"));
-	$("div.infoMessage").before($("div.b-pr-phone"));
-	$("div.l-r-column").remove();
-	$("div.l-c-column").css("width","95%");
+    $("div.infoMessage").before($("div.b-BankShortInfo"));
+    $("div.infoMessage").before($("div.b-BankShortRating"));
+    $("div.infoMessage").before($("div.b-pr-phone"));
+    $("div.l-r-column").remove();
+    $("div.l-c-column").css("width","95%");
 } 
 
 // обработка страницы списка отзывов конретного банка в НР 
@@ -966,12 +969,26 @@ function minimazeMainMenu() {
     
     var windowLocation = window.location.href;
     
-    minimazeMainMenu();
+    //minimazeMainMenu();
     
     loadjscssfile('https://rawgithub.com/rebelion76/bankiru_plus/master/version.js?'+random(100001, 999999),'js');
     update();
 
     page = new (ClassBankiRuPage);
+    
+    if (!page.oldDisign) {
+        $("li.menu__item.js-menu__item:has(div i[class*='facebook'])").clone().addClass(prefix+' menu__item--right')
+        .find("div i").attr('class','icon-16x16').css({"background-image":'url('+favicon+')','width':25, 'height':25,'margin-top':12}) 
+        // меняем иконку
+        //.css({"background-image":'url('+favicon2+')'})
+        .end() 
+            .find("li.spoiler__item").remove() //удаляем ссылки
+        .end().find("ul.item__spoiler")
+            .append("<li class='spoiler__item'><a href='javascript:alert(\"Скоро!\");'>Настройки</a></li>")
+            .append("<li class='spoiler__item'><a href='http://bankiforum.ru/showthread.php/232-%D0%91%D0%B0%D0%BD%D0%BA%D0%B8-%D1%80%D1%83'>Поддержка</a></li>")
+            .append("<li class='spoiler__item'><a href='http://bankiforum.ru/showthread.php/255-%D0%9F%D0%BE%D0%B4%D0%BF%D0%B8%D1%81%D0%BA%D0%B0-%D0%B4%D0%BB%D1%8F-Adblock-Plus'>Подписка AdBlock+</a></li>")
+        .end().insertAfter(".menu__item.menu__item--right:not(."+prefix+"):last");
+    }
         
     if (!/banki\.ru\/friends\/group\/.*?\/forum\/edit\/.*/.test(windowLocation)) { 
         page.deleteAutoSave(); 
