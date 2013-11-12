@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.85.7
+// @version        0.86
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru: улучшенные BB-коды в отзывах в HP, автораскрытие и расширение отзывов в НР, RSS-каналы на отзывы и ответы в НР, ГЛ. Дальше - больше!
@@ -13,7 +13,7 @@
 
 // --------------------- Основные переменные --------------------------------------
 var prefix = "banki_ru_plus_"; 
-var user_version = "0.85.7"; 
+var user_version = "0.86"; 
 var page = null;
 
 var favicon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23wAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RkI2OTZCMzIzQzlFMTFFM0E5QUNCMTYzQkQ4NUQxNzMiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RkI2OTZCMzMzQzlFMTFFM0E5QUNCMTYzQkQ4NUQxNzMiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpGQjY5NkIzMDNDOUUxMUUzQTlBQ0IxNjNCRDg1RDE3MyIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpGQjY5NkIzMTNDOUUxMUUzQTlBQ0IxNjNCRDg1RDE3MyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PrUsCVIAAAAMUExURf///zSY22y0TfOcErQw86oAAAABdFJOUwBA5thmAAAAIUlEQVQI12NgYAgNdWAAAfLoVWDQQDHNwPD//wGwuWTRAFefRZ32+6jbAAAAAElFTkSuQmCC";
@@ -196,6 +196,14 @@ function  oneResponse()
             do_it(target.id || target.className , target.alt, "edit_comment_editing_text", ""); 
         };
     }
+    
+    // исправление ошибки http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=191017&MID=2341244#message2341244
+    $("#REVIEW_TEXT").on('keydown', function(e){
+        if ((e.ctrlKey) && ((e.keyCode == 37) || (e.keyCode == 39))) {
+            e.stopImmediatePropagation();
+        }
+    });
+
     
     var i;
     var area_name;
@@ -955,13 +963,12 @@ function update() {
 } 
 
 
-// Минимизирует главное меню и вешает ссылки на разделы                                
-function minimazeMainMenu() {
-    $(".top-menu__item--main").removeClass('top-menu__item--main');
-    $.stylesheet(".top-menu",'min-height','90px');
-    $("span.top-menu__title").unbind('click').on('click', function(event) {
+// Вешает ссылки на разделы                                
+function linkTitleInMainMenu() {
+    //$.stylesheet(".main-menu__nav",'min-height','90px');
+    $("span.section__title").unbind('click').on('click', function(event) {
        event.stopImmediatePropagation(); 
-       location.href = $(this).parent().find("a.top-menu__link").first().attr('href');
+       location.href = $(this).parent().find("a.list__link").first().attr('href');
     });
 }
 (function ()
@@ -969,7 +976,7 @@ function minimazeMainMenu() {
     
     var windowLocation = window.location.href;
     
-    //minimazeMainMenu();
+    linkTitleInMainMenu();
     
     loadjscssfile('https://rawgithub.com/rebelion76/bankiru_plus/master/version.js?'+random(100001, 999999),'js');
     update();
