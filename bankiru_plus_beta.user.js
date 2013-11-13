@@ -13,7 +13,7 @@
 
 // --------------------- Основные переменные --------------------------------------
 var prefix = "banki_ru_plus_"; 
-var user_version = "0.86"; 
+var user_version = "0.86.1"; 
 var page = null;
 
 var favicon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23wAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RkI2OTZCMzIzQzlFMTFFM0E5QUNCMTYzQkQ4NUQxNzMiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RkI2OTZCMzMzQzlFMTFFM0E5QUNCMTYzQkQ4NUQxNzMiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpGQjY5NkIzMDNDOUUxMUUzQTlBQ0IxNjNCRDg1RDE3MyIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpGQjY5NkIzMTNDOUUxMUUzQTlBQ0IxNjNCRDg1RDE3MyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PrUsCVIAAAAMUExURf///zSY22y0TfOcErQw86oAAAABdFJOUwBA5thmAAAAIUlEQVQI12NgYAgNdWAAAfLoVWDQQDHNwPD//wGwuWTRAFefRZ32+6jbAAAAAElFTkSuQmCC";
@@ -146,6 +146,8 @@ function  oneResponse()
 {
     loadjscssfile("/bitrix/templates/.default/components/bitrix/forum/banki/style.css","css");
     
+    $(".productList li span.count").css({'color' : '#939393', 'font-size': '11px','display' : 'inline', 'top' :'auto', 'left': 'auto', 'position': 'static', 'width' :'auto', 'height':'auto'});
+
     recollapseResponses();
     
     var responce_comment_div = document.getElementById("response_comment_form");
@@ -177,7 +179,7 @@ function  oneResponse()
             target = e.target || e.src;
             do_it(target.id || target.className , target.alt, "REVIEW_TEXT",""); 
          };
-    }
+    } 
     if (edit_comment_div)
     { 
         var div_edit = edit_comment_div.children[0].children[0];
@@ -195,7 +197,7 @@ function  oneResponse()
             target = e.target || e.src;
             do_it(target.id || target.className , target.alt, "edit_comment_editing_text", ""); 
         };
-    }
+    } 
     
     // исправление ошибки http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=191017&MID=2341244#message2341244
     $("#REVIEW_TEXT").on('keydown', function(e){
@@ -251,7 +253,7 @@ function  oneResponse()
             if (responce_comment_div && (responce_comment_div.style.display!='none')) { do_it(target.id || target.className , target.getAttribute("name"), "REVIEW_TEXT", ""); } 
             if (edit_comment_div && (edit_comment_div.style.display!='none')) { do_it(target.id || target.className , target.getAttribute("name"), "edit_comment_editing_text", ""); }    
         };
-    }
+    } 
 }    
 
 // раскрытие "свернутых" отзывов и ответов ПБ
@@ -265,10 +267,11 @@ function recollapseResponses() {
 
 // удаляем правый блок в НР
 function deleteHRRigthBlock() {
-    $("div.infoMessage").before($("div.b-outer-card-adv"));
-    $("div.infoMessage").before($("div.b-BankShortInfo"));
-    $("div.infoMessage").before($("div.b-BankShortRating"));
-    $("div.infoMessage").before($("div.b-pr-phone"));
+    $("div.b-deposit__wrap__header")
+    .after($("div.b-pr-phone"))
+    .after($("div.b-BankShortRating"))
+    .after($("div.b-BankShortInfo"))
+    .after($("div.b-outer-card-adv"));
     $("div.l-r-column").remove();
     $("div.l-c-column").css("width","95%");
 } 
