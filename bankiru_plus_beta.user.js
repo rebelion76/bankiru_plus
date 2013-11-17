@@ -53,7 +53,6 @@ var functionsSequence = [
        // { address: 'banki\\.ru\\/friends\\/group\\/.*?\\/forum\\/.*', functions: 'reloadFriendsToForum', isLast: true },
        // { address: 'banki\\.ru\\/(.*)FID=72', functions: 'addCommentFormToForum', isLast: true },
     ];
- var allFunc = this;
 // ------------------- Вспомогательные функции ------------------------------------
 // Подключим jquery
 /*! jQuery v@1.8.1 jquery.com | jquery.org/license */
@@ -177,7 +176,7 @@ function do_it (type, string_extra, area_name, url)
      
 
 // обработка страницы списка отзывов конретного банка в НР 
-function listOfResponses() {
+bankiruPage.listOfResponses = function() {
     // может быть мы попали на эту страницу, потому  что отзыв скрыт? 
     $("div.b-errors").html(function(index, oldhtml) {
         // если мы можем определить, о каком отзыве идет речь, добавим ссылку на тему, где просят отзывы восстановить и передадим id скрытого отзыва
@@ -213,19 +212,19 @@ function addRSS(typeOfRSS)
     });    
 }
 
-function addRSSToResponces() {
+bankiruPage.addRSSToResponces = function() {
     addRSS('responces'); 
 }
 
-function addRSSToQA() {
+bankiruPage.addRSSToQA = function() {
     addRSS('qa');
 }
 
-function addRSSToLenta() {
+bankiruPage.addRSSToLenta = function() {
     addRSS('lenta');
 }
 
-function addRSSToBankNews() {
+bankiruPage.addRSSToBankNews = function() {
     addRSS('banknews');
 }
 
@@ -430,10 +429,11 @@ function addUrlToRecovery()
 }
 
 // принудительная установка галочки "разрешить смайлы" в личных сообщениях
-function enableSmilesInPM()
+bankiruPage.enableSmilesInPM = function()
 {
     $("#USE_SMILES:not(:checked)").click();
 }
+bankiruPage.enableSmilesInPM.nameForUser = 'Принудительно разрешить смайлы в ЛС';
 
 function getUserIdFromUrl(url)
 {
@@ -558,7 +558,7 @@ function changePage(href, oldpageRegexp, messageRegexp, newPage, currentPage)
 
 
 // заменяем вывод +10 спасибо на вывод всех спасибо TODO ERR
-var change10ThanksToAll = function()
+bankiruPage.change10ThanksToAll = function()
 {
     $("div.switch_page.linck > a.pseudo_link").attr("onclick","$('tr.event-ban, tr.event-thank').show();").attr("href","#user-reputation").html(function (i, old) {
         return old.replace("еще 10", "все записи");
@@ -567,9 +567,9 @@ var change10ThanksToAll = function()
     //<div class="b-array__paginator load-more-events">
     //<div class="switch_page linck"><a class="pseudo_link" href="#" onclick="return LoadMoreUserDetails()">Показать еще 10</a></div>
 }
-change10ThanksToAll.nameForUser = 'Замена в профиле "еще 10 спасибо" на "все записи"';
+bankiruPage.change10ThanksToAll.nameForUser = 'Замена в профиле "еще 10 спасибо" на "все записи"';
 
-var addHrefsToProfile = function()
+bankiruPage.addHrefsToProfile = function()
 {
     if (!page.isLogged) return false;
 
@@ -606,10 +606,10 @@ var addHrefsToProfile = function()
         location.reload();
     }
 }
-addHrefsToProfile.nameForUser = 'Дополнительные кнопки в профиле';
+bankiruPage.addHrefsToProfile.nameForUser = 'Дополнительные кнопки в профиле';
 
 // переносим правый блок в НР наверх
-var deleteHRRigthBlock = function() {
+bankiruPage.deleteHRRigthBlock = function() {
     if (!page.oldDisign) return;
     $("div.b-deposit__wrap__header")
     .after($("div.b-pr-phone"))
@@ -619,9 +619,9 @@ var deleteHRRigthBlock = function() {
     $("div.l-r-column").remove();
     $("div.l-c-column").css("width","95%");
 }
-deleteHRRigthBlock.nameForUser = 'Перенос правого блока в НР на верх (только для старого дизайна)';
+bankiruPage.deleteHRRigthBlock.nameForUser = 'Перенос правого блока в НР на верх (только для старого дизайна)';
 
-var addForumFormToHP = function() {
+bankiruPage.addForumFormToHP = function() {
     loadJsOrCssFile("/bitrix/templates/.default/components/bitrix/forum/banki/style.css","css");
     // подгрузка файлы выше 'портит' некоторые стили, вернем как было 
     $(".productList li span.count").css({'color' : '#939393', 'font-size': '11px','display' : 'inline', 'top' :'auto', 'left': 'auto', 'position': 'static', 'width' :'auto', 'height':'auto'});
@@ -682,9 +682,9 @@ var addForumFormToHP = function() {
         }
     });
 }
-addForumFormToHP.nameForUser = 'Замена формы ответа в комментариях НР на "как в форуме"';
+bankiruPage.addForumFormToHP.nameForUser = 'Замена формы ответа в комментариях НР на "как в форуме"';
 
-var addHrefsToHP = function() {
+bankiruPage.addHrefsToHP = function() {
     
     var i;
     var area_name;
@@ -736,25 +736,25 @@ var addHrefsToHP = function() {
         };
     }
 }
-addHrefsToHP.nameForUser = 'Цитата, имя и ссылка на сообщения в комментариях HP';
+bankiruPage.addHrefsToHP.nameForUser = 'Цитата, имя и ссылка на сообщения в комментариях HP';
 
 // раскрытие "свернутых" отзывов и ответов ПБ
-var recollapseResponses = function() {
+bankiruPage.recollapseResponses = function() {
     $(".response_collapse").removeClass("response_collapse").addClass("response_collapse minus");
     $(".no_credited").removeClass("no_credited");
     $("tr.bankComment div.text-block").toggle();
     $("tr[id*='resp_text'] div.text-block").toggle();
     $(".b-el-toggle").toggleClass("b-el-toggle_opened");
 }
-recollapseResponses.nameForUser = 'Разворачивать отзывы и ответы ПБ в НР';
+bankiruPage.recollapseResponses.nameForUser = 'Разворачивать отзывы и ответы ПБ в НР';
 
-var addAdditionalSearchToResponces = function() {
+bankiruPage.addAdditionalSearchToResponces = function() {
     addAditionalSearch('responces');
 }
-addAdditionalSearchToResponces.nameForUser="Поиск по отзывам в НР";
+bankiruPage.addAdditionalSearchToResponces.nameForUser="Поиск по отзывам в НР";
 
 // добавление ссылок на rss-каналы на отзывы и ответы ПБ в списке банков в НР
-var addRSSToListOfBanks = function() {
+bankiruPage.addRSSToListOfBanks = function() {
     // ориентируясь по имеющимся классам, выходим на поля в столбце название банка
     $("td.solves").parent().find("td:first-child + td").html(function(index, oldhtml) {
         // если это не последняя строка с итогами
@@ -767,19 +767,19 @@ var addRSSToListOfBanks = function() {
         return oldhtml;
     });
 }
-addRSSToListOfBanks.nameForUser = 'Ссылки на RSS-ленты банков в НР';
+bankiruPage.addRSSToListOfBanks.nameForUser = 'Ссылки на RSS-ленты банков в НР';
 
 // добавление пробелов в текст "Спасибо", чтобы достичь необходимых 20 символов 
-var addSpacesToSmallThank = function() {
+bankiruPage.addSpacesToSmallThank = function() {
     // для всех соотв. input делаем inline-хак в onclick 
     $("input.user-thank-change-button").attr("onclick", function (i, val) {
         return "$(this.parentNode).find('textarea.user-thank-change-reason').val(function (count, val) { for (i=20-val.length; i>0; i--) val=val+' '; return val;});" + val;
     });    
 }
-addSpacesToSmallThank.nameForUser="Спасибо в форуме с любым числом знаков";
+bankiruPage.addSpacesToSmallThank.nameForUser="Спасибо в форуме с любым числом знаков";
 
 // Добавляет в функцию вызова цитаты ссылку на сообщение
-var addHrefToQuotes = function() {
+bankiruPage.addHrefToQuotes = function() {
     $(".forum-action-quote a").clone().text('Цитировать с ссылкой').each(function(){
         var val = $(this).attr('onmousedown');
         if (/message_text_(\d+)/.test(val)) {
@@ -791,10 +791,10 @@ var addHrefToQuotes = function() {
             $(this).attr('onmousedown', val.replace(/quoteMessageEx\('(.*?)',/,"quoteMessageEx('$1 в сообщении [URL="+messageHref+"]"+messagePostID+"[/URL]',")); 
     }});
 }
-addHrefToQuotes.nameForUser = 'Цитата с ссылкой на сообщение в форуме'; 
+bankiruPage.addHrefToQuotes.nameForUser = 'Цитата с ссылкой на сообщение в форуме'; 
 
 // Добавляет ссылку на комментарии пользователя в теме
-var addUserPostSearch = function() {
+bankiruPage.addUserPostSearch = function() {
     
     $("div.forum-user-additional :first-child:has(span a)").after(function(){
         var user = getUserIdFromUrl($(this).find('a').attr('href'));
@@ -804,9 +804,9 @@ var addUserPostSearch = function() {
         return "<span>Сообщения в теме: <span><a href='http://www.banki.ru/forum/?PAGE_NAME=user_post&UID="+user+"&topic="+topic+"'>&gt;&gt;&gt;</a></span></span>";
     });
 }
-addUserPostSearch.nameForUser = 'Ссылка на поиск по сообщениям пользователя в теме форума';
+bankiruPage.addUserPostSearch.nameForUser = 'Ссылка на поиск по сообщениям пользователя в теме форума';
 
-var addLinksToHiddenUserInfo = function() {
+bankiruPage.addLinksToHiddenUserInfo = function() {
     if (!page.isLogged)  return false;
     $(".b-el-dropDown>ul").css('width', 180);
   
@@ -835,9 +835,9 @@ var addLinksToHiddenUserInfo = function() {
         element.insertBefore(oppThanksUserA, element.children[1]);
     });
 }
-addLinksToHiddenUserInfo.nameForUser = 'Дополнительные пункты в меню пользователя в форуме';
+bankiruPage.addLinksToHiddenUserInfo.nameForUser = 'Дополнительные пункты в меню пользователя в форуме';
 
-var addHotKeysToForum = function()
+bankiruPage.addHotKeysToForum = function()
 {
     var currentPageArr;
     var currentPage;
@@ -869,9 +869,9 @@ var addHotKeysToForum = function()
         }
     }    
 }
-addHotKeysToForum.nameForUser = 'Перемещение по страницам темы форума при помощи Ctrl <- ->';
+bankiruPage.addHotKeysToForum.nameForUser = 'Перемещение по страницам темы форума при помощи Ctrl <- ->';
 
-var addGotoPage = function()
+bankiruPage.addGotoPage = function()
 {
     var forumPageNavDIVArr = document.getElementsByClassName("forum-page-navigation");
     if (forumPageNavDIVArr.length == 0) return false;
@@ -937,15 +937,15 @@ var addGotoPage = function()
         }
     }
 }
-addGotoPage.nameForUser = 'Поле для перехода на любую страницу в форуме';
+bankiruPage.addGotoPage.nameForUser = 'Поле для перехода на любую страницу в форуме';
 
-var addAditionalSearchToForum = function() {
+bankiruPage.addAditionalSearchToForum = function() {
     addAditionalSearch('forum_search'); 
 }
-addAditionalSearchToForum.nameForUser="Поиск по темам форума";
+bankiruPage.addAditionalSearchToForum.nameForUser="Поиск по темам форума";
 
 // удаление "автосохранения" комментария, если текущая страница != странице, где последний раз был сохранен комментарий       
-var deleteAutoSave = function () {
+bankiruPage.deleteAutoSave = function () {
     
     // не помню зачем такое исключение
     if (/banki\.ru\/friends\/group\/.*?\/forum\/edit\/.*/.test(page.href)) return;
@@ -974,20 +974,20 @@ var deleteAutoSave = function () {
         });
     }          
 }
-deleteAutoSave.nameForUser = 'Отключить навязчивое автосохранение';
+bankiruPage.deleteAutoSave.nameForUser = 'Отключить навязчивое автосохранение';
 
 /** Вешает ссылки на разделы */                               
-var addLinkInMainMenu = function() {
+bankiruPage.addLinkInMainMenu = function() {
        $("span.section__title").unbind('click').on('click', function(event) {
        event.stopImmediatePropagation(); 
        location.href = $(this).parent().find("a.list__link").first().attr('href');
     });
 }
-addLinkInMainMenu.nameForUser = 'Заголовки главного меню - ссылки на разделы';
+bankiruPage.addLinkInMainMenu.nameForUser = 'Заголовки главного меню - ссылки на разделы';
 
 // ------------------------------ Основные функции ----------------------------------------------
 /** Добавляем меню скрипта в шапку */
-function addUserScriptMenu() {
+bankiruPage.addUserScriptMenu = function() {
     if (!page.oldDisign) {
         $("li.menu__item.js-menu__item:has(div i[class*='facebook'])").clone().addClass(prefix+' menu__item--right')
          // меняем иконку
@@ -1002,7 +1002,7 @@ function addUserScriptMenu() {
 }
 
 /** Обновление скрипта */
-function updateUserScript() {
+bankiruPage.updateUserScript = function() {
     
     loadJsOrCssFile(VERSION_URL+'?'+random(100001, 999999),'js');
     
@@ -1035,15 +1035,16 @@ function updateUserScript() {
     else { setTimeout(this, 100); }
 } 
 
-function addOptionsWindow() {
+/** Опции скрипта */
+bankiruPage.addOptionsWindow = function() {
     loadJsOrCssFile('/_lib/jquery/plugins/popup/popup.css','css');
     loadJsOrCssFile('/bitrix/templates/.default/components/bitrix/system.auth.form/redesign/style.css','css');
     $('body')
     .prepend('<div class="'+prefix+'options'+' b-popup b-popup_white" style="padding: 20px 27px 20px 22px; left: '+(page.center-250)+'px; top: 200px; opacity: 1; margin-top: 0px; display:none"><span class="b-el-link b-el-link_popup"><i class="b-el-link__icon b-el-link__icon_close '+prefix+'options_close"></i></span><h6 class="b-loginPopup__title">Настройки</h6><div class="'+prefix+'func_list"></div><div class="'+prefix+'options_reload" style="display:none"><br/><br/>Изменения будут применены только после перезагрузки страницы. <a href="javascript:window.location.reload();">Перегрузить?</a></div></div>')
     .prepend('<div class="b-popup__overlay" style="display: none;"></div>');
-    for (var key in allFunc) {
-        if ((typeof allFunc[key] == 'function') && ('nameForUser' in allFunc[key])) {
-            $('<div>'+allFunc[key].nameForUser+' <input type=checkbox id='+key+' class="'+prefix+'func_check"></div>').prependTo('.'+prefix+'func_list');
+    for (var key in bankiruPage) {
+        if ((typeof bankiruPage[key] == 'function') && ('nameForUser' in bankiruPage[key])) {
+            $('<div>'+bankiruPage[key].nameForUser+' <input type=checkbox id='+key+' class="'+prefix+'func_check"></div>').prependTo('.'+prefix+'func_list');
             var isAllowed = getParam(key);
             if (isAllowed === null) { 
                 isAllowed = 1;
@@ -1060,7 +1061,7 @@ function addOptionsWindow() {
      }
     $('#'+prefix+'options_popup_show').on('click', openOptions);
     $('body').on('keydown', function(e){
-        if ((e.ctrlKey) && (e.shiftKey) && (e.keyCode == 79)) {
+        if ((e.ctrlKey) && (e.shiftKey) && (e.keyCode == 49)) {
            openOptions();
         }
     });
@@ -1070,8 +1071,8 @@ function addOptionsWindow() {
     })
 }
 
-// общий класс для любой страницы
-function ClassBankiRuPage() {
+// общий конструктор для любой страницы
+function bankiruPage() {
     
     //определяем какой дизайн
     if  ($(".b-to-new-design>a").length!=0) { this.oldDisign = true; }
@@ -1101,21 +1102,20 @@ function ClassBankiRuPage() {
         this.params[keyVal[0]] = keyVal[1];
     }
     this.afterHash = window.location.hash.substring(1);
-      
 } 
 
 (function() {
-    page = new ClassBankiRuPage;
-    
+    page = new bankiruPage;
+    console.log(page);    
     for (var i=0; i<functionsSequence.length; i++) {
         var addressPattern = new RegExp(functionsSequence[i].address);
         if (addressPattern.test(page.href)) {
             var functions = functionsSequence[i].functions.split(', ');
             for (var j=0; j<functions.length; j++) {
                 var canRun = getParam(functions[j]);
-                if ((canRun === null) || (+canRun === 1)) this[functions[j]]();
+                if ((canRun === null) || (+canRun === 1)) bankiruPage[functions[j]]();
             }
             if (functionsSequence[i].isLast) break;
         }
     }
-})() 
+})(); 
