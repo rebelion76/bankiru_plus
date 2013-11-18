@@ -1010,6 +1010,7 @@ bankiruPage.addUserScriptMenu = function() {
         $('.'+prefix+'menu').on('click', function (e) {
             var div = $(this).find('div'); 
             if (div.attr('isOpened') == 'false')  { div.addClass('item__node--expanded').attr('isOpened', true); }
+            else { div.removeClass('item__node--expanded').attr('isOpened', false); }
             e.stopPropagation();
         });
         $('body').on('click', function () {
