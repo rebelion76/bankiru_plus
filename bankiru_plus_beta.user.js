@@ -19,7 +19,7 @@ var prefix = "banki_ru_plus_";
 /** версия  */
 var version = "0.89b"; 
 /** адрес обновления */
-var UPDATE_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js";
+var UPDATE_URL = "https://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js";
 /** адрес скрипта с версией */
 var VERSION_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/version.js";
 /** класс-страница */
@@ -1078,7 +1078,7 @@ bankiruPage.addOptionsWindow = function() {
      }
     $('#'+prefix+'options_popup_show').on('click', openOptions);
     $('body').on('keydown', function(e){
-        if ((e.ctrlKey) && (e.shiftKey) && ((e.keyCode == 79)||(e.keyCode == 80))) {
+        if ((e.ctrlKey) && (e.shiftKey) && ((e.keyCode == 191))) {
            openOptions();
         }
     });
