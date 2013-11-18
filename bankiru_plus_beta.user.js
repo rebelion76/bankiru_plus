@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.9.3
+// @version        0.90.4
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -17,9 +17,9 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.9.3"; 
+var version = "0.90.4"; 
 /** адрес обновления */
-var UPDATE_URL = "https://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js";
+var UPDATE_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js";
 /** адрес скрипта с версией */
 var VERSION_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/version.js";
 /** класс-страница */
