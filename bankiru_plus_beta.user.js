@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.9.2
+// @version        0.9.3
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -17,7 +17,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.9.2"; 
+var version = "0.9.3"; 
 /** адрес обновления */
 var UPDATE_URL = "https://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js";
 /** адрес скрипта с версией */
@@ -693,6 +693,7 @@ bankiruPage.addForumFormToHP.nameForUser = 'Замена формы ответа
 
 bankiruPage.addHrefsToHP = function() {
     
+    if (!page.isLogged) return;
     var i;
     var area_name;
     var url;
