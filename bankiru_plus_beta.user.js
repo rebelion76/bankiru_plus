@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.9.11
+// @version        0.9.2
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -17,7 +17,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.9.11"; 
+var version = "0.9.2"; 
 /** адрес обновления */
 var UPDATE_URL = "https://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js";
 /** адрес скрипта с версией */
@@ -1021,8 +1021,7 @@ bankiruPage.addUserScriptMenu = function() {
 
 /** Обновление скрипта */
 bankiruPage.updateUserScript = function() {
-    loadJsOrCssFile(VERSION_URL+'?'+random(100001, 999999),'js');
-    
+        
     var new_version = $("div."+prefix+"version").text();
     if (new_version!='') {
         
@@ -1046,7 +1045,7 @@ bankiruPage.updateUserScript = function() {
                 else dayX.setDate(dayX.getDate()+7); 
                 saveParam('dayX', dayX.toString());
             }   
-            $('.'+prefix+'.menu__item--right').find("ul.item__spoiler").prepend("<li class='spoiler__item'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>")    
+            $('.'+prefix+'menu.menu__item--right').find("ul.item__spoiler").prepend("<li class='spoiler__item'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>")    
         }
        
     }
@@ -1124,7 +1123,9 @@ function bankiruPage() {
 
 (function() {
     page = new bankiruPage;
-       
+    
+    loadJsOrCssFile(VERSION_URL+'?'+random(100001, 999999),'js');
+    
     for (var i=0; i<functionsSequence.length; i++) {
         var addressPattern = new RegExp(functionsSequence[i].address);
         if (addressPattern.test(page.href)) {
