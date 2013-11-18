@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.9
+// @version        0.9.1
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -17,7 +17,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.9"; 
+var version = "0.9.1"; 
 /** адрес обновления */
 var UPDATE_URL = "https://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js";
 /** адрес скрипта с версией */
@@ -1021,11 +1021,11 @@ bankiruPage.addUserScriptMenu = function() {
 
 /** Обновление скрипта */
 bankiruPage.updateUserScript = function() {
-    
     loadJsOrCssFile(VERSION_URL+'?'+random(100001, 999999),'js');
     
     var new_version = $("div."+prefix+"version").text();
     if (new_version!='') {
+        
         var today = new Date;
         var dayX = getParam('dayX');
         if (dayX === null) { 
@@ -1050,7 +1050,7 @@ bankiruPage.updateUserScript = function() {
         }
        
     }
-    else { setTimeout(this, 100); }
+    else { setTimeout(bankiruPage.updateUserScript, 100); }
 } 
 
 /** Опции скрипта */
