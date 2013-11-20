@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.90.4
+// @version        0.90.5
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -17,7 +17,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.90.4"; 
+var version = "0.90.5"; 
 /** адрес обновления */
 var UPDATE_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js";
 /** адрес скрипта с версией */
@@ -31,7 +31,7 @@ var favicon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23
  */
 var functionsSequence = [
        /* Все страницы */  
-       { address : 'banki\\.ru\\/', functions : 'updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave', isLast : false },
+       { address : 'banki\\.ru\\/', functions : 'updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*responseID.*', functions: 'deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP', isLast: true },
@@ -76,23 +76,6 @@ function getCookie(cookie_name)
     var results = document.cookie.match ( '(^|;) ?' + cookie_name + '=([^;]*)(;|$)' );
     if (results) return (unescape(results[2]));
     else return null;
-}
-
-// win1251 -> unescape
-function win1251unescape(str)
-{
-    var convTable = [0x402,0x403,0x201A,0x453,0x201E,0x2026,0x2020,0x2021,0x20AC,0x2030,0x409,0x2039,0x40A,0x40C,0x40B,0x40F,0x452,0x2018,0x2019,0x201C,0x201D,0x2022,0x2013,0x2014,0x20,0x2122,0x459,0x203A,0x45A,0x45C,
-	0x45B,0x45F,0xA0,0x40E,0x45E,0x408,0xA4,0x490,0xA6,0xA7,0x401,0xA9,0x404,0xAB,0xAC,0xAD,0xAE,0x407,0xB0,0xB1,0x406,0x456,0x491,0xB5,0xB6,0xB7,0x451,0x2116,0x454,0xBB,0x458,0x405,0x455,0x457,0x410,
-	0x411,0x412,0x413,0x414,0x415,0x416,0x417,0x418,0x419,0x41A,0x41B,0x41C,0x41D,0x41E,0x41F,0x420,0x421,0x422,0x423,0x424,0x425,0x426,0x427,0x428,0x429,0x42A,0x42B,0x42C,0x42D,0x42E,0x42F,0x430,0x431,
-	0x432,0x433,0x434,0x435,0x436,0x437,0x438,0x439,0x43A,0x43B,0x43C,0x43D,0x43E,0x43F,0x440,0x441,0x442,0x443,0x444,0x445,0x446,0x447,0x448,0x449,0x44A,0x44B,0x44C,0x44D,0x44E,0x44F];
-    return str.replace(/\+/g, '%20').replace(/%([0-9A-F]{2})/gi, 
-	function(nothing, charCodeStr)
-	{
-	   var charCode = parseInt(charCodeStr, 16);
-	   if (charCode < 0x7f){ return String.fromCharCode(charCode); }
-	   else { return String.fromCharCode(convTable[charCode - 128]); }
-	}
-	);
 }
 
 // Подгрузить css или js файл 
@@ -952,6 +935,18 @@ bankiruPage.addAditionalSearchToForum = function() {
 }
 bankiruPage.addAditionalSearchToForum.nameForUser="Поиск по темам форума";
 
+bankiruPage.removeRedirect = function() {
+    $('a[href*="banki.ru/redirect.php"]').attr('href', function(index, attr) {
+        var regexp = /.*?banki\.ru\/redirect\.php\?link=(.*?)&hash(.*)/;
+        if (regexp.test(attr)) {
+            attr = attr.replace(regexp,'$1');
+            attr = decodeURIComponent(attr);
+        }
+        return attr;
+    });
+}
+bankiruPage.removeRedirect.nameForUser="Удаление редиректа из ссылок";
+
 // удаление "автосохранения" комментария, если текущая страница != странице, где последний раз был сохранен комментарий       
 bankiruPage.deleteAutoSave = function () {
     
@@ -1040,7 +1035,7 @@ bankiruPage.updateUserScript = function() {
                 dayX = today;
                 confirmed = window.confirm('Вышла новая версия Банки.ру+ '+new_version+'(у вас установлена '+version+'). Хотите скачать и установить?');
                 if (confirmed) {
-                    window.open('',prefix+'_update');
+                    window.open(UPDATE_URL, prefix+'_update');
                     dayX.setDate(dayX.getDate()+1); 
                 }
                 else dayX.setDate(dayX.getDate()+7); 
