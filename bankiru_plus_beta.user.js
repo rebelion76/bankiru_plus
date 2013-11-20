@@ -949,7 +949,7 @@ bankiruPage.removeRedirect.nameForUser="Удаление редиректа из
 
 bankiruPage.addSelectToSearchInTop = function() {
     $('.branded-search__link').remove();   
-    $('form.item__node.js-search-input-form').prepend('<select name="where" style="margin-top:12px""><option selected="selected" value="0">по всему сайту</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option selected="selected" value="iblock_responses">в народном рейтинге</option><option value="forum">в форуме</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>');
+    $('form.item__node.js-search-input-form').prepend('<select name="where" style="margin-top:12px""><option selected="selected" value="0">по всему сайту</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option value="iblock_responses">в народном рейтинге</option><option value="forum">в форуме</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>');
 }    
 bankiruPage.addSelectToSearchInTop.nameForUser="Выбор раздела для поиске в шапке";
 
