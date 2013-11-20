@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.90.5
+// @version        0.90.6
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -17,7 +17,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.90.5"; 
+var version = "0.90.6"; 
 /** адрес обновления */
 var UPDATE_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js";
 /** адрес скрипта с версией */
@@ -31,7 +31,7 @@ var favicon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23
  */
 var functionsSequence = [
        /* Все страницы */  
-       { address : 'banki\\.ru\\/', functions : 'updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect', isLast : false },
+       { address : 'banki\\.ru\\/', functions : 'updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*responseID.*', functions: 'deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP', isLast: true },
@@ -947,6 +947,12 @@ bankiruPage.removeRedirect = function() {
 }
 bankiruPage.removeRedirect.nameForUser="Удаление редиректа из ссылок";
 
+bankiruPage.addSelectToSearchInTop = function() {
+    $('.branded-search__link').remove();   
+    $('form.item__node.js-search-input-form').prepend('<select name="where" style="margin-top:12px""><option selected="selected" value="0">по всему сайту</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option selected="selected" value="iblock_responses">в народном рейтинге</option><option value="forum">в форуме</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>');
+}    
+bankiruPage.addSelectToSearchInTop.nameForUser="Выбор раздела для поиске в шапке";
+
 // удаление "автосохранения" комментария, если текущая страница != странице, где последний раз был сохранен комментарий       
 bankiruPage.deleteAutoSave = function () {
     
@@ -985,7 +991,7 @@ bankiruPage.addLinkInMainMenu = function() {
        event.stopImmediatePropagation(); 
        location.href = $(this).parent().find("a.list__link").first().attr('href');
     });
-}
+}    
 bankiruPage.addLinkInMainMenu.nameForUser = 'Заголовки главного меню - ссылки на разделы';
 
 // ------------------------------ Предварительные функции ----------------------------------------------
