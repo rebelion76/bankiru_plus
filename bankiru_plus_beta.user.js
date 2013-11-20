@@ -1080,7 +1080,7 @@ bankiruPage.addOptionsWindow = function() {
      }
     $('#'+prefix+'options_popup_show').on('click', openOptions);
     $('body').on('keydown', function(e){
-        if ((e.ctrlKey) && (e.shiftKey) && ((e.keyCode == 191))) {
+        if ((e.ctrlKey) && (e.shiftKey) && ((e.keyCode == 191) || (e.keyCode == 190))) {
            openOptions();
         }
     });
