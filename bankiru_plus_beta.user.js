@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.90.6
+// @version        0.90.7
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -17,7 +17,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.90.6"; 
+var version = "0.90.7"; 
 /** адрес обновления */
 var UPDATE_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js";
 /** адрес скрипта с версией */
@@ -421,33 +421,6 @@ function getUserNameAndIdFromProfile(url)
     return {id:userId, name:userName};
 }
 
-// показывает спасибо от пользователя с uid и именем в hash TODO ERR
-function filterThanksByUserId()
-{
-    hash = page.afterHash;
-    
-    var userId = /(.*)&(.*)/.exec(hash)[1];
-    var userName = /(.*)&(.*)/.exec(hash)[2];
-
-    // сначала скрываем все - и штрафы, и спасибо
-    $("tr.event-ban, tr.event-thank").hide();
-    // теперь открываем только тех, у кого в ссылке соотв. uid
-    $('a.name[href*="UID='+userId+'"]').parents("tr.event-thank").show();
-    // теперь меняем слово Репутация на Спасибо от ...
-    $("#user-reputation ~ h2").html(function (index, oldhtml) {
-        return oldhtml.replace("Репутация", "Спасибо от " + userName+" (всего "+$('a.name[href*="UID='+userId+'"]').length+")");
-    });
-    // когда нажимаем "показать все записи", надо вернуть слово "Репутация" обратно 
-    $("div.switch_page.linck > a.pseudo_link").bind("click", function () {
-        $("#user-reputation ~ h2").html(function (index, oldhtml) {
-            return oldhtml.replace(/(.*?)(<span)/,"Репутация $2"); 
-        });
-    });
-    // меняем обратно хэш - убрать после перевода 
-    window.location.hash = "user-reputation";
-}
-
-
 
 // дополнительный поиск по теме форума и НР
 function addAditionalSearch (type)
@@ -541,6 +514,33 @@ bankiruPage.addRSSToQA = function() {
     addRSS('qa');
 }
 bankiruPage.addRSSToQA.nameForUser = "RSS на ответы в 'хлебных крошках' ВИО";
+
+// показывает спасибо от пользователя с uid и именем в hash TODO ERR
+bankiruPage.filterThanksByUserId = function()
+{
+    hash = page.afterHash;
+    
+    var userId = /(.*)&(.*)/.exec(hash)[1];
+    var userName = /(.*)&(.*)/.exec(hash)[2];
+
+    // сначала скрываем все - и штрафы, и спасибо
+    $("tr.event-ban, tr.event-thank").hide();
+    // теперь открываем только тех, у кого в ссылке соотв. uid
+    $('a.name[href*="UID='+userId+'"]').parents("tr.event-thank").show();
+    // теперь меняем слово Репутация на Спасибо от ...
+    $("#user-reputation ~ h2").html(function (index, oldhtml) {
+        return oldhtml.replace("Репутация", "Спасибо от " + userName+" (всего "+$('a.name[href*="UID='+userId+'"]').length+")");
+    });
+    // когда нажимаем "показать все записи", надо вернуть слово "Репутация" обратно 
+    $("div.switch_page.linck > a.pseudo_link").bind("click", function () {
+        $("#user-reputation ~ h2").html(function (index, oldhtml) {
+            return oldhtml.replace(/(.*?)(<span)/,"Репутация $2"); 
+        });
+    });
+    // меняем обратно хэш - убрать после перевода 
+    window.location.hash = "user-reputation";
+}
+
 
 // заменяем вывод +10 спасибо на вывод всех спасибо TODO ERR
 bankiruPage.change10ThanksToAll = function()
