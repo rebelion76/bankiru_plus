@@ -987,9 +987,8 @@ bankiruPage.deleteAutoSave.nameForUser = 'Отключить навязчиво�
 
 /** Вешает ссылки на разделы */                               
 bankiruPage.addLinkInMainMenu = function() {
-       $("span.section__title").unbind('click').on('click', function(event) {
-       event.stopImmediatePropagation(); 
-       location.href = $(this).parent().find("a.list__link").first().attr('href');
+       $("span.section__title").wrap( function() {
+            return "<a style='text-decoration:none' href='"+$(this).parent().find("a.list__link").first().attr('href')+"'>";
     });
 }    
 bankiruPage.addLinkInMainMenu.nameForUser = 'Заголовки главного меню - ссылки на разделы';
