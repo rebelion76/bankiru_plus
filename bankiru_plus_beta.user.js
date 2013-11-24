@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.90.7
+// @version        0.90.8
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -17,7 +17,9 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.90.7"; 
+var version = "0.90.8";
+/** новая версия */
+var new_version = getParam('new_version');
 /** адрес обновления */
 var UPDATE_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js";
 /** адрес скрипта с версией */
@@ -1008,6 +1010,8 @@ bankiruPage.addUserScriptMenu = function() {
             .append("<li class='spoiler__item'><a href='http://bankiforum.ru/showthread.php/255-%D0%9F%D0%BE%D0%B4%D0%BF%D0%B8%D1%81%D0%BA%D0%B0-%D0%B4%D0%BB%D1%8F-Adblock-Plus'>Подписка AdBlock+</a></li>")
         .end().insertAfter(".menu__item.menu__item--right:not(."+prefix+"menu):last");
         
+        if ((new_version!==null)&&(new_version>version)) { $('.'+prefix+'menu.menu__item--right').find("ul.item__spoiler").prepend("<li class='spoiler__item'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>"); }    
+        
         $('.'+prefix+'menu').on('click', function (e) {
             var div = $(this).find('div'); 
             if (div.attr('isOpened') == 'false')  { div.addClass('item__node--expanded').attr('isOpened', true); }
@@ -1022,35 +1026,54 @@ bankiruPage.addUserScriptMenu = function() {
 
 /** Обновление скрипта */
 bankiruPage.updateUserScript = function() {
-        
-    var new_version = $("div."+prefix+"version").text();
-    if (new_version!='') {
-        
-        var today = new Date;
-        var dayX = getParam('dayX');
-        if (dayX === null) { 
-            dayX = today;
-            saveParam('dayX', today.toString()); 
-        }
-        else dayX = new Date(dayX);
+
+    var today = new Date;
     
-        if (new_version>version) {
-               
-            if (dayX.getTime()<=today.getTime()) {
-                dayX = today;
-                confirmed = window.confirm('Вышла новая версия Банки.ру+ '+new_version+'(у вас установлена '+version+'). Хотите скачать и установить?');
-                if (confirmed) {
-                    window.open(UPDATE_URL, prefix+'_update');
-                    dayX.setDate(dayX.getDate()+1); 
-                }
-                else dayX.setDate(dayX.getDate()+7); 
-                saveParam('dayX', dayX.toString());
-            }   
-            $('.'+prefix+'menu.menu__item--right').find("ul.item__spoiler").prepend("<li class='spoiler__item'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>")    
-        }
-       
+    var dayCheckUpdate = getParam('dayCheckUpdate');
+    if (dayCheckUpdate === null) { 
+        dayCheckUpdate = today;
+        saveParam('dayCheckUpdate', today.toString()); 
     }
-    else { setTimeout(bankiruPage.updateUserScript, 100); }
+    else dayCheckUpdate = new Date(dayCheckUpdate);
+    
+    if (dayCheckUpdate.getTime()>today.getTime()) return;  
+    dayCheckUpdate.setDate(today.getDate()+1);
+    saveParam('dayCheckUpdate', dayCheckUpdate.toString()); 
+
+    loadJsOrCssFile(VERSION_URL+'?'+random(100001, 999999),'js');
+    
+    chanceToUpdate();
+    
+    function chanceToUpdate() {
+    
+        var new_version_online = $("div."+prefix+"version").text();
+        
+        if (new_version_online!='') {
+            new_version = new_version_online; saveParam('new_version', new_version);
+            
+            var dayX = getParam('dayX');
+            if (dayX === null) { 
+                dayX = today;
+                saveParam('dayX', today.toString()); 
+            }
+            else dayX = new Date(dayX);
+    
+            if (new_version>version) {
+               
+                if (dayX.getTime()<=today.getTime()) {
+                    dayX = today;
+                    confirmed = window.confirm('Вышла новая версия Банки.ру+ '+new_version+'(у вас установлена '+version+'). Хотите скачать и установить?');
+                    if (confirmed) {
+                        window.open(UPDATE_URL, prefix+'_update');
+                        dayX.setDate(dayX.getDate()+1); 
+                    }
+                    else dayX.setDate(dayX.getDate()+7); 
+                    saveParam('dayX', dayX.toString());
+                }   
+            }
+        }
+        else { setTimeout(chanceToUpdate, 100); }
+    }
 } 
 
 /** Опции скрипта */
@@ -1125,7 +1148,6 @@ function bankiruPage() {
 (function() {
     page = new bankiruPage;
     
-    loadJsOrCssFile(VERSION_URL+'?'+random(100001, 999999),'js');
     
     for (var i=0; i<functionsSequence.length; i++) {
         var addressPattern = new RegExp(functionsSequence[i].address);
