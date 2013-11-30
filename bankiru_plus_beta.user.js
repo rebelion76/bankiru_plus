@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.90.9
+// @version        0.90.91
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -17,7 +17,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.90.9";
+var version = "0.90.91";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -950,8 +950,12 @@ bankiruPage.removeRedirect = function() {
 bankiruPage.removeRedirect.nameForUser="Удаление редиректа из ссылок";
 
 bankiruPage.addSelectToSearchInTop = function() {
-    $('.branded-search__link').remove();   
+    $('.branded-search__link').remove();
     $('form.item__node.js-search-input-form').prepend('<select name="where" style="margin-top:12px""><option selected="selected" value="0">по всему сайту</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option value="iblock_responses">в народном рейтинге</option><option value="forum">в форуме</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>');
+    
+    // на случай, если нет брендового поиска, так уже однажды случалось
+    $('li.menu__item--last:not(.branded-search-wrapper)').addClass('branded-search-wrapper');
+    $('form.item__node.js-search-input-form:not(:parent:parent div.branded-search)').wrap('<div class="branded-search branded-search--color-90be19" />');
 }    
 bankiruPage.addSelectToSearchInTop.nameForUser="Выбор раздела для поиске в шапке";
 
