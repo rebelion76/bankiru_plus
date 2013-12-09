@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.90.92
+// @version        0.91
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -20,7 +20,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.90.92";
+var version = "0.91";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -52,7 +52,7 @@ var functionsSequence = [
        { address: 'banki\\.ru\/profile\/\\?UID=\\d+', functions: 'addHrefsToProfile, change10ThanksToAll', isLast: true },
        /* Форум */
        { address: 'banki\\.ru\\/forum\\/', functions : 'forumPage', isLast : false },
-       { address: 'banki\\.ru\\/forum\\/($|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
+       { address: 'banki\\.ru\\/forum\\/(#|$|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes', isLast: true }, 
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM', isLast: true },
@@ -943,28 +943,54 @@ page.addGotoPage.nameForUser = 'Поле для перехода на любую
 
 page.addThemeSearchToForum = function() {
     var searchHTML = "<input name='"+prefix+"_input_search' placeholder='Поиск по названиям тем' type='text' class='input--search' style='height: 24px;' size=30>&nbsp;&nbsp;&nbsp;&nbsp;";
-    $(".forum-header-box:not(:has(.forum-header-options))").append("<div class='forum-header-options'><span class='forum-option-subscribe' style='display:none'></span></div>");
+    $(".forum-header-box:not(:has(.forum-header-options)) .forum-header-title").append("<div class='forum-header-options'></div>");
     $(".forum-header-options").first().prepend(searchHTML);
     var fid = this.fid; 
-    $("[name*='"+prefix+"_input_search']").on('keydown', function(e) {
-       if (e.keyCode!=13) return; 
-       var searchAdditional = '';
-       if (fid !== undefined) { searchAdditional = '&FID='+ fid; } 
-       $.get(
-            '/forum/?PAGE_NAME=topic_search&do_search=Y&search_template='+$(this).val()+searchAdditional, 
-            function(responce) {
-                $('.forum-navigation-box').remove();
-                var searchHTML = $(responce).find('.forum-navigation-box:first').clone().wrap('<p>').parent().html();
-                //+$(responce).find('.forum-info-box.forum-topics')[0].outerHTML+$(responce).find('.forum-navigation-box:last')[0].outerHTML;
-                console.log(searchHTML);
-                $('.forum-block-container').html(searchHTML);
+    
+    searchFunction = function(searchUrl, fid, template, field) {
+        if (searchUrl === null) {
+            var searchAdditional = '';
+            if ((fid !== undefined) && (fid !== 0))  { searchAdditional = '&FID='+ fid; }
+            if ((field !== null) && (field !== ''))  { searchAdditional = searchAdditional+ '&search_field=' + field; }
+            var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y'+searchAdditional+'&search_template='+template;
+        }    
+        $.ajax({
+            url: searchUrl, 
+            dataType:'text'}).
+            done(function(responce) {
+                $('.forum-navigation-box, .forum-header-box').remove();
+                
+                responce = /<body.*?>([\s\S]*?)<\/body>/.exec(responce)[1];
+                responce = responce.replace(/([\s\S]*?)<script>[\s\S]*?<\/script>([\s\S]*)/,'$1$2');
+                responce = responce.replace(/<\\*form.*?>/,'');
+                $('.forum-block-container').html(responce);
+                
                 $('.forum-block-container a.tableheadtext').attr('href', function() {
-                    alert('!');
-                    var href = $(this).prev().attr('href').value();
-                    $(this).prev().attr('href').remove();
+                    var href = $(this).prev().attr('href');
+                    $(this).prev().remove();
                     return href;
                 });
+                
+                $("div.forum-page-navigation a").each(function(){$(this).attr('data-href',$(this).attr('href'));}).on('click', function(e) { 
+                    e.stopPropagation();
+                    searchFunction($(this).attr('data-href'), null, null, null); 
+                }).attr('href','#');  
+                
+                $('.forum-filter-first>input').attr('type','button').on('click', function (e) {
+                    e.stopPropagation();
+                    searchFunction(null, $('select.forums-selector-single').val(), $('input.search-input').val(), $("select[name*='search_field']").val()); 
+                });
+                $('input.search-input').off().on('keydown', function(e) {
+                    if (e.keyCode!=13) return;
+                    e.stopPropagation();
+                    searchFunction(null, $('select.forums-selector-single').val(), $('input.search-input').val(), $("select[name*='search_field']").val()); 
+                });
             });
+    };
+    
+    $("[name*='"+prefix+"_input_search']").on('keydown', function(e) {
+       if (e.keyCode!=13) return; 
+       searchFunction(null, fid, $(this).val(), null); 
     });
 }
 page.addThemeSearchToForum.nameForUser="Поиск по названию тем форума";
