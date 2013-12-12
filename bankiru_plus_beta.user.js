@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91
+// @version        0.91.1
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -20,7 +20,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91";
+var version = "0.91.1";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -54,7 +54,7 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/forum\\/', functions : 'forumPage', isLast : false },
        { address: 'banki\\.ru\\/forum\\/(#|$|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
-       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes', isLast: true }, 
+       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addUserCoeff, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes', isLast: true }, 
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM', isLast: true },
        /* Перегрузка друзей, не понятно работает ли */
        // { address: 'banki\\.ru\\/friends\\/group\\/.*?\\/forum\\/.*', functions: 'reloadFriendsToForum', isLast: true },
@@ -92,6 +92,28 @@ function loadJsOrCssFile(filename, filetype)
         $('body').append('<link href="'+filename+'" type="text/css" rel="stylesheet" />')
     }
 }
+
+// win-1251 в escape-последовательность
+function escape1251(str)
+{
+    var ret = '';
+
+    for (i=0; i<str.length; i++)
+    {
+        var n = str.charCodeAt(i);
+        if (n >= 0x410 && n <= 0x44F) n -= 0x350;
+        else if (n == 0x451) n = 0xB8;
+        else if (n == 0x401) n = 0xA8;
+        if ((n < 65 || n > 90) && (n < 97 || n > 122) && n < 256) {
+            if (n < 16) ret += '%0'+n.toString(16);
+            else ret += '%'+n.toString(16);
+        }
+        else ret += String.fromCharCode(n);
+    }
+
+    return ret;
+}
+
 
 // Выполнить код скрипта  
 function contentEval(source) 
@@ -808,6 +830,22 @@ page.addUserPostSearch = function() {
 }
 page.addUserPostSearch.nameForUser = 'Ссылка на поиск по сообщениям пользователя в теме форума';
 
+// Добавляет коэффициент полезности сообщений в теме форума
+page.addUserCoeff = function() {
+    
+    $("div.forum-user-additional").append(function(){
+        var numOfMesages = +$(this).find("span:contains('Сообщений') span a").text();
+        if (numOfMesages<100) return;
+        var numOfThanks = +$(this).find("span:contains('Репутация') span a").text();
+        if (numOfThanks<=0) return;
+        var coeff = (numOfThanks/numOfMesages*100).toFixed(2);
+        return "<span>Полезность: <span style='color:black'>"+coeff+"%</span></span>";
+    });
+}
+page.addUserCoeff.nameForUser = 'Коэффициент полезности сообщений в теме форума';
+
+
+
 page.addLinksToHiddenUserInfo = function() {
     if (!page.isLogged)  return false;
     $(".b-el-dropDown>ul").css('width', 180);
@@ -941,6 +979,7 @@ page.addGotoPage = function()
 }
 page.addGotoPage.nameForUser = 'Поле для перехода на любую страницу в форуме';
 
+
 page.addThemeSearchToForum = function() {
     var searchHTML = "<input name='"+prefix+"_input_search' placeholder='Поиск по названиям тем' type='text' class='input--search' style='height: 24px;' size=30>&nbsp;&nbsp;&nbsp;&nbsp;";
     $(".forum-header-box:not(:has(.forum-header-options)) .forum-header-title").append("<div class='forum-header-options'></div>");
@@ -952,10 +991,10 @@ page.addThemeSearchToForum = function() {
             var searchAdditional = '';
             if ((fid !== undefined) && (fid !== 0))  { searchAdditional = '&FID='+ fid; }
             if ((field !== null) && (field !== ''))  { searchAdditional = searchAdditional+ '&search_field=' + field; }
-            var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y'+searchAdditional+'&search_template='+template;
+            var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y'+searchAdditional+'&search_template='+escape1251(template); //вызываемому скрипту обязательно нужна win-1251 escape 
         }    
         $.ajax({
-            url: searchUrl, 
+            url: searchUrl,
             dataType:'text'}).
             done(function(responce) {
                 $('.forum-navigation-box, .forum-header-box').remove();
@@ -1005,7 +1044,7 @@ page.removeRedirect = function() {
         var regexp = /.*?banki\.ru\/redirect\.php\?link=(.*?)&hash(.*)/;
         if (regexp.test(attr)) {
             attr = attr.replace(regexp,'$1');
-            attr = decodeURIComponent(attr);
+            attr = decodeURIComponent(attr); 
         }
         return attr;
     });
