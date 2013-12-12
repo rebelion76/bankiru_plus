@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.1
+// @version        0.91.2
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -20,7 +20,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.1";
+var version = "0.91.2";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -1113,12 +1113,15 @@ page.addUserScriptMenu = function() {
         .end().find("ul.item__spoiler") // добавляем ссылки
             .append("<li class='spoiler__item'><a href='#' id="+prefix+"options_popup_show>Настройки</a></li>")
             .append("<li class='spoiler__item'><a href='http://bankiforum.ru/showthread.php/232-%D0%91%D0%B0%D0%BD%D0%BA%D0%B8-%D1%80%D1%83'>Поддержка</a></li>")
+            .append("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+">Последняя версия</a></li>")
             .append("<li class='spoiler__item'>-----------------------</li>")
             .append("<li class='spoiler__item'><a href='http://bankiforum.ru/showthread.php/290-RSS-ленты-на-banki-ru'>RSS-ленты</a></li>")
             .append("<li class='spoiler__item'><a href='http://bankiforum.ru/showthread.php/255-%D0%9F%D0%BE%D0%B4%D0%BF%D0%B8%D1%81%D0%BA%D0%B0-%D0%B4%D0%BB%D1%8F-Adblock-Plus'>Подписка AdBlock+</a></li>")
     
         .end().insertAfter(".menu__item.menu__item--right:not(."+prefix+"menu):last");
-        if ((new_version!==null)&&(new_version>version)) { $('.'+prefix+'menu.menu__item--right').find("ul.item__spoiler").prepend("<li class='spoiler__item'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>"); }    
+        if ((new_version!==null)&&(new_version>version)) { 
+            $("."+prefix+"getlastversion").after("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>").remove();
+        }    
         
         $('.'+prefix+'menu').on('click', function (e) {
             var div = $(this).find('div'); 
@@ -1168,7 +1171,7 @@ page.updateUserScript = function() {
     
             if (new_version>version) {
                
-                $('.'+prefix+'menu.menu__item--right').find("ul.item__spoiler:not(:contains('Новая версия'))").prepend("<li class='spoiler__item'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>");
+                $("."+prefix+"getlastversion").after("<li class='spoiler__item'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>").remove();
                 
                 if (dayX.getTime()<=today.getTime()) {
                     dayX = today;
