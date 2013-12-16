@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.2
+// @version        0.91.3
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -20,7 +20,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.2";
+var version = "0.91.3";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -31,6 +31,8 @@ var VERSION_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/version.j
 var page = new bankiruPage; 
 /** иконка */
 var favicon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23wAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RkI2OTZCMzIzQzlFMTFFM0E5QUNCMTYzQkQ4NUQxNzMiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RkI2OTZCMzMzQzlFMTFFM0E5QUNCMTYzQkQ4NUQxNzMiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpGQjY5NkIzMDNDOUUxMUUzQTlBQ0IxNjNCRDg1RDE3MyIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpGQjY5NkIzMTNDOUUxMUUzQTlBQ0IxNjNCRDg1RDE3MyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PrUsCVIAAAAMUExURf///zSY22y0TfOcErQw86oAAAABdFJOUwBA5thmAAAAIUlEQVQI12NgYAgNdWAAAfLoVWDQQDHNwPD//wGwuWTRAFefRZ32+6jbAAAAAElFTkSuQmCC";
+/** икнока ожидания */
+var waiticon = "data:image/gif;base64,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";
 /** Список адресов страниц и функций, которые должны быть выполены на этих страницах
  *  { address: '<регулярка адреса, \ нужен двойной!>', functions: '<список функций через пробел запятая>', isLast: <true, если после выполнения закончить> }
  */
@@ -49,12 +51,12 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/banks\\/bank\\/.*?\\/news\\/', functions: 'addRSSToBankNews', isLast: true },
        /* Профиль */
        { address: 'banki\\.ru\/profile\/\\?UID=\\d+#\\d', functions: 'filterThanksByUserId', isLast: false },
-       { address: 'banki\\.ru\/profile\/\\?UID=\\d+', functions: 'addHrefsToProfile, change10ThanksToAll', isLast: true },
+       { address: 'banki\\.ru\/profile\/\\?UID=\\d+', functions: 'addUserCoeffToProfile, addHrefsToProfile, change10ThanksToAll', isLast: true },
        /* Форум */
        { address: 'banki\\.ru\\/forum\\/', functions : 'forumPage', isLast : false },
        { address: 'banki\\.ru\\/forum\\/(#|$|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
-       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addUserCoeff, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes', isLast: true }, 
+       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addUserCoeffToForum, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes', isLast: true }, 
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM', isLast: true },
        /* Перегрузка друзей, не понятно работает ли */
        // { address: 'banki\\.ru\\/friends\\/group\\/.*?\\/forum\\/.*', functions: 'reloadFriendsToForum', isLast: true },
@@ -524,6 +526,14 @@ page.forumPage = function() {
     this.mid = this.params['MID'];
 }
 
+// Считает коэфициент полезности пользователя, null если не удовлетворяет условиям (больше 100 сообщений, положительное число спасибо)
+function userCoeff (messages, thanks) {
+    messages = +messages; thanks = +thanks; 
+    if ((messages<100) || (thanks<=0)) return null
+    else return (thanks/messages*100).toFixed(2);
+} 
+
+
 // --------------------------- Функции, доступные для отключения пользователю ----------------------- 
 
 // принудительная установка галочки "разрешить смайлы" в личных сообщениях
@@ -574,6 +584,15 @@ page.filterThanksByUserId = function()
     window.location.hash = "user-reputation";
 }
 
+// Добавляет коэффициент полезности сообщений в профиле
+page.addUserCoeffToProfile = function() {
+    $(".aboutUser").append(function(){
+        var coeff = userCoeff($("a[title='Посмотреть на сообщения пользователя']").text(), $("a#user-reputation-btn").text());
+        if (coeff === null) return;
+        return "<div class='reputation'>полезность: <b>"+coeff+"%</b></div>";
+    });
+}
+page.addUserCoeffToProfile.nameForUser = 'Коэффициент полезности сообщений в профиле';
 
 // заменяем вывод +10 спасибо на вывод всех спасибо TODO ERR
 page.change10ThanksToAll = function()
@@ -830,19 +849,17 @@ page.addUserPostSearch = function() {
 }
 page.addUserPostSearch.nameForUser = 'Ссылка на поиск по сообщениям пользователя в теме форума';
 
+
 // Добавляет коэффициент полезности сообщений в теме форума
-page.addUserCoeff = function() {
+page.addUserCoeffToForum = function() {
     
     $("div.forum-user-additional").append(function(){
-        var numOfMesages = +$(this).find("span:contains('Сообщений') span a").text();
-        if (numOfMesages<100) return;
-        var numOfThanks = +$(this).find("span:contains('Репутация') span a").text();
-        if (numOfThanks<=0) return;
-        var coeff = (numOfThanks/numOfMesages*100).toFixed(2);
+        var coeff = userCoeff($(this).find("span:contains('Сообщений') span a").text(), $(this).find("span:contains('Репутация') span a").text());
+        if (coeff === null) return;
         return "<span>Полезность: <span style='color:black'>"+coeff+"%</span></span>";
     });
 }
-page.addUserCoeff.nameForUser = 'Коэффициент полезности сообщений в теме форума';
+page.addUserCoeffToForum.nameForUser = 'Коэффициент полезности сообщений в теме форума';
 
 
 
@@ -979,24 +996,25 @@ page.addGotoPage = function()
 }
 page.addGotoPage.nameForUser = 'Поле для перехода на любую страницу в форуме';
 
-
+// Поиск по названиям тем форума
 page.addThemeSearchToForum = function() {
     var searchHTML = "<input name='"+prefix+"_input_search' placeholder='Поиск по названиям тем' type='text' class='input--search' style='height: 24px;' size=30>&nbsp;&nbsp;&nbsp;&nbsp;";
     $(".forum-header-box:not(:has(.forum-header-options)) .forum-header-title").append("<div class='forum-header-options'></div>");
     $(".forum-header-options").first().prepend(searchHTML);
     var fid = this.fid; 
-    
+    $(".bread-crumbs").append("<img src='"+waiticon+"' class="+prefix+"wait style='display:none;'>");
     searchFunction = function(searchUrl, fid, template, field) {
         if (searchUrl === null) {
             var searchAdditional = '';
             if ((fid !== undefined) && (fid !== 0))  { searchAdditional = '&FID='+ fid; }
             if ((field !== null) && (field !== ''))  { searchAdditional = searchAdditional+ '&search_field=' + field; }
             var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y'+searchAdditional+'&search_template='+escape1251(template); //вызываемому скрипту обязательно нужна win-1251 escape 
-        }    
+        } 
+        $("."+prefix+"wait").show();
         $.ajax({
             url: searchUrl,
-            dataType:'text'}).
-            done(function(responce) {
+            dataType:'text'})
+            .done(function(responce) {
                 $('.forum-navigation-box, .forum-header-box').remove();
                 
                 responce = /<body.*?>([\s\S]*?)<\/body>/.exec(responce)[1];
@@ -1009,6 +1027,9 @@ page.addThemeSearchToForum = function() {
                     $(this).prev().remove();
                     return href;
                 });
+                
+                // если ничего не нашли
+                $("div.forum-block-container:not(:has(div.forum-info-box.forum-topics))").append('<div class="forum-info-box forum-topics"><div class="forum-info-box-inner">Ничего не найдено. Попробуйте другую фразу для поиска.</div></div>');
                 
                 $("div.forum-page-navigation a").each(function(){$(this).attr('data-href',$(this).attr('href'));}).on('click', function(e) { 
                     e.stopPropagation();
@@ -1024,7 +1045,8 @@ page.addThemeSearchToForum = function() {
                     e.stopPropagation();
                     searchFunction(null, $('select.forums-selector-single').val(), $('input.search-input').val(), $("select[name*='search_field']").val()); 
                 });
-            });
+            })
+            .complete(function() {$("."+prefix+"wait").hide();});
     };
     
     $("[name*='"+prefix+"_input_search']").on('keydown', function(e) {
@@ -1259,6 +1281,7 @@ function bankiruPage() {
 } 
 
 (function() {
+    
     for (var i=0; i<functionsSequence.length; i++) {
         var addressPattern = new RegExp(functionsSequence[i].address);
         if (addressPattern.test(page.href)) {
