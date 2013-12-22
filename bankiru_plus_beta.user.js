@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.4
+// @version        0.91.4.1
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.4";
+var version = "0.91.4.1";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -49,8 +49,7 @@ var functionsSequence = [
        /* ВИО */ 
        { address: 'banki\\.ru\\/services\\/questions-answers', functions: 'addRSSToQA', isLast: true },
        /* Новости */
-       { address: 'banki\\.ru\\/news\\/.*?id=.*', functions: 'changeNewsCommentsHref', isLast: false },
-       { address: 'banki\\.ru\\/news\\/columnists\\/.*?id=.*', functions: 'repairColumnistHrefs', isLast: true },
+       { address: 'banki\\.ru\\/news\\/.*?id=.*', functions: 'changeNewsCommentsHref, repairNewsCommentsAuthorAndCitateHrefs', isLast: false },
        { address: 'banki\\.ru\\/news\\/lenta\\/.+\\/', functions: 'addRSSToLenta', isLast: true },
        { address: 'banki\\.ru\\/banks\\/bank\\/.*?\\/news\\/', functions: 'addRSSToBankNews', isLast: true },
        /* Профиль */
@@ -537,8 +536,8 @@ function userCoeff (messages, thanks) {
     else return (thanks/messages*100).toFixed(2);
 } 
 
-// Исправляет ошибку с ссылками в коментариях к авторским колонкам
-page.repairColumnistHrefs = function() { 
+// Исправляет ошибку с ссылками в коментариях к некоторым новостным колонкам http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=2427451#message2427451
+page.repairNewsCommentsAuthorAndCitateHrefs = function() { 
     $(".control").css({"background-image" : "none", "width":"auto"});
 }
 
@@ -565,7 +564,43 @@ page.changeNewsCommentsHref = function() {
     $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea']").attr('href', 
         function(index, attr)  {
             var messageString = $(".date>a[href*='message']:first").attr('href');
-            if (!/.*message(\d+)/.test(messageString)) return attr;
+            if (!/.*message(\d+)/.test(messageString)) {
+                 /*var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y'+escape1251($(".b-el-h1:first").text()); //вызываемому скрипту обязательно нужна win-1251 escape 
+                 $.ajax({
+                    url: searchUrl,
+                    dataType:'text'})
+                    .done(function(responce) {
+                                        
+                        responce = /<body.*?>([\s\S]*?)<\/body>/.exec(responce)[1];
+                responce = responce.replace(/([\s\S]*?)<script>[\s\S]*?<\/script>([\s\S]*)/,'$1$2');
+                responce = responce.replace(/<\\*form.*?>/,'');
+                $('.forum-block-container').html(responce);
+                
+                $('.forum-block-container a.tableheadtext').attr('href', function() {
+                    var href = $(this).prev().attr('href');
+                    $(this).prev().remove();
+                    return href;
+                });
+                
+                // если ничего не нашли
+                $("div.forum-block-container:not(:has(div.forum-info-box.forum-topics))").append('<div class="forum-info-box forum-topics"><div class="forum-info-box-inner">Ничего не найдено. Попробуйте другую фразу для поиска.</div></div>');
+                
+                $("div.forum-page-navigation a").each(function(){$(this).attr('data-href',$(this).attr('href'));}).on('click', function(e) { 
+                    e.stopPropagation();
+                    searchFunction($(this).attr('data-href'), null, null, null); 
+                }).attr('href','#');  
+                
+                $('.forum-filter-first>input').attr('type','button').on('click', function (e) {
+                    e.stopPropagation();
+                    searchFunction(null, $('select.forums-selector-single').val(), $('input.search-input').val(), $("select[name*='search_field']").val()); 
+                });
+                $('input.search-input').off().on('keydown', function(e) {
+                    if (e.keyCode!=13) return;
+                    e.stopPropagation();
+                    searchFunction(null, $('select.forums-selector-single').val(), $('input.search-input').val(), $("select[name*='search_field']").val()); 
+                });*/
+                return attr;
+            }
             return '/forum/?PAGE_NAME=read&MID='+/.*message(\d+)/.exec(messageString)[1];
         });
 }
