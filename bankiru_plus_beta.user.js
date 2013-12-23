@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.4.1
+// @version        0.91.5
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.4.1";
+var version = "0.91.5";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -536,6 +536,15 @@ function userCoeff (messages, thanks) {
     else return (thanks/messages*100).toFixed(2);
 } 
 
+// вырезает лишнее из ответа тем поиска по форуму
+function themeSearchAfterLoadParce(responce) {
+    responce = /<body.*?>([\s\S]*?)<\/body>/.exec(responce)[1];
+    responce = responce.replace(/([\s\S]*?)<script>[\s\S]*?<\/script>([\s\S]*)/,'$1$2');
+    responce = responce.replace(/<\\*form.*?>/,'');
+    responce = responce.replace(/<div class="forum-filter-field clearfix">[\s\S]*?for="user_city"[\s\S]*?<div class="forum-filter-field clearfix search-input">/,'<div class="forum-filter-field clearfix search-input">');
+    return responce;
+}
+
 // Исправляет ошибку с ссылками в коментариях к некоторым новостным колонкам http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=2427451#message2427451
 page.repairNewsCommentsAuthorAndCitateHrefs = function() { 
     $(".control").css({"background-image" : "none", "width":"auto"});
@@ -561,48 +570,33 @@ page.changeNewsCommentsHref = function() {
         function(index, attr) {
             return attr+'#comments';
         });
+    var needLoadTheme = false;    
     $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea']").attr('href', 
         function(index, attr)  {
             var messageString = $(".date>a[href*='message']:first").attr('href');
             if (!/.*message(\d+)/.test(messageString)) {
-                 /*var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y'+escape1251($(".b-el-h1:first").text()); //вызываемому скрипту обязательно нужна win-1251 escape 
-                 $.ajax({
-                    url: searchUrl,
-                    dataType:'text'})
-                    .done(function(responce) {
-                                        
-                        responce = /<body.*?>([\s\S]*?)<\/body>/.exec(responce)[1];
-                responce = responce.replace(/([\s\S]*?)<script>[\s\S]*?<\/script>([\s\S]*)/,'$1$2');
-                responce = responce.replace(/<\\*form.*?>/,'');
-                $('.forum-block-container').html(responce);
-                
-                $('.forum-block-container a.tableheadtext').attr('href', function() {
-                    var href = $(this).prev().attr('href');
-                    $(this).prev().remove();
-                    return href;
-                });
-                
-                // если ничего не нашли
-                $("div.forum-block-container:not(:has(div.forum-info-box.forum-topics))").append('<div class="forum-info-box forum-topics"><div class="forum-info-box-inner">Ничего не найдено. Попробуйте другую фразу для поиска.</div></div>');
-                
-                $("div.forum-page-navigation a").each(function(){$(this).attr('data-href',$(this).attr('href'));}).on('click', function(e) { 
-                    e.stopPropagation();
-                    searchFunction($(this).attr('data-href'), null, null, null); 
-                }).attr('href','#');  
-                
-                $('.forum-filter-first>input').attr('type','button').on('click', function (e) {
-                    e.stopPropagation();
-                    searchFunction(null, $('select.forums-selector-single').val(), $('input.search-input').val(), $("select[name*='search_field']").val()); 
-                });
-                $('input.search-input').off().on('keydown', function(e) {
-                    if (e.keyCode!=13) return;
-                    e.stopPropagation();
-                    searchFunction(null, $('select.forums-selector-single').val(), $('input.search-input').val(), $("select[name*='search_field']").val()); 
-                });*/
+                needLoadTheme = true;
                 return attr;
             }
             return '/forum/?PAGE_NAME=read&MID='+/.*message(\d+)/.exec(messageString)[1];
         });
+     
+     if (needLoadTheme) {
+         var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y&search_template='+escape1251($(".b-el-h1:first").text()); //вызываемому скрипту обязательно нужна win-1251 escape 
+         $.get(searchUrl, function(responce) {
+            responce = themeSearchAfterLoadParce(responce);   
+            $("<div class='"+prefix+"search_temp' style='display:none'>").appendTo('body').html(responce);
+            var themeA = $('.'+prefix+'search_temp').find('.forum-info-box-inner>ol>li>a:first');
+            if (themeA.length !== 0) {
+                var themeHref = themeA.attr('href');
+                console.log(themeHref);
+                $('.'+prefix+'search_temp').remove();
+                $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea']").attr('href', function(index, attr)  {
+                    return '/forum/'+themeHref; });    
+            }
+         });       
+      }              
+        
 }
 page.changeNewsCommentsHref.nameForUser = "Изменить ссылку на комментарии в новостях";
 
@@ -1075,10 +1069,7 @@ page.addThemeSearchToForum = function() {
             .done(function(responce) {
                 $('.forum-navigation-box, .forum-header-box').remove();
                 
-                responce = /<body.*?>([\s\S]*?)<\/body>/.exec(responce)[1];
-                responce = responce.replace(/([\s\S]*?)<script>[\s\S]*?<\/script>([\s\S]*)/,'$1$2');
-                responce = responce.replace(/<\\*form.*?>/,'');
-                $('.forum-block-container').html(responce);
+                $('.forum-block-container').html(themeSearchAfterLoadParce(responce));
                 
                 $('.forum-block-container a.tableheadtext').attr('href', function() {
                     var href = $(this).prev().attr('href');
