@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.5
+// @version        0.91.5.1
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.5";
+var version = "0.91.5.1";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -49,7 +49,7 @@ var functionsSequence = [
        /* ВИО */ 
        { address: 'banki\\.ru\\/services\\/questions-answers', functions: 'addRSSToQA', isLast: true },
        /* Новости */
-       { address: 'banki\\.ru\\/news\\/.*?id=.*', functions: 'changeNewsCommentsHref, repairNewsCommentsAuthorAndCitateHrefs', isLast: false },
+       { address: 'banki\\.ru(\\/.*?)*\\/news\\/.*?id=.*', functions: 'changeNewsCommentsHref, repairNewsCommentsAuthorAndCitateHrefs', isLast: false },
        { address: 'banki\\.ru\\/news\\/lenta\\/.+\\/', functions: 'addRSSToLenta', isLast: true },
        { address: 'banki\\.ru\\/banks\\/bank\\/.*?\\/news\\/', functions: 'addRSSToBankNews', isLast: true },
        /* Профиль */
@@ -559,10 +559,6 @@ page.enableSmilesInPM = function()
 }
 page.enableSmilesInPM.nameForUser = 'Принудительно разрешить смайлы в ЛС';
 
-page.addRSSToLenta = function() {
-    addRSS('lenta');
-}
-page.addRSSToLenta.nameForUser = "RSS на разделы новостей в 'хлебных крошках'";
 
 // В новостях меняет ссылку на комментарии на форумскую и исправляет недоработку с #comments http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2451541#message2451541
 page.changeNewsCommentsHref = function() {
@@ -570,35 +566,45 @@ page.changeNewsCommentsHref = function() {
         function(index, attr) {
             return attr+'#comments';
         });
-    var needLoadTheme = false;    
+    var needLoadTheme = true;    
     $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea']").attr('href', 
         function(index, attr)  {
             var messageString = $(".date>a[href*='message']:first").attr('href');
-            if (!/.*message(\d+)/.test(messageString)) {
-                needLoadTheme = true;
-                return attr;
-            }
+            if (!/.*message(\d+)/.test(messageString)) return attr;
+            needLoadTheme = false;
+            $(this).html(function (index, html) { return html+' в форуме'; }); 
             return '/forum/?PAGE_NAME=read&MID='+/.*message(\d+)/.exec(messageString)[1];
         });
      
      if (needLoadTheme) {
-         var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y&search_template='+escape1251($(".b-el-h1:first").text()); //вызываемому скрипту обязательно нужна win-1251 escape 
+         var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y&search_template='+escape1251($(".b-el-h1, .b-el-article__h1").first().text()); //вызываемому скрипту обязательно нужна win-1251 escape 
          $.get(searchUrl, function(responce) {
             responce = themeSearchAfterLoadParce(responce);   
             $("<div class='"+prefix+"search_temp' style='display:none'>").appendTo('body').html(responce);
             var themeA = $('.'+prefix+'search_temp').find('.forum-info-box-inner>ol>li>a:first');
             if (themeA.length !== 0) {
                 var themeHref = themeA.attr('href');
-                console.log(themeHref);
                 $('.'+prefix+'search_temp').remove();
-                $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea']").attr('href', function(index, attr)  {
-                    return '/forum/'+themeHref; });    
-            }
-         });       
+                var $commentsHref = $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea']");
+                if ($commentsHref.length === 0) { 
+                    $commentsHref = $("<a class='b-el-link' title='Комментарии' href='#comments'><i class='comments'></i>Комментарии</a><span class='delimiter'></span>")
+                                    .insertBefore("span.b-el-link.b-el-link_gray"); 
+                    $commentsHref = $(".b-el-link[href*='comments']");        
+                }
+                $commentsHref.attr('href', function(index, attr) { 
+                    $(this).html(function (index, html) { return html+' в форуме'; }); 
+                    return '/forum/'+themeHref;
+                });
+            }  
+        });       
       }              
-        
 }
-page.changeNewsCommentsHref.nameForUser = "Изменить ссылку на комментарии в новостях";
+page.changeNewsCommentsHref.nameForUser = "В новостях менять ссылку на комментарии на форум";
+
+page.addRSSToLenta = function() {
+    addRSS('lenta');
+}
+page.addRSSToLenta.nameForUser = "RSS на разделы новостей в 'хлебных крошках'";
 
 page.addRSSToBankNews = function() {
     addRSS('banknews');
