@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.5.1
+// @version        0.91.5.2
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.5.1";
+var version = "0.91.5.2";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -588,7 +588,7 @@ page.changeNewsCommentsHref = function() {
                 var $commentsHref = $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea']");
                 if ($commentsHref.length === 0) { 
                     $commentsHref = $("<a class='b-el-link' title='Комментарии' href='#comments'><i class='comments'></i>Комментарии</a><span class='delimiter'></span>")
-                                    .insertBefore("span.b-el-link.b-el-link_gray"); 
+                                    .insertBefore("span.b-el-link"); 
                     $commentsHref = $(".b-el-link[href*='comments']");        
                 }
                 $commentsHref.attr('href', function(index, attr) { 
@@ -1057,7 +1057,7 @@ page.addGotoPage.nameForUser = 'Поле для перехода на любую
 // Поиск по названиям тем форума
 page.addThemeSearchToForum = function() {
     var searchHTML = "<input name='"+prefix+"_input_search' placeholder='Поиск по названиям тем' type='text' class='input--search' style='height: 24px;' size=30>&nbsp;&nbsp;&nbsp;&nbsp;";
-    $(".forum-header-box:not(:has(.forum-header-options)) .forum-header-title").append("<div class='forum-header-options'></div>");
+    $(".forum-header-box:not(:has(.forum-header-options)) .forum-header-title, .forum-category-name>tr>td:first").append("<div class='forum-header-options'></div>");
     $(".forum-header-options").first().prepend(searchHTML);
     var fid = this.fid; 
     $(".bread-crumbs").append("<img src='"+waiticon+"' class="+prefix+"wait style='display:none;'>");
