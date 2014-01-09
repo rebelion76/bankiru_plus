@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.6
+// @version        0.91.6.1
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.6";
+var version = "0.91.6.1";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -577,7 +577,7 @@ page.changeNewsCommentsHref = function() {
         });
      
      if (needLoadTheme) {
-         var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y&search_template='+escape1251($(".b-el-h1, .b-el-article__h1").first().text()); //вызываемому скрипту обязательно нужна win-1251 escape 
+         var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y&FID=35&search_template='+escape1251($(".b-el-h1, .b-el-article__h1").first().text()); //вызываемому скрипту обязательно нужна win-1251 escape 
          $.get(searchUrl, function(responce) {
             responce = themeSearchAfterLoadParce(responce);   
             $("<div class='"+prefix+"search_temp' style='display:none'>").appendTo('body').html(responce);
@@ -1120,10 +1120,15 @@ page.removeRedirect = function() {
     $('a[href*="banki.ru/redirect.php"]').attr('href', function(index, attr) {
         var regexp = /.*?banki\.ru\/redirect\.php\?link=(.*?)&hash(.*)/;
         if (regexp.test(attr)) {
-            attr = attr.replace(regexp,'$1');
-            attr = decodeURIComponent(attr); 
+            url = attr.replace(regexp,'$1');
+            try { 
+                url = decodeURIComponent(url);
+            }
+            catch(err) {
+                return attr;
+            } 
         }
-        return attr;
+        return url;
     });
 }
 page.removeRedirect.nameForUser="Удаление редиректа из ссылок";
