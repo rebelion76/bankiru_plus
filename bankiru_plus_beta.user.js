@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.6.1
+// @version        0.91.6.2
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.6.1";
+var version = "0.91.6.2";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -33,7 +33,7 @@ var VERSION_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/version.j
 var page = new bankiruPage; 
 /** иконка */
 var favicon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23wAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RkI2OTZCMzIzQzlFMTFFM0E5QUNCMTYzQkQ4NUQxNzMiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RkI2OTZCMzMzQzlFMTFFM0E5QUNCMTYzQkQ4NUQxNzMiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpGQjY5NkIzMDNDOUUxMUUzQTlBQ0IxNjNCRDg1RDE3MyIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpGQjY5NkIzMTNDOUUxMUUzQTlBQ0IxNjNCRDg1RDE3MyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PrUsCVIAAAAMUExURf///zSY22y0TfOcErQw86oAAAABdFJOUwBA5thmAAAAIUlEQVQI12NgYAgNdWAAAfLoVWDQQDHNwPD//wGwuWTRAFefRZ32+6jbAAAAAElFTkSuQmCC";
-/** икнока ожидания */
+/** иконка ожидания */
 var waiticon = "data:image/gif;base64,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";
 /** Список адресов страниц и функций, которые должны быть выполены на этих страницах
  *  { address: '<регулярка адреса, \ нужен двойной!>', functions: '<список функций через пробел запятая>', isLast: <true, если после выполнения закончить> }
@@ -1134,8 +1134,23 @@ page.removeRedirect = function() {
 page.removeRedirect.nameForUser="Удаление редиректа из ссылок";
 
 page.addSelectToSearchInTop = function() {
+    function changeSearchForm(action, inputName) {
+        $("form.item__node.js-search-input-form").attr('action',action);
+        $("form.item__node.js-search-input-form .input-search__field").attr('name',inputName);
+    }
     $('.branded-search__link').remove();   
-    $('form.item__node.js-search-input-form').prepend('<select name="where" style="margin-top:12px"><option selected="selected" value="0">по всему сайту</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option value="iblock_responses">в народном рейтинге</option><option value="forum">в форуме</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>');
+    $('<select name="where" style="margin-top:12px"><option selected="selected" value="0">по всему сайту</option><option value="'+prefix+'banks">в банках России</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option value="iblock_responses">в народном рейтинге</option><option value="forum">в форуме</option><option value="'+prefix+'users">в пользователях</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>')
+    .prependTo("form.item__node.js-search-input-form")
+    .on("change", function() {
+        switch ($(this).find('option:selected').attr('value')) {
+            case prefix+'users': changeSearchForm('/forum/','user_name'); break;
+            case prefix+'banks': changeSearchForm('/banks/search/','search[text]'); break;    
+            default : changeSearchForm('/search/','q');
+        }
+    });
+    $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='search[type]' value='name'>");
+    $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='PAGE_NAME' value='user_list'>");
+    $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='set_filter' value='Фильтровать'>");
     
     // на случай, если нет брендового поиска, так уже однажды случалось
     $('li.menu__item--last:not(.branded-search-wrapper) form.item__node.js-search-input-form').wrap('<div class="branded-search branded-search--color-90be19" />');
@@ -1178,11 +1193,14 @@ page.deleteAutoSave.nameForUser = 'Отключить навязчивое ав�
 
 /** Добавляет пункты в "меню пользователя" */
 page.addToUserMenu = function() {
-    $(".item__spoiler.item__spoiler--user").css({"width":"120"});
+    $(".item__spoiler.item__spoiler--user").css({"width":"150", "padding-left":"20px"});
     $(".spoiler__item>a:contains('Сообщения')")
     .text("ЛС (входящие)")
     .parent().after('<li class="spoiler__item"><a href="/forum/?PAGE_NAME=pm_list&amp;FID=2">ЛС (отправленные)</a></li>')
-    .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/index.php?PAGE_NAME=user_post&UID='+this.userId+'&mode=all">Комментарии</a></li>')
+    .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/index.php?PAGE_NAME=user_post&UID='+this.userId+'&mode=all">Сообщения в форуме</a></li>')
+    .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/?PAGE_NAME=subscr_list">Подписки</a></li>');                  
+    $(".spoiler__item>a:contains('Моя лента')")
+    .parent().after('<li class="spoiler__item"><a href="http://www.banki.ru/profile/index.php?UID='+this.userId+'&action=activity">Моя активность</a></li>');
 }
 page.addToUserMenu.nameForUser='Дополнительные ссылки в меню пользователя'
         
