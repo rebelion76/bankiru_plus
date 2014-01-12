@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.6.2
+// @version        0.91.6.3
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.6.2";
+var version = "0.91.6.3";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -1138,16 +1138,26 @@ page.addSelectToSearchInTop = function() {
         $("form.item__node.js-search-input-form").attr('action',action);
         $("form.item__node.js-search-input-form .input-search__field").attr('name',inputName);
     }
-    $('.branded-search__link').remove();   
-    $('<select name="where" style="margin-top:12px"><option selected="selected" value="0">по всему сайту</option><option value="'+prefix+'banks">в банках России</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option value="iblock_responses">в народном рейтинге</option><option value="forum">в форуме</option><option value="'+prefix+'users">в пользователях</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>')
+    $('.branded-search__link').remove();
+    var searchOption = getParam('top_search_option');
+    if (searchOption === null) {
+        saveParam('top_search_option', 0);
+        searchOption = 0;
+    }
+    
+    $('<select name="where" style="margin-top:12px"><option value="0">по всему сайту</option><option value="'+prefix+'banks">в банках России</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option value="iblock_responses">в народном рейтинге</option><option value="forum">в форуме</option><option value="'+prefix+'users">в пользователях</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>')
     .prependTo("form.item__node.js-search-input-form")
     .on("change", function() {
-        switch ($(this).find('option:selected').attr('value')) {
+        var value = $(this).find('option:selected').attr('value');
+        saveParam('top_search_option', value);
+        switch (value) {
             case prefix+'users': changeSearchForm('/forum/','user_name'); break;
             case prefix+'banks': changeSearchForm('/banks/search/','search[text]'); break;    
             default : changeSearchForm('/search/','q');
         }
-    });
+    })
+    .find("option[value='"+searchOption+"']").attr('selected','true');
+    
     $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='search[type]' value='name'>");
     $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='PAGE_NAME' value='user_list'>");
     $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='set_filter' value='Фильтровать'>");
@@ -1193,11 +1203,12 @@ page.deleteAutoSave.nameForUser = 'Отключить навязчивое ав�
 
 /** Добавляет пункты в "меню пользователя" */
 page.addToUserMenu = function() {
-    $(".item__spoiler.item__spoiler--user").css({"width":"150", "padding-left":"20px"});
+    $(".item__spoiler.item__spoiler--user").css({"width":"170", "padding-left":"20px"});
     $(".spoiler__item>a:contains('Сообщения')")
     .text("ЛС (входящие)")
     .parent().after('<li class="spoiler__item"><a href="/forum/?PAGE_NAME=pm_list&amp;FID=2">ЛС (отправленные)</a></li>')
-    .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/index.php?PAGE_NAME=user_post&UID='+this.userId+'&mode=all">Сообщения в форуме</a></li>')
+    .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/index.php?PAGE_NAME=user_post&UID='+this.userId+'&mode=all">Мои сообщения в форуме</a></li>')
+    .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/index.php?PAGE_NAME=user_post&UID='+this.userId+'&mode=lta">Мои темы в форуме</a></li>')
     .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/?PAGE_NAME=subscr_list">Подписки</a></li>');                  
     $(".spoiler__item>a:contains('Моя лента')")
     .parent().after('<li class="spoiler__item"><a href="http://www.banki.ru/profile/index.php?UID='+this.userId+'&action=activity">Моя активность</a></li>');
