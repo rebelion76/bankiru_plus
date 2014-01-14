@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.6.3
+// @version        0.91.6.4
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.6.3";
+var version = "0.91.6.4";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -1156,7 +1156,8 @@ page.addSelectToSearchInTop = function() {
             default : changeSearchForm('/search/','q');
         }
     })
-    .find("option[value='"+searchOption+"']").attr('selected','true');
+    .find("option[value='"+searchOption+"']").attr('selected','true')
+    .trigger("change");
     
     $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='search[type]' value='name'>");
     $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='PAGE_NAME' value='user_list'>");
