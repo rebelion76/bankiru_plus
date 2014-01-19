@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.6.5
+// @version        0.91.7.0
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.6.5";
+var version = "0.91.7.0";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -57,7 +57,7 @@ var functionsSequence = [
        { address: 'banki\\.ru\/profile\/\\?UID=\\d+', functions: 'addUserCoeffToProfile, addHrefsToProfile, change10ThanksToAll', isLast: true },
        /* Форум */
        { address: 'banki\\.ru\\/forum\\/', functions : 'forumPage', isLast : false },
-       { address: 'banki\\.ru\\/forum\\/(#|$|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
+       { address: 'banki\\.ru\\/forum\\/(#|$|.*?'+prefix+'theme_search.*|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?TOPIC_SUBSCRIBE=Y&.*', functions: 'repairPageHrefsIfSubscribe', isLast : false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addUserCoeffToForum, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes', isLast: true }, 
@@ -563,42 +563,59 @@ page.enableSmilesInPM.nameForUser = 'Принудительно разрешит
 
 // В новостях меняет ссылку на комментарии на форумскую и исправляет недоработку с #comments http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2451541#message2451541
 page.changeNewsCommentsHref = function() {
+    // исправляет недобработку
     $(".b-pagination__list>li>a, .nav_page>span>a").attr('href', 
         function(index, attr) {
             return attr+'#comments';
         });
-    var needLoadTheme = true;    
-    $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea']").attr('href', 
-        function(index, attr)  {
-            var messageString = $(".date>a[href*='message']:first").attr('href');
-            if (!/.*message(\d+)/.test(messageString)) return attr;
-            needLoadTheme = false;
+    // менят и добаляет ссылку на комментарии в форуме                
+    var needLoadTheme = true; 
+    var themeHref = '';
+    var messageString = $(".date>a[href*='message']:first").attr('href');
+    if (/.*message(\d+)/.test(messageString))  {
+        needLoadTheme = false;
+        themeHref = '/forum/?PAGE_NAME=read&MID='+/.*message(\d+)/.exec(messageString)[1];
+    }
+    
+    function addLinks(themeHref) { 
+        var $commentsHref = $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea']");
+        if ($commentsHref.length === 0) { 
+            $commentsHref = $("<a class='b-el-link' title='Комментарии' href='#comments'><i class='comments'></i>Комментарии</a><span class='delimiter'></span>")
+                            .insertBefore("span.b-el-link"); 
+            $commentsHref = $(".b-el-link[href*='comments']");        
+        }
+        $commentsHref.attr('href', function(index, attr) { 
             $(this).html(function (index, html) { return html+' в форуме'; }); 
-            return '/forum/?PAGE_NAME=read&MID='+/.*message(\d+)/.exec(messageString)[1];
+            return themeHref;
         });
-     
-     if (needLoadTheme) {
-         var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y&FID=35&search_template='+escape1251($(".b-el-h1, .b-el-article__h1").first().text()); //вызываемому скрипту обязательно нужна win-1251 escape 
-         $.get(searchUrl, function(responce) {
+        $("h2.comment").html(function(i, old) {
+            if (/\d+.*?<a/.test(old)) return old.replace(/(\d+.*?)<a/,'<a class="goForm" href="'+themeHref+'">$1 в форуме</a> • <a');
+            else return old;
+        });
+    }
+    
+    
+    if (needLoadTheme) {
+        var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y&FID=35&search_template='+escape1251($(".b-el-h1, .b-el-article__h1").first().text()); //вызываемому скрипту обязательно нужна win-1251 escape 
+        $.get(searchUrl, function(responce) {
             responce = themeSearchAfterLoadParce(responce);   
             $("<div class='"+prefix+"search_temp' style='display:none'>").appendTo('body').html(responce);
             var themeA = $('.'+prefix+'search_temp').find('.forum-info-box-inner>ol>li>a:first');
             if (themeA.length !== 0) {
-                var themeHref = themeA.attr('href');
+                var themeHref = '/forum/'+themeA.attr('href');
                 $('.'+prefix+'search_temp').remove();
-                var $commentsHref = $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea']");
-                if ($commentsHref.length === 0) { 
-                    $commentsHref = $("<a class='b-el-link' title='Комментарии' href='#comments'><i class='comments'></i>Комментарии</a><span class='delimiter'></span>")
-                                    .insertBefore("span.b-el-link"); 
-                    $commentsHref = $(".b-el-link[href*='comments']");        
-                }
-                $commentsHref.attr('href', function(index, attr) { 
-                    $(this).html(function (index, html) { return html+' в форуме'; }); 
-                    return '/forum/'+themeHref;
-                });
-            }  
+                addLinks(themeHref);
+            }
         });       
-      }              
+    }
+    else addLinks(themeHref); 
+  
+  
+   /*$(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea']").attr('href', function(index, attr)  {
+        $(this).html(function (index, html) { return html+' в форуме'; }); 
+        return themeHref;
+   });*/
+    
 }
 page.changeNewsCommentsHref.nameForUser = "В новостях менять ссылку на комментарии на форум";
 
@@ -661,7 +678,8 @@ page.change10ThanksToAll = function()
     }); 
     
     //<div class="b-array__paginator load-more-events">
-    //<div class="switch_page linck"><a class="pseudo_link" href="#" onclick="return LoadMoreUserDetails()">Показать еще 10</a></div>
+    //<div class="switch_page linck"><a 
+    //class="pseudo_link" href="#" onclick="return LoadMoreUserDetails()">Показать еще 10</a></div>
 }
 page.change10ThanksToAll.nameForUser = 'Замена в профиле "еще 10 спасибо" на "все записи"';
 
@@ -1071,12 +1089,13 @@ page.addThemeSearchToForum = function() {
     $(".forum-header-options").first().prepend(searchHTML);
     var fid = this.fid; 
     $(".bread-crumbs").append("<img src='"+waiticon+"' class="+prefix+"wait style='display:none;'>");
-    searchFunction = function(searchUrl, fid, template, field) {
+    searchFunction = function(searchUrl, fid, template, field, noescape) {
         if (searchUrl === null) {
             var searchAdditional = '';
             if ((fid !== undefined) && (fid !== 0))  { searchAdditional = '&FID='+ fid; }
             if ((field !== null) && (field !== ''))  { searchAdditional = searchAdditional+ '&search_field=' + field; }
-            var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y'+searchAdditional+'&search_template='+escape1251(template); //вызываемому скрипту обязательно нужна win-1251 escape 
+            if (noescape !== true) template = escape1251(template); //вызываемому скрипту обязательно нужна win-1251 escape 
+            var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y'+searchAdditional+'&search_template='+template; 
         } 
         $("."+prefix+"wait").show();
         $.ajax({
@@ -1113,6 +1132,8 @@ page.addThemeSearchToForum = function() {
             })
             .complete(function() {$("."+prefix+"wait").hide();});
     };
+    var template = this.params[prefix+'theme_search']; 
+    if (template !== undefined) searchFunction(null, null, template, null, true);
     
     $("[name*='"+prefix+"_input_search']").on('keydown', function(e) {
        if (e.keyCode!=13) return; 
@@ -1143,6 +1164,7 @@ page.removeRedirect = function() {
 }
 page.removeRedirect.nameForUser="Удаление редиректа из ссылок";
 
+/** Выбор раздела для поиске в шапке */
 page.addSelectToSearchInTop = function() {
     function changeSearchForm(action, inputName) {
         $("form.item__node.js-search-input-form").attr('action',action);
@@ -1155,24 +1177,26 @@ page.addSelectToSearchInTop = function() {
         searchOption = 0;
     }
     
-    $('<select name="where" style="margin-top:12px"><option value="0">по всему сайту</option><option value="'+prefix+'banks">в банках России</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option value="iblock_responses">в народном рейтинге</option><option value="forum">в форуме</option><option value="'+prefix+'users">в пользователях</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>')
+    $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='search[type]' value='name'>");
+    $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='PAGE_NAME' value='user_list'>");
+    $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='set_filter' value='Фильтровать'>");
+        
+    $('<select name="where" style="margin-top:12px"><option value="0">по всему сайту</option><option value="'+prefix+'banks">в банках России</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option value="iblock_responses">в народном рейтинге</option><option value="'+prefix+'theme_search">в темах форума</option><option value="forum">в форуме</option><option value="'+prefix+'users">в пользователях</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>')
     .prependTo("form.item__node.js-search-input-form")
     .on("change", function() {
         var value = $(this).find('option:selected').attr('value');
         saveParam('top_search_option', value);
         switch (value) {
             case prefix+'users': changeSearchForm('/forum/','user_name'); break;
-            case prefix+'banks': changeSearchForm('/banks/search/','search[text]'); break;    
+            case prefix+'banks': changeSearchForm('/banks/search/','search[text]'); break;
+            case prefix+'theme_search':  changeSearchForm('/forum/',prefix+'theme_search'); $("input[name*='PAGE_NAME']").remove(); break;
             default : changeSearchForm('/search/','q');
         }
     })
     .find("option[value='"+searchOption+"']").attr('selected','true')
     .trigger("change");
     
-    $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='search[type]' value='name'>");
-    $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='PAGE_NAME' value='user_list'>");
-    $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='set_filter' value='Фильтровать'>");
-    
+   
     // на случай, если нет брендового поиска, так уже однажды случалось
     $('li.menu__item--last:not(.branded-search-wrapper) form.item__node.js-search-input-form').wrap('<div class="branded-search branded-search--color-90be19" />');
     $('li.menu__item--last:not(.branded-search-wrapper)').addClass('branded-search-wrapper');
