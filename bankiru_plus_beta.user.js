@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.7.0
+// @version        0.91.8.0
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.7.0";
+var version = "0.91.8.0";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -40,7 +40,7 @@ var waiticon = "data:image/gif;base64,R0lGODlhEAAQAMQAAP///+7u7t3d3bu7u6qqqpmZmY
  */
 var functionsSequence = [
        /* Все страницы */  
-       { address : 'banki\\.ru\\/', functions : 'updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu', isLast : false },
+       { address : 'banki\\.ru\\/', functions : 'updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*responseID.*', functions: 'deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP', isLast: true },
@@ -1250,16 +1250,15 @@ page.addToUserMenu = function() {
 }
 page.addToUserMenu.nameForUser='Дополнительные ссылки в меню пользователя'
         
-/** Удаляет кнопку наверх                                
+/** Удаляет кнопку наверх */                                
 page.removeUpButton = function() {
-    alert('!!');
-    $(document).on('ready', function() { 
-        
+    
+    $(document).on('scroll', function() { 
+        $("#scrollToTop").remove();
     });
-    $.when($("#scrollToTop").appendTo('body'), function(){ alert('!!!!!'); });
 }    
 page.removeUpButton.nameForUser = 'Отключить кнопку наверх';
-page.removeUpButton.firstRunIsFalse = false; */
+page.removeUpButton.firstRunIsFalse = false; 
 
 /** Вешает ссылки на разделы */                               
 page.addLinkInMainMenu = function() {
