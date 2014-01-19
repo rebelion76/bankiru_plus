@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.6.4
+// @version        0.91.6.5
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.6.4";
+var version = "0.91.6.5";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -58,6 +58,7 @@ var functionsSequence = [
        /* Форум */
        { address: 'banki\\.ru\\/forum\\/', functions : 'forumPage', isLast : false },
        { address: 'banki\\.ru\\/forum\\/(#|$|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
+       { address: 'banki\\.ru\\/forum\\/.*?TOPIC_SUBSCRIBE=Y&.*', functions: 'repairPageHrefsIfSubscribe', isLast : false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addUserCoeffToForum, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes', isLast: true }, 
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM', isLast: true },
@@ -869,6 +870,15 @@ page.addRSSToListOfBanks = function() {
     });
 }
 page.addRSSToListOfBanks.nameForUser = 'RSS на отзывы и ответы ПБ в списке банков НР';
+
+/** Исправление ошибки в ссылках в случае подписки http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2501456#message2501456  */
+page.repairPageHrefsIfSubscribe = function() {
+    $(".forum-page-navigation>a").attr('href', function(i, val) {
+        if (/TOPIC_SUBSCRIBE=Y&/.test(val)) val = val.replace('TOPIC_SUBSCRIBE=Y&','');    
+        return val;
+    });
+}
+page.repairPageHrefsIfSubscribe.nameForUser = 'Исправление ошибки в ссылках на страницы форума при подписке';
 
 // добавление пробелов в текст "Спасибо", чтобы достичь необходимых 20 символов 
 page.addSpacesToSmallThank = function() {
