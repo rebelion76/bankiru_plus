@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.8.1
+// @version        0.91.8.2
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.8.1";
+var version = "0.91.8.2";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -1179,7 +1179,6 @@ page.addSelectToSearchInTop = function() {
     }
     
     $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='search[type]' value='name'>");
-    $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='PAGE_NAME' value='user_list'>");
     $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='set_filter' value='Фильтровать'>");
         
     $('<select name="where" style="margin-top:12px"><option value="0">по всему сайту</option><option value="'+prefix+'banks">в банках России</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option value="iblock_responses">в народном рейтинге</option><option value="'+prefix+'theme_search">в темах форума</option><option value="forum">в форуме</option><option value="'+prefix+'users">в пользователях</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>')
@@ -1188,9 +1187,9 @@ page.addSelectToSearchInTop = function() {
         var value = $(this).find('option:selected').attr('value');
         saveParam('top_search_option', value);
         switch (value) {
-            case prefix+'users': changeSearchForm('/forum/','user_name'); break;
+            case prefix+'users': changeSearchForm('/forum/','user_name'); $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='PAGE_NAME' value='user_list'>"); break;
             case prefix+'banks': changeSearchForm('/banks/search/','search[text]'); break;
-            case prefix+'theme_search':  changeSearchForm('/forum/',prefix+'theme_search'); $("input[name*='PAGE_NAME']").remove(); break;
+            case prefix+'theme_search':  changeSearchForm('/forum/',prefix+'theme_search'); $("form.item__node.js-search-input-form input[name*='PAGE_NAME']").remove(); break;
             default : changeSearchForm('/search/','q');
         }
     })
@@ -1316,7 +1315,8 @@ page.updateUserScript = function() {
     else dayCheckUpdate = new Date(dayCheckUpdate);
     
     if (dayCheckUpdate.getTime()>today.getTime()) return;  
-    dayCheckUpdate.setDate(today.getDate()+1);
+    dayCheckUpdate = today;
+    dayCheckUpdate.setDate(dayCheckUpdate.getDate()+1);
     saveParam('dayCheckUpdate', dayCheckUpdate.toString()); 
 
     loadJsOrCssFile(VERSION_URL+'?'+random(100001, 999999),'js');
