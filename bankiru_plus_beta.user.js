@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.8.2
+// @version        0.91.8.3
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.8.2";
+var version = "0.91.8.3";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -928,8 +928,8 @@ page.addUserPostSearch = function() {
     
     $("div.forum-user-additional :first-child:has(span a)").after(function(){
         var user = getUserIdFromUrl($(this).find('a').attr('href'));
-        var topic= $("div.forum-header-title:first").text();
-        topic = topic.replace(/,(.*)$/,'');
+        var topic= $("h1.topic-page__title:first").text();
+        //topic = topic.replace(/,(.*)$/,'');
         topic = $.trim(topic);
         return "<span>Сообщения в теме: <span><a href='http://www.banki.ru/forum/?PAGE_NAME=user_post&UID="+user+"&topic="+topic+"'>&gt;&gt;&gt;</a></span></span>";
     });
