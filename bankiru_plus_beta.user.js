@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.8.3
+// @version        0.91.8.4
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.8.3";
+var version = "0.91.8.4";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -57,7 +57,7 @@ var functionsSequence = [
        { address: 'banki\\.ru\/profile\/\\?UID=\\d+', functions: 'addUserCoeffToProfile, addHrefsToProfile, change10ThanksToAll', isLast: true },
        /* Форум */
        { address: 'banki\\.ru\\/forum\\/', functions : 'forumPage', isLast : false },
-       { address: 'banki\\.ru\\/forum\\/(#|$|.*?'+prefix+'theme_search.*|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
+       { address: 'banki\\.ru\\/forum\\/(\\?modern=\\d|#|$|.*?'+prefix+'theme_search.*|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?TOPIC_SUBSCRIBE=Y&.*', functions: 'repairPageHrefsIfSubscribe', isLast : false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addUserCoeffToForum, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes', isLast: true }, 
@@ -199,7 +199,7 @@ function addRSS(typeOfRSS)
 {
     var bankId;
     var filter;
-    if (page.oldDisign) { filter = ".b-breadCrumbs"; }
+    if (page.oldDesign) { filter = ".b-breadCrumbs"; }
     else filter = "ul.bread-crumbs";
     $(filter).html(function (index, oldhtml) {
         switch (typeOfRSS) {
@@ -463,15 +463,15 @@ function addAditionalSearch (type)
     var titlePiece=page.title;
     switch (type) { 
         case 'forum_search': 
-            var searchElemsHTML = "<input name='bankiruplus_input_search' placeholder='Поиск по теме' type='text' style='height: 24px;' class='input--search' size=30>&nbsp;&nbsp;&nbsp;&nbsp;"; 
+            var searchElemsHTML = "<input placeholder='Поиск по теме' name='"+prefix+"input_search' type='text' style='height: 24px;' size=30><input type='button' style='position:relative; left:-32px; height: 20px' class='input-search__button input-search__button--enabled' name='"+prefix+"button_search'>&nbsp;&nbsp;&nbsp;&nbsp;"; 
             $(".forum-header-options").first().prepend(searchElemsHTML);
             searchQuery = searchQuery + 'inurl:TID=' + page.params['TID']+' '; 
             break;
         case 'responces' : 
-            var searchElemsHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type= 'text' name='bankiruplus_input_search' placeholder='Поиск по отзывам' size=30>"; 
+            var searchElemsHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='text' name='"+prefix+"input_search' placeholder='Поиск по отзывам' size='30'><input type='button' style='position:relative; left:-38px' class='input-search__button input-search__button--enabled' name='"+prefix+"button_search'>"; 
             $("DIV.bank-responses-review > a.bank-button-add").before(searchElemsHTML);
             //("div.b-customFilter").
-            $("[name='bankiruplus_input_search']").addClass('input--search');
+            //$("[name='bankiruplus_input_search']").addClass('input--search');
             if (/(Отзывы.*?),/.test(titlePiece)) { titlePiece =/(Отзывы.*?),/.exec(titlePiece)[1]; }
             searchQuery = searchQuery + 'intitle:"' + titlePiece + '"' + ' inurl:"responseID" ';
             break;    
@@ -483,12 +483,13 @@ function addAditionalSearch (type)
     }
     function additionalSearchSubmit(e) {
         if ((e.type=='keydown') && (e.keyCode!=13)) return;
-        googleWindow = window.open(searchQuery+$("[name='bankiruplus_input_search']").val());
+        googleWindow = window.open(searchQuery+$("[name='"+prefix+"input_search']").val());
         googleWindow.focus();
     }
     
-    $("[name='bankiruplus_button_search']").bind("click", additionalSearchSubmit);
-    $("[name='bankiruplus_input_search']").bind("keydown", additionalSearchSubmit);
+    $("[name='"+prefix+"input_search']").bind("keydown", additionalSearchSubmit);
+    page.oldDesign ? $("[name='"+prefix+"button_search']").hide() : $("[name='"+prefix+"button_search']").bind("click", additionalSearchSubmit);
+    
 }
 
 // переход по страницам форума
@@ -730,7 +731,7 @@ page.addRSSToResponces.nameForUser = "RSS на отзывы и ответы ПБ
 
 // переносим правый блок в НР наверх
 page.deleteHRRigthBlock = function() {
-    if (!page.oldDisign) return;
+    if (!page.oldDesign) return;
     $("div.b-deposit__wrap__header")
     .after($("div.b-pr-phone"))
     .after($("div.b-BankShortRating"))
@@ -1085,7 +1086,7 @@ page.addGotoPage.nameForUser = 'Поле для перехода на любую
 
 // Поиск по названиям тем форума
 page.addThemeSearchToForum = function() {
-    var searchHTML = "<input name='"+prefix+"_input_search' placeholder='Поиск по названиям тем' type='text' class='input--search' style='height: 24px;' size=30>&nbsp;&nbsp;&nbsp;&nbsp;";
+    var searchHTML = "<input name='"+prefix+"input_search' placeholder='Поиск по названиям тем' type='text' style='height: 24px;' size=30><input type='button' name='"+prefix+"button_search' class='input-search__button input-search__button--enabled' style='position:relative; left:-32px; height: 20px'>&nbsp;&nbsp;&nbsp;&nbsp;";
     $(".forum-header-box:not(:has(.forum-header-options)) .forum-header-title, .forum-category-name>tr>td:first").append("<div class='forum-header-options'></div>");
     $(".forum-header-options").first().prepend(searchHTML);
     var fid = this.fid; 
@@ -1136,9 +1137,13 @@ page.addThemeSearchToForum = function() {
     var template = this.params[prefix+'theme_search']; 
     if (template !== undefined) searchFunction(null, null, template, null, true);
     
-    $("[name*='"+prefix+"_input_search']").on('keydown', function(e) {
+    $("[name*='"+prefix+"input_search']").on('keydown', function(e) {
        if (e.keyCode!=13) return; 
        searchFunction(null, fid, $(this).val(), null); 
+    });
+    this.oldDesign ? $("[name='"+prefix+"button_search']").hide() : 
+    $("[name*='"+prefix+"button_search']").on('click', function(e) {
+       searchFunction(null, fid, $("[name*='"+prefix+"input_search']").val(), null); 
     });
 }
 page.addThemeSearchToForum.nameForUser="Поиск по названию тем форума";
@@ -1271,7 +1276,7 @@ page.addLinkInMainMenu.nameForUser = 'Заголовки главного мен
 // ------------------------------ Предварительные функции ----------------------------------------------
 /** Добавляем меню скрипта в шапку */
 page.addUserScriptMenu = function() {
-    if (!page.oldDisign) {
+    if (!page.oldDesign) {
         $("li.menu__item.js-menu__item:has(div i[class*='facebook'])").clone(true).addClass(prefix+'menu menu__item--right')
         .find("div").addClass(prefix+'menu_div').attr('isOpened',false)
         // меняем иконку
@@ -1397,11 +1402,11 @@ page.addOptionsWindow = function() {
 function bankiruPage() {
     
     //определяем какой дизайн
-    if  ($(".b-to-new-design>a").length!=0) { this.oldDisign = true; }
-    else { this.oldDisign = false; }
+    if  ($(".b-to-new-design>a").length!=0) { this.oldDesign = true; }
+    else { this.oldDesign = false; }
     
     // ищем имя пользователя и его id, на основании найденного решаем залогирован ли пользователь или нет
-    if (this.oldDisign) {
+    if (this.oldDesign) {
         this.userName = $("a.b-userbar__name").html();
         this.userId = getUserIdFromUrl($("a.b-userbar__name").attr("href")); 
     }
