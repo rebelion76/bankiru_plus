@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.91.8.4
+// @version        0.92.0.0
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.91.8.4";
+var version = "0.92.0.0";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -55,6 +55,9 @@ var functionsSequence = [
        /* Профиль */
        { address: 'banki\\.ru\/profile\/\\?UID=\\d+#\\d', functions: 'filterThanksByUserId', isLast: false },
        { address: 'banki\\.ru\/profile\/\\?UID=\\d+', functions: 'addUserCoeffToProfile, addHrefsToProfile, change10ThanksToAll', isLast: true },
+       /* Поиск по темам форума */
+       // http://http://www.banki.ru/forum/?PAGE_NAME=search
+       { address: 'banki\\.ru\\/forum\\/.*?'+prefix+'searchInTheme', functions : 'changeSearchInForumPage', isLast: true }, 
        /* Форум */
        { address: 'banki\\.ru\\/forum\\/', functions : 'forumPage', isLast : false },
        { address: 'banki\\.ru\\/forum\\/(\\?modern=\\d|#|$|.*?'+prefix+'theme_search.*|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
@@ -69,7 +72,7 @@ var functionsSequence = [
 // ------------------- Вспомогательные функции ------------------------------------
 
 // Сохранить параметр
-function saveParam(name, value) {
+function setParam(name, value) {
    if (typeof(localStorage)=='undefined') { document.cookie = prefix+name+'='+value+';'+'expires=Tue, 19 Jan 2038 00:00:00 GMT'; }
    else { localStorage.setItem(prefix+name, value); }
 }
@@ -99,7 +102,7 @@ function loadJsOrCssFile(filename, filetype)
     }
 }
 
-// win-1251 в escape-последовательность
+/** 1251 -> escape */
 function escape1251(str)
 {
     var ret = '';
@@ -119,6 +122,24 @@ function escape1251(str)
 
     return ret;
 }
+
+/**  escape -> 1251 */
+function unescape1251(str)
+{
+    var convTable = [0x402,0x403,0x201A,0x453,0x201E,0x2026,0x2020,0x2021,0x20AC,0x2030,0x409,0x2039,0x40A,0x40C,0x40B,0x40F,0x452,0x2018,0x2019,0x201C,0x201D,0x2022,0x2013,0x2014,0x20,0x2122,0x459,0x203A,0x45A,0x45C,
+	0x45B,0x45F,0xA0,0x40E,0x45E,0x408,0xA4,0x490,0xA6,0xA7,0x401,0xA9,0x404,0xAB,0xAC,0xAD,0xAE,0x407,0xB0,0xB1,0x406,0x456,0x491,0xB5,0xB6,0xB7,0x451,0x2116,0x454,0xBB,0x458,0x405,0x455,0x457,0x410,
+	0x411,0x412,0x413,0x414,0x415,0x416,0x417,0x418,0x419,0x41A,0x41B,0x41C,0x41D,0x41E,0x41F,0x420,0x421,0x422,0x423,0x424,0x425,0x426,0x427,0x428,0x429,0x42A,0x42B,0x42C,0x42D,0x42E,0x42F,0x430,0x431,
+	0x432,0x433,0x434,0x435,0x436,0x437,0x438,0x439,0x43A,0x43B,0x43C,0x43D,0x43E,0x43F,0x440,0x441,0x442,0x443,0x444,0x445,0x446,0x447,0x448,0x449,0x44A,0x44B,0x44C,0x44D,0x44E,0x44F];
+    return str.replace(/\+/g, '%20').replace(/%([0-9A-F]{2})/gi, 
+	function(nothing, charCodeStr)
+	{
+	   var charCode = parseInt(charCodeStr, 16);
+	   if (charCode < 0x7f){ return String.fromCharCode(charCode); }
+	   else { return String.fromCharCode(convTable[charCode - 128]); }
+	}
+	);
+}
+
 
 
 // Выполнить код скрипта  
@@ -458,14 +479,25 @@ function getUserNameAndIdFromProfile(url)
 function addAditionalSearch (type)
 {
 
-    var searchQuery = 'http://google.ru/search?hl=ru&output=search&filter=1&pws=0&sclient=psy-ab&as_q=site:banki.ru ';
-    var googleWindow;
+    var googleSearchQuery = 'http://google.ru/search?hl=ru&output=search&filter=1&pws=0&sclient=psy-ab&as_q=site:banki.ru ';
+    var bankiSearchQuery = 'http://www.banki.ru/forum/?PAGE_NAME=search&where=forum&'+prefix+'searchInTheme='+prefix+'themeName&how=d&q=';
+    var searchType; if ((searchType=getParam('inThemeSearchType')) === null) { searchType='banki'; setParam('inThemeSearchType','banki'); }
+    var searchQuery = googleSearchQuery;
+    var searchWindow;
     var titlePiece=page.title;
+    function getSearchIcon(searchType) {
+        return (searchType === 'banki') ? '/favicon.ico' : 'http://google.com/favicon.ico';
+    }
     switch (type) { 
         case 'forum_search': 
-            var searchElemsHTML = "<input placeholder='Поиск по теме' name='"+prefix+"input_search' type='text' style='height: 24px;' size=30><input type='button' style='position:relative; left:-32px; height: 20px' class='input-search__button input-search__button--enabled' name='"+prefix+"button_search'>&nbsp;&nbsp;&nbsp;&nbsp;"; 
+            var searchElemsHTML = "<a href='javascript:'><img src='"+prefix+"src' id="+prefix+"inThemeSearchType style='position:relative; top:2px; right:5px'></a><input placeholder='Поиск по теме' name='"+prefix+"input_search' type='text' style='height: 24px;' size=30><input type='button' style='position:relative; left:-32px; height: 20px' class='input-search__button input-search__button--enabled' name='"+prefix+"button_search'>&nbsp;&nbsp;&nbsp;&nbsp;"; 
+            searchElemsHTML = searchElemsHTML.replace(prefix+'src',getSearchIcon(searchType));
             $(".forum-header-options").first().prepend(searchElemsHTML);
-            searchQuery = searchQuery + 'inurl:TID=' + page.params['TID']+' '; 
+            if (searchType === 'banki') { 
+                searchQuery = bankiSearchQuery + page.params['TID']+' '; 
+                searchQuery = searchQuery.replace(prefix+'themeName',escape1251(page.themeName));
+            }
+            else { searchQuery = googleSearchQuery + 'inurl:TID=' + page.params['TID']+' '; }    
             break;
         case 'responces' : 
             var searchElemsHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='text' name='"+prefix+"input_search' placeholder='Поиск по отзывам' size='30'><input type='button' style='position:relative; left:-38px' class='input-search__button input-search__button--enabled' name='"+prefix+"button_search'>"; 
@@ -481,14 +513,29 @@ function addAditionalSearch (type)
             searchQuery = searchQuery + 'intitle:"' + titlePiece + '"' + ' inurl:"questions-answers" ';
             break; */
     }
+    $("[name='"+prefix+"input_search']").attr('data-src',searchQuery);
+    
     function additionalSearchSubmit(e) {
         if ((e.type=='keydown') && (e.keyCode!=13)) return;
-        googleWindow = window.open(searchQuery+$("[name='"+prefix+"input_search']").val());
-        googleWindow.focus();
+        searchWindow = window.open($("[name='"+prefix+"input_search']").attr('data-src')+escape1251($("[name='"+prefix+"input_search']").val()));
+        searchWindow.focus();
     }
     
     $("[name='"+prefix+"input_search']").bind("keydown", additionalSearchSubmit);
     page.oldDesign ? $("[name='"+prefix+"button_search']").hide() : $("[name='"+prefix+"button_search']").bind("click", additionalSearchSubmit);
+    
+    $('#'+prefix+'inThemeSearchType').on('click', function() {
+        var searchType = getParam('inThemeSearchType'); 
+        (searchType === 'banki') ? searchType = 'google' : searchType = 'banki';
+        setParam('inThemeSearchType', searchType);
+        $(this).attr('src', getSearchIcon(searchType));
+        if (searchType === 'banki') { 
+            searchQuery = bankiSearchQuery + page.params['TID']+' ';
+            searchQuery = searchQuery.replace(prefix+'themeName',escape1251(page.themeName));
+        }
+        else { searchQuery = googleSearchQuery + 'inurl:TID=' + page.params['TID']+' '; } 
+        $("[name='"+prefix+"input_search']").attr('data-src',searchQuery);
+    });
     
 }
 
@@ -529,6 +576,7 @@ page.forumPage = function() {
     this.fid = this.params['FID']; 
     this.tid = this.params['TID'];
     this.mid = this.params['MID'];
+    this.themeName = $.trim($("h1.topic-page__title:first").text());
 }
 
 // Считает коэфициент полезности пользователя, null если не удовлетворяет условиям (больше 100 сообщений, положительное число спасибо)
@@ -551,6 +599,35 @@ function themeSearchAfterLoadParce(responce) {
 page.repairNewsCommentsAuthorAndCitateHrefs = function() { 
     $(".control").css({"background-image" : "none", "width":"auto"});
 }
+
+/** Изменяет страницу поиска по форуму, когда это поиcк по теме */
+page.changeSearchInForumPage = function() {
+    var query = $('#searchTextInput').val();
+
+    if (!(/\d+.*/.test(query))) return;
+    
+    var themeId = /(\d+).*/.exec(query)[1];
+    
+    query = $.trim(/\d+(.*)$/.exec(query)[1]);
+    $('#searchTextInput').val(query);
+    
+    var themeName = unescape1251(this.params[prefix+'searchInTheme']);
+    $("h1.b-el-h1:contains('Поиск по форуму')").html("Поиск по теме <a href='/forum/?PAGE_NAME=read&TID="+themeId+"'>"+themeName+"</a>");
+    $(".b-search__form").append("<input type='hidden' value='"+themeName+"' name='"+prefix+"searchInTheme'/>");
+        
+    $('.input-search__field, .b-searchForm__question').val('');
+    
+    $('.b-search__form').on("submit", function() {
+        $(this).find('#searchTextInput').val(function (i,val){return themeId+' '+val;})
+    }); 
+    
+    $(".b-searchList__url:not([href*='"+themeId+"'])").parent().parent().css({"opacity":"0.1"});
+    
+    $('.b-pagination__list>li>a, .nav_page>span>a, a.b-el-line__link').each(function() {
+        $(this).attr('href', function(i,val) { return val+'&'+prefix+'searchInTheme='+escape1251(themeName)});   
+    })
+    
+}    
 
 // --------------------------- Функции, доступные для отключения пользователю ----------------------- 
 
@@ -926,13 +1003,10 @@ page.addHrefToQuotes.nameForUser = 'Цитата с ссылкой на сооб
 
 // Добавляет ссылку на комментарии пользователя в теме
 page.addUserPostSearch = function() {
-    
+    var themeName = this.themeName;
     $("div.forum-user-additional :first-child:has(span a)").after(function(){
         var user = getUserIdFromUrl($(this).find('a').attr('href'));
-        var topic= $("h1.topic-page__title:first").text();
-        //topic = topic.replace(/,(.*)$/,'');
-        topic = $.trim(topic);
-        return "<span>Сообщения в теме: <span><a href='http://www.banki.ru/forum/?PAGE_NAME=user_post&UID="+user+"&topic="+topic+"'>&gt;&gt;&gt;</a></span></span>";
+        return "<span>Сообщения в теме: <span><a href='http://www.banki.ru/forum/?PAGE_NAME=user_post&UID="+user+"&topic="+themeName+"'>&gt;&gt;&gt;</a></span></span>";
     });
 }
 page.addUserPostSearch.nameForUser = 'Ссылка на поиск по сообщениям пользователя в теме форума';
@@ -1179,7 +1253,7 @@ page.addSelectToSearchInTop = function() {
     $('.branded-search__link').remove();
     var searchOption = getParam('top_search_option');
     if (searchOption === null) {
-        saveParam('top_search_option', 0);
+        setParam('top_search_option', 0);
         searchOption = 0;
     }
     
@@ -1190,7 +1264,7 @@ page.addSelectToSearchInTop = function() {
     .prependTo("form.item__node.js-search-input-form")
     .on("change", function() {
         var value = $(this).find('option:selected').attr('value');
-        saveParam('top_search_option', value);
+        setParam('top_search_option', value);
         switch (value) {
             case prefix+'users': changeSearchForm('/forum/','user_name'); $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='PAGE_NAME' value='user_list'>"); break;
             case prefix+'banks': changeSearchForm('/banks/search/','search[text]'); break;
@@ -1315,14 +1389,14 @@ page.updateUserScript = function() {
     var dayCheckUpdate = getParam('dayCheckUpdate');
     if (dayCheckUpdate === null) { 
         dayCheckUpdate = today;
-        saveParam('dayCheckUpdate', today.toString()); 
+        setParam('dayCheckUpdate', today.toString()); 
     }
     else dayCheckUpdate = new Date(dayCheckUpdate);
     
     if (dayCheckUpdate.getTime()>today.getTime()) return;  
     dayCheckUpdate = today;
     dayCheckUpdate.setDate(dayCheckUpdate.getDate()+1);
-    saveParam('dayCheckUpdate', dayCheckUpdate.toString()); 
+    setParam('dayCheckUpdate', dayCheckUpdate.toString()); 
 
     loadJsOrCssFile(VERSION_URL+'?'+random(100001, 999999),'js');
     
@@ -1333,12 +1407,12 @@ page.updateUserScript = function() {
         var new_version_online = $("div."+prefix+"version").text();
         
         if (new_version_online!='') {
-            new_version = new_version_online; saveParam('new_version', new_version);
+            new_version = new_version_online; setParam('new_version', new_version);
             
             var dayX = getParam('dayX');
             if (dayX === null) { 
                 dayX = today;
-                saveParam('dayX', today.toString()); 
+                setParam('dayX', today.toString()); 
             }
             else dayX = new Date(dayX);
     
@@ -1354,7 +1428,7 @@ page.updateUserScript = function() {
                         dayX.setDate(dayX.getDate()+1); 
                     }
                     else dayX.setDate(dayX.getDate()+7); 
-                    saveParam('dayX', dayX.toString());
+                    setParam('dayX', dayX.toString());
                 }   
             }
         }
@@ -1375,10 +1449,10 @@ page.addOptionsWindow = function() {
             var isAllowed = getParam(key);
             if (isAllowed === null) {
                 isAllowed = (typeof(page[key].firstRunIsFalse)==='undefined')? 1 : 0;
-                saveParam(key, isAllowed); 
+                setParam(key, isAllowed); 
             }
             if (+isAllowed === 1) { $('#'+key).click(); }
-            $('#'+key).on('click', function() { saveParam(this.id, +this.checked); $('.'+prefix+'options_reload').show(); });
+            $('#'+key).on('click', function() { setParam(this.id, +this.checked); $('.'+prefix+'options_reload').show(); });
         }
     }
     
@@ -1445,3 +1519,6 @@ function bankiruPage() {
         }
     }
 })(); 
+
+//a:has(span.user__notification)
+//.forum-pmessage-new:last
