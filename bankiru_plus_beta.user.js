@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.0.0
+// @version        0.92.0.1
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.92.0.0";
+var version = "0.92.0.1";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -1504,7 +1504,8 @@ function bankiruPage() {
     }
     this.afterHash = window.location.hash.substring(1);
 } 
-
+//a:has(span.user__notification)
+//.forum-pmessage-new:last
 (function() {
     
     for (var i=0; i<functionsSequence.length; i++) {
@@ -1519,6 +1520,3 @@ function bankiruPage() {
         }
     }
 })(); 
-
-//a:has(span.user__notification)
-//.forum-pmessage-new:last
