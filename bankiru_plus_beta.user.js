@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.0.1
+// @version        0.92.1.0
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.92.0.1";
+var version = "0.92.1.0";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -40,7 +40,7 @@ var waiticon = "data:image/gif;base64,R0lGODlhEAAQAMQAAP///+7u7t3d3bu7u6qqqpmZmY
  */
 var functionsSequence = [
        /* Все страницы */  
-       { address : 'banki\\.ru\\/', functions : 'updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton', isLast : false },
+       { address : 'banki\\.ru\\/', functions : 'updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*responseID.*', functions: 'deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP', isLast: true },
@@ -638,6 +638,19 @@ page.enableSmilesInPM = function()
 }
 page.enableSmilesInPM.nameForUser = 'Принудительно разрешить смайлы в ЛС';
 
+/** подменяет ссылку на новые ЛС  */
+page.changeLinkToPM = function() {
+   
+    var CLASS_TEMP_DIV = prefix + 'tempHrefPM';
+    var FILTER_PM_A = 'a:has(span.user__notification), a.b-userbar__mailCounter';
+   
+    $('body').append('<div class='+CLASS_TEMP_DIV+' style="display:none"></div>');
+    $('.'+CLASS_TEMP_DIV).load('/forum/?PAGE_NAME=pm_list&FID=1 .forum-pmessage-new:last', function() {
+           $(FILTER_PM_A).attr('href', $('.'+CLASS_TEMP_DIV+'>a').attr('href'));
+    });
+   
+}
+page.changeLinkToPM.nameForUser = 'Подменять ссылку-оповещении о новых ЛС';
 
 // В новостях меняет ссылку на комментарии на форумскую и исправляет недоработку с #comments http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2451541#message2451541
 page.changeNewsCommentsHref = function() {
@@ -1425,9 +1438,8 @@ page.updateUserScript = function() {
                     confirmed = window.confirm('Вышла новая версия Банки.ру+ '+new_version+'(у вас установлена '+version+'). Хотите скачать и установить?');
                     if (confirmed) {
                         window.open(UPDATE_URL, prefix+'_update');
-                        dayX.setDate(dayX.getDate()+1); 
                     }
-                    else dayX.setDate(dayX.getDate()+7); 
+                    dayX.setDate(dayX.getDate()+1); 
                     setParam('dayX', dayX.toString());
                 }   
             }
@@ -1504,8 +1516,7 @@ function bankiruPage() {
     }
     this.afterHash = window.location.hash.substring(1);
 } 
-//a:has(span.user__notification)
-//.forum-pmessage-new:last
+
 (function() {
     
     for (var i=0; i<functionsSequence.length; i++) {
