@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.1.0
+// @version        0.92.2.0
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.92.1.0";
+var version = "0.92.2.0";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -59,7 +59,7 @@ var functionsSequence = [
        // http://http://www.banki.ru/forum/?PAGE_NAME=search
        { address: 'banki\\.ru\\/forum\\/.*?'+prefix+'searchInTheme', functions : 'changeSearchInForumPage', isLast: true }, 
        /* Форум */
-       { address: 'banki\\.ru\\/forum\\/', functions : 'forumPage', isLast : false },
+       { address: 'banki\\.ru\\/forum\\/', functions : 'forumPage, addCutBBCodeToForum', isLast : false },
        { address: 'banki\\.ru\\/forum\\/(\\?modern=\\d|#|$|.*?'+prefix+'theme_search.*|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?TOPIC_SUBSCRIBE=Y&.*', functions: 'repairPageHrefsIfSubscribe', isLast : false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
@@ -178,6 +178,7 @@ function frame(string, type, string_extra, url)
     case "form_url": string="[URL="+url+"]"+string+"[/URL]"; break;  
     case "form_img": string="[IMG]"+url+"[/IMG]"; break;
     case "form_video": string="[VIDEO]"+url+"[/VIDEO]"; break;
+    case "cut" : string="[CUT "+string_extra+"]"+string+"[/CUT]";
     }
     return string;
 }
@@ -201,6 +202,10 @@ function do_it (type, string_extra, area_name, url)
             selection = prompt("Введите название сайта",selection);
             if (!selection) { return; }
         }
+    }
+    else if (type==="cut") {
+        string_extra = prompt("Введите заголовок спойлера","");
+        if (!string_extra) { return; }
     }
     
     var string_to_ins = frame(selection, type, string_extra, url); 
@@ -1036,7 +1041,15 @@ page.addUserCoeffToForum = function() {
 }
 page.addUserCoeffToForum.nameForUser = 'Коэффициент полезности сообщений в теме форума';
 
-
+page.addCutBBCodeToForum = function () {
+    var ID_CUT_HREF = prefix+'cut'; 
+    $('<a title="Спойлер (cut)" id="'+ID_CUT_HREF+'" class="forum-bbcode-button forum-bbcode-quote" href="#postform"><img src="/bitrix/templates/.default/components/bitrix/blog/banki/bitrix/blog.post.edit/.default/images/cut.gif"></a>')
+    .insertAfter("#form_quote");
+    $('#'+ID_CUT_HREF).on("click", function () { do_it('cut', null, 'POST_MESSAGE' ,null); });
+    
+    $(".forum-spoiler>thead>tr>th>div").css({"border-bottom-style":"dashed","border-bottom-width":"1px"});
+}
+page.addCutBBCodeToForum.nameForUser = 'Добавить BB-код CUT в форум'
 
 page.addLinksToHiddenUserInfo = function() {
     if (!page.isLogged)  return false;
