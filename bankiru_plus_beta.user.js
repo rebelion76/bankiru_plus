@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.2.1
+// @version        0.92.2.3
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.92.2.1";
+var version = "0.92.2.3";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -106,13 +106,16 @@ function loadJsOrCssFile(filename, filetype)
 function escape1251(str)
 {
     var ret = '';
-
+    var i;
     for (i=0; i<str.length; i++)
     {
         var n = str.charCodeAt(i);
+        
         if (n >= 0x410 && n <= 0x44F) n -= 0x350;
         else if (n == 0x451) n = 0xB8;
         else if (n == 0x401) n = 0xA8;
+        else if (n == 8230) n = 133; // троеточие
+        
         if ((n < 65 || n > 90) && (n < 97 || n > 122) && n < 256) {
             if (n < 16) ret += '%0'+n.toString(16);
             else ret += '%'+n.toString(16);
@@ -648,11 +651,17 @@ page.changeLinkToPM = function() {
    
     var CLASS_TEMP_DIV = prefix + 'tempHrefPM';
     var FILTER_PM_A = 'a:has(span.user__notification), a.b-userbar__mailCounter';
+    var FILTER_PM_SPAN = '.user__notification';
+    var CLASS_PMWAIT = prefix + 'pmWait';
    
-    $('body').append('<div class='+CLASS_TEMP_DIV+' style="display:none"></div>');
-    $('.'+CLASS_TEMP_DIV).load('/forum/?PAGE_NAME=pm_list&FID=1 .forum-pmessage-new:last', function() {
-           $(FILTER_PM_A).attr('href', $('.'+CLASS_TEMP_DIV+'>a').attr('href'));
-    });
+    if ($(FILTER_PM_A).length>0) {
+        $('body').append('<div class='+CLASS_TEMP_DIV+' style="display:none"></div>');
+        $('<img src="'+waiticon+'">').insertAfter(FILTER_PM_SPAN).addClass(CLASS_PMWAIT);
+        $('.'+CLASS_TEMP_DIV).load('/forum/?PAGE_NAME=pm_list&FID=1 .forum-pmessage-new:last', function() {
+               $(FILTER_PM_A).attr('href', $('.'+CLASS_TEMP_DIV+'>a').attr('href'));
+               $('.'+CLASS_PMWAIT).hide();
+        });
+    }    
    
 }
 page.changeLinkToPM.nameForUser = 'Подменять ссылку-оповещении о новых ЛС';
