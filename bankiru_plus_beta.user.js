@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.2.3
+// @version        0.92.2.4
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -22,7 +22,7 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.92.2.3";
+var version = "0.92.2.4";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -229,7 +229,7 @@ function addRSS(typeOfRSS)
     var bankId;
     var filter;
     if (page.oldDesign) { filter = ".b-breadCrumbs"; }
-    else filter = "ul.bread-crumbs";
+    else filter = "nav.bread-crumbs";
     $(filter).html(function (index, oldhtml) {
         switch (typeOfRSS) {
             // ВИО конретного банка
@@ -1393,7 +1393,8 @@ page.addUserScriptMenu = function() {
         .end().end().find("li.spoiler__item").remove() //удаляем ссылки
         .end().find("ul.item__spoiler") // добавляем ссылки
             .append("<li class='spoiler__item'><a href='#' id="+prefix+"options_popup_show>Настройки</a></li>")
-            .append("<li class='spoiler__item'><a href='http://bankiforum.ru/showthread.php/232-%D0%91%D0%B0%D0%BD%D0%BA%D0%B8-%D1%80%D1%83'>Поддержка</a></li>")
+            .append("<li class='spoiler__item'><a href='/forum/?PAGE_NAME=read&FID=9&TID=211756'>FAQ</a></li>")
+            .append("<li class='spoiler__item'><a href='/forum/?PAGE_NAME=read&FID=9&TID=129799'>Поддержка</a></li>")
             .append("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+">Последняя версия</a></li>")
             .append("<li class='spoiler__item'>-----------------------</li>")
             .append("<li class='spoiler__item'><a href='http://bankiforum.ru/showthread.php/290-RSS-ленты-на-banki-ru'>RSS-ленты</a></li>")
