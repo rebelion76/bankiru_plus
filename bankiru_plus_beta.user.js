@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.3.0
+// @version        0.92.4.0
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -27,7 +27,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.92.3.0";
+var version = "0.92.4.0";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -70,6 +70,8 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes', isLast: true }, 
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM', isLast: true },
+       /* Поиск по депозитам */
+       { address: 'banki\\.ru\\/products\\/deposits\\/search\\/', functions: 'addRSSToDepositsSearch', isLast : true },
        /* Перегрузка друзей, не понятно работает ли */
        // { address: 'banki\\.ru\\/friends\\/group\\/.*?\\/forum\\/.*', functions: 'reloadFriendsToForum', isLast: true },
        // { address: 'banki\\.ru\\/(.*)FID=72', functions: 'addCommentFormToForum', isLast: true },
@@ -645,6 +647,15 @@ page.changeSearchInForumPage = function() {
 
 // --------------------------- Функции, доступные для отключения пользователю ----------------------- 
 
+/** Вывод ошибок  */                                
+page.showErrors = function(err, global) {
+    var showErrors = getParam('showErrors');
+    var errorText = err.name+'\n'+err.message+'\n'+err.stack;
+    if (global || (+showErrors === 1) || (showErrors === null)) { alert('Возникла необработанная ошибка. Пожалуйста, сообщите автору в форуме (ссылка "Подержка" в меню скрипта) или на e-mail rebelion76@gmail.com текст ошибки:\n'+errorText); }
+    else console.log(errorText);
+}    
+page.showErrors.nameForUser = 'Выводить сообщения об ошибках';
+
 // принудительная установка галочки "разрешить смайлы" в личных сообщениях
 page.enableSmilesInPM = function()
 {
@@ -671,6 +682,18 @@ page.changeLinkToPM = function() {
    
 }
 page.changeLinkToPM.nameForUser = 'Подменять ссылку-оповещении о новых ЛС';
+
+page.addRSSToDepositsSearch = function() {
+    var FILTER_DIV_SEARCHED_COUNTS = 'div.b-note';
+    var CLASS_INPUT_DEPOSITE_PERCENT = prefix+'deposite_percents';
+    var CLASS_A_DEPOSITE_RSS = prefix+'deposite_rss';
+    $(FILTER_DIV_SEARCHED_COUNTS).append('<br><span><a class="'+CLASS_A_DEPOSITE_RSS+'" href="http://pipes.yahoo.com/pipes/pipe.run?_id=6dd465ea1c0852d0891c5aee029d62b7&_render=rss&numberinput1=&urlinput1='+page.href+'"><img src="/com/rss.gif"></a> со  ставкой не ниже <input size="4" class='+CLASS_INPUT_DEPOSITE_PERCENT+'>% (разделитель строго точка).');
+    $('.'+CLASS_INPUT_DEPOSITE_PERCENT).on("input", function () {
+       var $percent = $(this).val();
+       $('.'+CLASS_A_DEPOSITE_RSS).attr('href', function(i, val) { return val.replace(/numberinput1=.*?&/,'numberinput1='+$percent+'&'); });
+    });
+}
+page.addRSSToDepositsSearch.nameForUser = 'RSS на выборку в поиске по вкладам';
 
 // В новостях меняет ссылку на комментарии на форумскую и исправляет недоработку с #comments http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2451541#message2451541
 page.changeNewsCommentsHref = function() {
@@ -1569,15 +1592,24 @@ function bankiruPage() {
 
 (function() {
     
-    for (var i=0; i<functionsSequence.length; i++) {
-        var addressPattern = new RegExp(functionsSequence[i].address);
-        if (addressPattern.test(page.href)) {
-            var functions = functionsSequence[i].functions.split(', ');
-            for (var j=0; j<functions.length; j++) {
-                var canRun = getParam(functions[j]);
-                if ( ((canRun === null) && (typeof(page[functions[j]].firstRunIsFalse)==='undefined')) || (+canRun === 1)) page[functions[j]]();
+    try {
+        for (var i=0; i<functionsSequence.length; i++) {
+            var addressPattern = new RegExp(functionsSequence[i].address);
+            if (addressPattern.test(page.href)) {
+                var functions = functionsSequence[i].functions.split(', ');
+                for (var j=0; j<functions.length; j++) {
+                    var canRun = getParam(functions[j]);
+                    if ( ((canRun === null) && (typeof(page[functions[j]].firstRunIsFalse)==='undefined')) || (+canRun === 1)) 
+                    try { page[functions[j]](); }
+                    catch (err) {
+                        page.showErrors(err, false);
+                    }
+                }
+                if (functionsSequence[i].isLast) break;
             }
-            if (functionsSequence[i].isLast) break;
-        }
+        }    
+    }
+    catch (err) { 
+        page.showErrors(err, true); 
     }
 })(); 
