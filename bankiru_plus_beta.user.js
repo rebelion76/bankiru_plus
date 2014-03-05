@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.4.0
+// @version        0.92.4.1
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -27,7 +27,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.92.4.0";
+var version = "0.92.4.1";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -650,6 +650,7 @@ page.changeSearchInForumPage = function() {
 /** Вывод ошибок  */                                
 page.showErrors = function(err, global) {
     var showErrors = getParam('showErrors');
+    err.stack = err.stack.replace(/file([\s\S]*?)bankiru_plus_beta\.user\.js/gi, 'bankiru_plus_beta.user.js');
     var errorText = err.name+'\n'+err.message+'\n'+err.stack;
     if (global || (+showErrors === 1) || (showErrors === null)) { alert('Возникла необработанная ошибка. Пожалуйста, сообщите автору в форуме (ссылка "Подержка" в меню скрипта) или на e-mail rebelion76@gmail.com текст ошибки:\n'+errorText); }
     else console.log(errorText);
@@ -949,7 +950,7 @@ page.addHrefsToHP = function() {
     var responce_comment_div = document.getElementById("response_comment_form");
     var edit_comment_div = document.getElementById("edit_comment_form"); 
       
-    for (i=0;i<=comments.length;i++)
+    for (i=0;i<comments.length;i++)
     {
         url = "";
         var nick = comments[i].children[0].children[0].children[0].children[0].innerHTML;
