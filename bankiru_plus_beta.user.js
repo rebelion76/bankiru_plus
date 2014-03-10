@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.5.1
+// @version        0.92.5.2
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -27,7 +27,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.92.5.1";
+var version = "0.92.5.2";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -1056,7 +1056,7 @@ page.addHrefToQuotes = function() {
     var FILER_SPAN_DATE = '.forum-post-date>span:contains(".")';
     
     if (this.isClosed) {
-        var citate =  new ModalWindow('citate',150,'Нажмите Ctrl-C', 500);
+        var citate =  new ModalWindow('citate',150,'Нажмите Ctrl-C', 600);
         $('body').on('keyup', function(e) {
             if ((e.ctrlKey) && (e.keyCode == 67))  { citate.close(); }
         });
@@ -1633,7 +1633,10 @@ function ModalWindow(name, top, title, width) {
             if ((width === 0) || ($(this).width<width)) return val;
             return width;
         })
-        .css('top', function(i, val) { return top+document.documentElement.scrollTop; })
+        .css('top', function(i, val) { 
+            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop; 
+            return top+scrollTop; 
+        })
         .css('left', function(i, val) { return ($(window).width()-$(this).outerWidth())/2; })
         .show(); 
     }
