@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.4.1
+// @version        0.92.5.0
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -27,7 +27,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.92.4.1";
+var version = "0.92.5.0";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -35,7 +35,7 @@ var UPDATE_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_pl
 /** адрес скрипта с версией */
 var VERSION_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/version.js";
 /** класс-страница */
-var page = new bankiruPage; 
+var page = new BankiruPage; 
 /** иконка */
 var favicon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAgMAAAC5h23wAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RkI2OTZCMzIzQzlFMTFFM0E5QUNCMTYzQkQ4NUQxNzMiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RkI2OTZCMzMzQzlFMTFFM0E5QUNCMTYzQkQ4NUQxNzMiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpGQjY5NkIzMDNDOUUxMUUzQTlBQ0IxNjNCRDg1RDE3MyIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpGQjY5NkIzMTNDOUUxMUUzQTlBQ0IxNjNCRDg1RDE3MyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PrUsCVIAAAAMUExURf///zSY22y0TfOcErQw86oAAAABdFJOUwBA5thmAAAAIUlEQVQI12NgYAgNdWAAAfLoVWDQQDHNwPD//wGwuWTRAFefRZ32+6jbAAAAAElFTkSuQmCC";
 /** иконка ожидания */
@@ -45,7 +45,7 @@ var waiticon = "data:image/gif;base64,R0lGODlhEAAQAMQAAP///+7u7t3d3bu7u6qqqpmZmY
  */
 var functionsSequence = [
        /* Все страницы */  
-       { address : 'banki\\.ru\\/', functions : 'updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM', isLast : false },
+       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*responseID.*', functions: 'deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP', isLast: true },
@@ -592,6 +592,7 @@ page.forumPage = function() {
     this.tid = this.params['TID'];
     this.mid = this.params['MID'];
     this.themeName = $.trim($("h1.topic-page__title:first").text());
+    this.isClosed = ($('.post_message').length === 0); 
 }
 
 // Считает коэфициент полезности пользователя, null если не удовлетворяет условиям (больше 100 сообщений, положительное число спасибо)
@@ -651,7 +652,7 @@ page.changeSearchInForumPage = function() {
 page.showErrors = function(err, global) {
     var showErrors = getParam('showErrors');
     err.stack = err.stack.replace(/file([\s\S]*?)bankiru_plus_beta\.user\.js/gi, 'bankiru_plus_beta.user.js');
-    var errorText = err.name+'\n'+err.message+'\n'+err.stack;
+    var errorText = version+'\n'+this.href.replace(/sessid=.*?(&|$)/,'')+'\n'+err.name+'\n'+err.message+'\n'+err.stack;
     if (global || (+showErrors === 1) || (showErrors === null)) { alert('Возникла необработанная ошибка. Пожалуйста, сообщите автору в форуме (ссылка "Подержка" в меню скрипта) или на e-mail rebelion76@gmail.com текст ошибки:\n'+errorText); }
     else console.log(errorText);
 }    
@@ -1045,16 +1046,55 @@ page.addSpacesToSmallThank.nameForUser="Спасибо в форуме с люб
 
 // Добавляет в функцию вызова цитаты ссылку на сообщение
 page.addHrefToQuotes = function() {
-    $(".forum-action-quote a").clone().text('Цитировать с ссылкой').each(function(){
+    var FILTER_DIV_LINKS = 'div.forum-action-links';
+    var A_TEXT = 'Цитировать с ссылкой';
+    var CLASS_PRE_CITATE = prefix+'pre_citate';
+    var FILTER_TABLE_POST = 'table.forum-post-table';
+    var FILTER_SPAN_NAME = 'div.forum-user-name>a>span';
+    var FILTER_A_NUMBER = 'div.forum-post-number>noindex>a';
+    var FILTER_DIV_POST_TEXT = 'div.forum-post-text';
+    var FILER_SPAN_DATE = '.forum-post-date>span:contains(".")';
+    
+    if (this.isClosed) {
+        var citate =  new ModalWindow('citate',150,'Нажмите Ctrl-C', 500);
+        $('body').on('keyup', function(e) {
+            if ((e.ctrlKey) && (e.keyCode == 67))  { citate.close(); }
+        });
+        $('<a href="#">'+A_TEXT+'</a>').appendTo(FILTER_DIV_LINKS).on('click', function(e) {
+            e.preventDefault();
+            
+            var table_post = $(this).parents(FILTER_TABLE_POST);
+            var name = table_post.find(FILTER_SPAN_NAME).text();
+            var href = table_post.find(FILTER_A_NUMBER).attr('href');
+            //var date = $.trim(table_post.find(FILER_SPAN_DATE).text().substr(0,10));
+                       
+            var selection = document.getSelection();
+            var text = selection.toString();
+            if (text === '') { text = table_post.find(FILTER_DIV_POST_TEXT).text(); }
+            text = $.trim(text);
+            text = text.replace(/\n/g,'<br\>');
+            citate.changeInner('<span class="'+CLASS_PRE_CITATE+'">[QUOTE]'+name+' [URL='+href+']пишет[/URL]:<br\>'+text+'[/QUOTE]</span>');
+            citate.open();
+            
+            var range = document.createRange();
+            range.selectNode($('.'+CLASS_PRE_CITATE)[0]);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+        });
+    }
+    else {
+        $(".forum-action-quote a").clone().text(A_TEXT).each(function(){
         var val = $(this).attr('onmousedown');
         if (/message_text_(\d+)/.test(val)) {
             var messageID = /message_text_(\d+)/.exec(val)[1];
             $(this).insertBefore(".forum-action-quote:has(a[onmousedown*='"+messageID+"'])");
             $(this).after("&nbsp;&nbsp;&nbsp;");
             var messageHref = $(".forum-post-number>noindex>a[href*='"+messageID+"']").attr('href');
-            var messagePostID = $(".forum-post-number>noindex>a[href*='"+messageID+"']").text();
+            var messagePostID = $("[href*='"+messageID+"']").text();
             $(this).attr('onmousedown', val.replace(/quoteMessageEx\('(.*?)',/,"quoteMessageEx('$1 в сообщении [URL="+messageHref+"]"+messagePostID+"[/URL]',")); 
-    }});
+        }});
+    }
 }
 page.addHrefToQuotes.nameForUser = 'Цитата с ссылкой на сообщение в форуме'; 
 
@@ -1332,6 +1372,7 @@ page.removeRedirect.nameForUser="Удаление редиректа из ссы
 
 /** Выбор раздела для поиске в шапке */
 page.addSelectToSearchInTop = function() {
+    
     function changeSearchForm(action, inputName) {
         $("form.item__node.js-search-input-form").attr('action',action);
         $("form.item__node.js-search-input-form .input-search__field").attr('name',inputName);
@@ -1370,7 +1411,7 @@ page.addSelectToSearchInTop.nameForUser="Выбор раздела для пои
 
 // удаление "автосохранения" комментария, если текущая страница != странице, где последний раз был сохранен комментарий       
 page.deleteAutoSave = function () {
-    
+
     // не помню зачем такое исключение
     if (/banki\.ru\/friends\/group\/.*?\/forum\/edit\/.*/.test(page.href)) return;
     
@@ -1522,13 +1563,16 @@ page.updateUserScript = function() {
     }
 } 
 
+
+
 /** Опции скрипта */
 page.addOptionsWindow = function() {
-    loadJsOrCssFile('/_lib/jquery/plugins/popup/popup.css','css');
-    loadJsOrCssFile('/bitrix/templates/.default/components/bitrix/system.auth.form/redesign/style.css','css');
-    $('body')
-    .prepend('<div class="'+prefix+'options'+' b-popup b-popup_white" style="padding: 20px 27px 20px 22px; left: '+(page.center-250)+'px; top: 150px; opacity: 1; margin-top: 0px; display:none"><span class="b-el-link b-el-link_popup"><i class="b-el-link__icon b-el-link__icon_close '+prefix+'options_close"></i></span><h6 class="b-loginPopup__title">Настройки</h6><div class="'+prefix+'func_list"></div><div class="'+prefix+'options_reload" style="display:none"><br/><br/>Изменения будут применены только после перезагрузки страницы. <a href="javascript:window.location.reload();">Перегрузить?</a></div></div>')
-    .prepend('<div class="b-popup__overlay" style="display: none;"></div>');
+    
+    var DIV_OPTIONS_TOP = 25;
+    
+    var optionsWindow = new ModalWindow('options', DIV_OPTIONS_TOP, 'Настройки');
+    optionsWindow.changeInner('<div class="'+prefix+'options_reload" style="display:none">Изменения будут применены только после перезагрузки страницы. <a href="javascript:window.location.reload();">Перегрузить?</a><br/><br/></div><div class="'+prefix+'func_list"></div>');
+    
     for (var key in page) {
         if ((typeof page[key] == 'function') && ('nameForUser' in page[key])) {
             $('<div>'+page[key].nameForUser+' <input type=checkbox id='+key+' class="'+prefix+'func_check"></div>').prependTo('.'+prefix+'func_list');
@@ -1542,24 +1586,68 @@ page.addOptionsWindow = function() {
         }
     }
     
-    var openOptions = function() {
-        $('.b-popup__overlay').addClass('b-popup__overlay_black').show();
-        $('.'+prefix+'options').addClass('b-popup_show').show(); 
-     }
-    $('#'+prefix+'options_popup_show').on('click', openOptions);
+    $('#'+prefix+'options_popup_show').on('click', $.proxy(optionsWindow.open,optionsWindow));
+    
     $('body').on('keydown', function(e){
         if ((e.ctrlKey) && (e.shiftKey) && ((e.keyCode == 191) || (e.keyCode == 190))) {
-           openOptions();
+           optionsWindow.open();
         }
     });
-    $('.'+prefix+'options_close').click(function() {
-        $('.b-popup__overlay').removeClass('b-popup__overlay_black').hide();
-        $('.banki_ru_plus_options').removeClass('b-popup_show').hide();
-    })
 }
 
+page.loadFilesEtc = function() {
+    loadJsOrCssFile('/_lib/jquery/plugins/popup/popup.css','css');
+    loadJsOrCssFile('/bitrix/templates/.default/components/bitrix/system.auth.form/redesign/style.css','css');
+}
+
+// ----------------------- Конструкторы ----------------------------------------------
+/** Конструктор для "модальных" окон */
+function ModalWindow(name, top, title, width) {
+    this.top = top;
+    this.name = name;
+    this.title = title;
+    this.width = (width === undefined) ? 0 : width;
+    this.FILTER_DIV_OVERLAY = 'div.b-popup__overlay';
+    this.CLASS_DIV_OVERLAY = 'b-popup__overlay';
+    this.CLASS_DIV_OVERLAY_BLACK = 'b-popup__overlay_black';
+    this.CLASS_DIV_SHOW = 'b-popup_show';    
+    this.CLASS_DIV_MAIN = prefix+name;
+    this.CLASS_I_CLOSE = prefix+name+'_close';
+    this.CLASS_DIV_INNER = prefix+name+'_inner';
+    
+    if ( $(this.FILTER_DIV_OVERLAY).length === 0) { $('body').prepend('<div class="'+this.CLASS_DIV_OVERLAY+'" style="display: none;"></div>'); }
+    $('body')
+    .prepend('<div class="'+this.CLASS_DIV_MAIN+' b-popup b-popup_white" style="padding: 20px 27px 20px 22px; top: '+this.top+'px; opacity: 1; margin-top: 0px; display:none;"><span class="b-el-link b-el-link_popup"><i class="b-el-link__icon b-el-link__icon_close '+this.CLASS_I_CLOSE+'"></i></span><h6 class="b-loginPopup__title">'+this.title+'</h6><div class='+this.CLASS_DIV_INNER+'></div></div>')
+    
+    this.close = function() {
+        $(this.FILTER_DIV_OVERLAY).removeClass(this.CLASS_DIV_OVERLAY_BLACK).hide();
+        $('.'+this.CLASS_DIV_MAIN).removeClass(this.CLASS_DIV_SHOW).hide();
+    };
+    
+    this.open = function () {
+        $(this.FILTER_DIV_OVERLAY).addClass(this.CLASS_DIV_OVERLAY_BLACK).show();
+        var top = this.top;
+        var width = this.width;
+        $('.'+this.CLASS_DIV_MAIN).addClass(this.CLASS_DIV_SHOW)
+        .css('width', function (i,val) { 
+            if ((width === 0) || ($(this).width<width)) return val;
+            return width;
+        })
+        .css('top', function(i, val) { return top+document.documentElement.scrollTop; })
+        .css('left', function(i, val) { return ($(window).width()-$(this).outerWidth())/2; })
+        .show(); 
+    }
+    
+    this.changeInner = function (newHtml) {
+        $('.'+this.CLASS_DIV_INNER).html(newHtml);
+    }
+    
+    $('.'+this.CLASS_I_CLOSE).on("click", $.proxy(this.close, this));
+    
+} 
+
 // общий конструктор для любой страницы
-function bankiruPage() {
+function BankiruPage() {
     
     //определяем какой дизайн
     if  ($(".b-to-new-design>a").length!=0) { this.oldDesign = true; }
