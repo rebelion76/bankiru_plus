@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.5.0
+// @version        0.92.5.1
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -27,7 +27,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.92.5.0";
+var version = "0.92.5.1";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -1091,7 +1091,7 @@ page.addHrefToQuotes = function() {
             $(this).insertBefore(".forum-action-quote:has(a[onmousedown*='"+messageID+"'])");
             $(this).after("&nbsp;&nbsp;&nbsp;");
             var messageHref = $(".forum-post-number>noindex>a[href*='"+messageID+"']").attr('href');
-            var messagePostID = $("[href*='"+messageID+"']").text();
+            var messagePostID = $(".forum-post-number>noindex>a[href*='"+messageID+"']").text();
             $(this).attr('onmousedown', val.replace(/quoteMessageEx\('(.*?)',/,"quoteMessageEx('$1 в сообщении [URL="+messageHref+"]"+messagePostID+"[/URL]',")); 
         }});
     }
