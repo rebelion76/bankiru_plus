@@ -1,2 +1,2 @@
-var new_version = '0.92.5.2';
+var new_version = '0.92.5.3';
 $('<div>'+new_version+'</div>').appendTo('body').addClass('banki_ru_plus_version').css('display','none');

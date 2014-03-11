@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.5.2
+// @version        0.92.5.3
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -27,7 +27,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.92.5.2";
+var version = "0.92.5.3";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -1084,6 +1084,8 @@ page.addHrefToQuotes = function() {
         });
     }
     else {
+        var selectAllTextInMessage = 'var messages = $(this).parents("'+FILTER_TABLE_POST+'").find("'+FILTER_DIV_POST_TEXT+'"); var selection = document.getSelection(); if (selection.toString()=="") { var  range = document.createRange(); range.selectNode(messages[0]); selection.removeAllRanges(); selection.addRange(range); }';
+        $("span.forum-action-quote a").attr('onmousedown', function(i, val) { return selectAllTextInMessage+val;} );
         $(".forum-action-quote a").clone().text(A_TEXT).each(function(){
         var val = $(this).attr('onmousedown');
         if (/message_text_(\d+)/.test(val)) {
@@ -1092,7 +1094,7 @@ page.addHrefToQuotes = function() {
             $(this).after("&nbsp;&nbsp;&nbsp;");
             var messageHref = $(".forum-post-number>noindex>a[href*='"+messageID+"']").attr('href');
             var messagePostID = $(".forum-post-number>noindex>a[href*='"+messageID+"']").text();
-            $(this).attr('onmousedown', val.replace(/quoteMessageEx\('(.*?)',/,"quoteMessageEx('$1 в сообщении [URL="+messageHref+"]"+messagePostID+"[/URL]',")); 
+            $(this).attr('onmousedown', selectAllTextInMessage+val.replace(/quoteMessageEx\('(.*?)',/,"quoteMessageEx('$1 в сообщении [URL="+messageHref+"]"+messagePostID+"[/URL]',")); 
         }});
     }
 }
