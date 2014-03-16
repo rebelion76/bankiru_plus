@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.5.3
+// @version        0.92.5.4
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -27,7 +27,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.92.5.3";
+var version = "0.92.5.4";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -45,7 +45,7 @@ var waiticon = "data:image/gif;base64,R0lGODlhEAAQAMQAAP///+7u7t3d3bu7u6qqqpmZmY
  */
 var functionsSequence = [
        /* Все страницы */  
-       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM', isLast : false },
+       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, repairRightBlock', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*responseID.*', functions: 'deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP', isLast: true },
@@ -221,8 +221,8 @@ function do_it (type, string_extra, area_name, url)
     var string_to_ins = frame(selection, type, string_extra, url); 
   
     area.value = area.value.substring(0,pos_start)+string_to_ins+area.value.substring(pos_end,area.value.legth);
-    saveHref(location.href);
-    saveComment(area);
+    //saveHref(location.href);
+    //saveComment(area);
 }
      
 
@@ -647,6 +647,14 @@ page.changeSearchInForumPage = function() {
 }    
 
 // --------------------------- Функции, доступные для отключения пользователю ----------------------- 
+
+// исправляет ошибку с правым блоком в старом дизайне  http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=2640928#message2640928
+page.repairRightBlock = function() {
+    if (!this.oldDesign) return; 
+    var FILTER_RIGTH_COLUMN = ".l-bigR-column";
+    $(FILTER_RIGTH_COLUMN).css({"display":"block"});
+} 
+page.repairRightBlock.nameForUser = 'Исправлять ошибку с правым блоком (только для старого дизайна)';
 
 /** Вывод ошибок  */                                
 page.showErrors = function(err, global) {
@@ -1084,8 +1092,8 @@ page.addHrefToQuotes = function() {
         });
     }
     else {
-        var selectAllTextInMessage = 'var messages = $(this).parents("'+FILTER_TABLE_POST+'").find("'+FILTER_DIV_POST_TEXT+'"); var selection = document.getSelection(); if (selection.toString()=="") { var  range = document.createRange(); range.selectNode(messages[0]); selection.removeAllRanges(); selection.addRange(range); }';
-        $("span.forum-action-quote a").attr('onmousedown', function(i, val) { return selectAllTextInMessage+val;} );
+        var selectAllTextInMessage = 'var messages = $(this).parents("'+FILTER_TABLE_POST+'").find("'+FILTER_DIV_POST_TEXT+'"); var selection = document.getSelection(); if (selection.toString()=="") { $(".post_message")[0].hasfocus=false; var range = document.createRange(); range.selectNode(messages[0]);  selection.addRange(range); }';
+        //var rewriteGetSelection = ' PostForm.GetSelection = function() { if (this.form["POST_MESSAGE"].hasfocus == true && typeof(this.form["POST_MESSAGE"].selectionStart) != "undefined") { return this.form["POST_MESSAGE"].value.substr(this.form["POST_MESSAGE"].selectionStart, this.form["POST_MESSAGE"].selectionEnd - this.form["POST_MESSAGE"].selectionStart); } else if (this.saveSelection) { return this.saveSelection; } else if (document.selection && document.selection.createRange) { return document.selection.createRange().text; } else if (document.getSelection) { return document.getSelection() + "";} else { return false; }}';    
         $(".forum-action-quote a").clone().text(A_TEXT).each(function(){
         var val = $(this).attr('onmousedown');
         if (/message_text_(\d+)/.test(val)) {
@@ -1096,6 +1104,8 @@ page.addHrefToQuotes = function() {
             var messagePostID = $(".forum-post-number>noindex>a[href*='"+messageID+"']").text();
             $(this).attr('onmousedown', selectAllTextInMessage+val.replace(/quoteMessageEx\('(.*?)',/,"quoteMessageEx('$1 в сообщении [URL="+messageHref+"]"+messagePostID+"[/URL]',")); 
         }});
+    
+        $("span.forum-action-quote a").attr('onmousedown', function(i, val) { return selectAllTextInMessage+val;} );
     }
 }
 page.addHrefToQuotes.nameForUser = 'Цитата с ссылкой на сообщение в форуме'; 
@@ -1147,7 +1157,7 @@ page.addCutBBCodeToForum = function () {
     var ID_CUT_HREF = prefix+'cut'; 
     $('<a title="Спойлер (cut)" id="'+ID_CUT_HREF+'" class="forum-bbcode-button forum-bbcode-quote" href="#postform"><img src="/bitrix/templates/.default/components/bitrix/blog/banki/bitrix/blog.post.edit/.default/images/cut.gif"></a>')
     .insertAfter("#form_quote");
-    $('#'+ID_CUT_HREF).on("click", function () { do_it('cut', null, 'POST_MESSAGE' ,null); });
+    $('#'+ID_CUT_HREF).on("click", function () {try {do_it('cut', null, 'POST_MESSAGE' ,null);} catch (err) { page.showErrors(err, false); }  });
     
     $(".forum-spoiler>thead>tr>th>div").css({"border-bottom-style":"dashed","border-bottom-width":"1px"});
 }
