@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.5.4
+// @version        0.92.5.5
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -27,7 +27,7 @@
 /** префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** версия  */
-var version = "0.92.5.4";
+var version = "0.92.5.5";
 /** новая версия */
 var new_version = getParam('new_version');
 /** адрес обновления */
@@ -61,7 +61,6 @@ var functionsSequence = [
        { address: 'banki\\.ru\/profile\/\\?UID=\\d+#\\d', functions: 'filterThanksByUserId', isLast: false },
        { address: 'banki\\.ru\/profile\/\\?UID=\\d+', functions: 'addUserCoeffToProfile, addHrefsToProfile, change10ThanksToAll', isLast: true },
        /* Поиск по темам форума */
-       // http://http://www.banki.ru/forum/?PAGE_NAME=search
        { address: 'banki\\.ru\\/forum\\/.*?'+prefix+'searchInTheme', functions : 'changeSearchInForumPage', isLast: true }, 
        /* Форум */
        { address: 'banki\\.ru\\/forum\\/', functions : 'forumPage, addCutBBCodeToForum', isLast : false },
@@ -201,6 +200,7 @@ function do_it (type, string_extra, area_name, url)
     var pos_start = area.selectionStart;
     var pos_end = area.selectionEnd;
     var selection = (pos_start==pos_end) ? document.getSelection() : area.value.substring(pos_start,pos_end);
+    var selection_text = selection.toString();
     
     if ((type==="form_url") || (type==="form_img") || (type==="form_video"))
     {
@@ -209,8 +209,8 @@ function do_it (type, string_extra, area_name, url)
       
         if (type==="form_url") 
         { 
-            selection = prompt("Введите название сайта",selection);
-            if (!selection) { return; }
+            selection_text = prompt("Введите название сайта", selection_text);
+            if (!selection_text) { return; }
         }
     }
     else if (type==="cut") {
@@ -218,12 +218,14 @@ function do_it (type, string_extra, area_name, url)
         if (!string_extra) { return; }
     }
     
-    var string_to_ins = frame(selection, type, string_extra, url); 
+    var string_to_ins = frame(selection_text, type, string_extra, url); 
   
     area.value = area.value.substring(0,pos_start)+string_to_ins+area.value.substring(pos_end,area.value.legth);
-    //saveHref(location.href);
-    //saveComment(area);
-}
+    
+    // area.focus();
+    // area.selectionStart = pos_start;
+    // area.selectionEnd = pos_start + string_to_ins.length;
+ }
      
 
 
@@ -697,7 +699,11 @@ page.addRSSToDepositsSearch = function() {
     var FILTER_DIV_SEARCHED_COUNTS = 'div.b-note';
     var CLASS_INPUT_DEPOSITE_PERCENT = prefix+'deposite_percents';
     var CLASS_A_DEPOSITE_RSS = prefix+'deposite_rss';
-    $(FILTER_DIV_SEARCHED_COUNTS).append('<br><span><a class="'+CLASS_A_DEPOSITE_RSS+'" href="http://pipes.yahoo.com/pipes/pipe.run?_id=6dd465ea1c0852d0891c5aee029d62b7&_render=rss&numberinput1=&urlinput1='+page.href+'"><img src="/com/rss.gif"></a> со  ставкой не ниже <input size="4" class='+CLASS_INPUT_DEPOSITE_PERCENT+'>% (разделитель строго точка).');
+    var hrefPart1 = encodeURIComponent(page.href.split('?')[0]);
+    console.log(hrefPart1);
+    var hrefPart2 = encodeURIComponent(page.href.split('?')[1]);
+    console.log(hrefPart2);
+    $(FILTER_DIV_SEARCHED_COUNTS).append('<br><span><a class="'+CLASS_A_DEPOSITE_RSS+'" href="http://pipes.yahoo.com/pipes/pipe.run?_id=6dd465ea1c0852d0891c5aee029d62b7&_render=rss&numberinput1=&textinput1='+hrefPart1+'&textinput2='+hrefPart2+'"><img src="/com/rss.gif"></a> со  ставкой не ниже <input size="4" class='+CLASS_INPUT_DEPOSITE_PERCENT+'>% (разделитель строго точка).');
     $('.'+CLASS_INPUT_DEPOSITE_PERCENT).on("input", function () {
        var $percent = $(this).val();
        $('.'+CLASS_A_DEPOSITE_RSS).attr('href', function(i, val) { return val.replace(/numberinput1=.*?&/,'numberinput1='+$percent+'&'); });
