@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.5.7
+// @version        0.92.5.8
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.5.7";
+var version = "0.92.5.8";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -49,7 +49,7 @@ var waiticon = "data:image/gif;base64,R0lGODlhEAAQAMQAAP///+7u7t3d3bu7u6qqqpmZmY
  */
 var functionsSequence = [
        /* Все страницы */  
-       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, repairRightBlock', isLast : false },
+       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, repairRightBlock, repairLoginForm', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*responseID.*', functions: 'deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP', isLast: true },
@@ -754,6 +754,26 @@ page.repairRightBlock = function() {
     $(FILTER_RIGTH_COLUMN).css({"display":"block"});
 } 
 page.repairRightBlock.nameForUser = 'Исправлять ошибку с правым блоком (только для старого дизайна)';
+
+// исправляет ошибку в форме логина http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=2754220#message2754220
+page.repairLoginForm = function() {
+    if (this.isLogged) return;
+    
+    var FILTER_HREF_LOGIN = ".item__call--login";
+    var FILTER_INPUT_BACKURL = "section.b-loginPopup input[name='backurl']";
+    var FILTER_INPUTS_LOGIN_PASS = "#login, #password";
+    var FILTER_FORM_LOGIN = "section.b-loginPopup form:first";
+    
+    $(FILTER_HREF_LOGIN).one('click', function() { 
+        $(FILTER_INPUT_BACKURL).val(window.location.pathname+window.location.search);
+        $(FILTER_INPUTS_LOGIN_PASS).keydown(function(e) { 
+            if (e.which == 13) {
+                $(FILTER_FORM_LOGIN).submit();
+            }
+        });
+    });    
+} 
+page.repairLoginForm.nameForUser = 'Исправлять ошибку в форме логина';
 
 /** Вывод ошибок  */                                
 page.showErrors = function(err, global) {
