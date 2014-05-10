@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.5.8
+// @version        0.92.6.0
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.5.8";
+var version = "0.92.6.0";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -72,8 +72,8 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/forum\\/(\\?modern=\\d|#|$|.*?'+prefix+'theme_search.*|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?TOPIC_SUBSCRIBE=Y&.*', functions: 'repairPageHrefsIfSubscribe', isLast : false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
-       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes', isLast: true }, 
-       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM', isLast: true },
+       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes, addPMwithQuotes', isLast: true }, 
+       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM, addCitateFromForum', isLast: true },
        /* Поиск по депозитам */
        { address: 'banki\\.ru\\/products\\/deposits\\/search\\/', functions: 'addRSSToDepositsSearch', isLast : true },
        /* Перегрузка друзей, не понятно работает ли */
@@ -743,7 +743,20 @@ page.changeSearchInForumPage = function() {
         $(this).attr('href', function(i,val) { return val+'&'+prefix+'searchInTheme='+escape1251(themeName)});   
     })
     
-}    
+}   
+
+/** Собственно добавляет цитату и тему в ЛC  @see addPMwithQuotes */
+page.addCitateFromForum = function() {
+    var FILTER_INPUT_SUBJECT = '#POST_SUBJ';
+    var FILTER_TEXTAREA = "textarea[name='POST_MESSAGE']";
+    
+    if (this.params[prefix+'pm_mode']===undefined) return;
+    
+    var temp = getParam('citate_origin');
+    $(FILTER_INPUT_SUBJECT).val('Re: '+temp.substr(0,46));
+    $(FILTER_TEXTAREA).val(getParam('citate'));
+    
+} 
 
 // --------------------------- Функции, доступные для отключения пользователю ----------------------- 
 
@@ -1239,17 +1252,36 @@ page.addSpacesToSmallThank = function() {
 }
 page.addSpacesToSmallThank.nameForUser="Спасибо в форуме с любым числом знаков";
 
-// Добавляет в функцию вызова цитаты ссылку на сообщение
-page.addHrefToQuotes = function() {
-    var FILTER_DIV_LINKS = 'div.forum-action-links';
-    var A_TEXT = 'Цитировать с ссылкой';
-    var CLASS_PRE_CITATE = prefix+'pre_citate';
-    var FILTER_TABLE_POST = 'table.forum-post-table';
-    var FILTER_SPAN_NAME = 'div.forum-user-name>a>span';
-    var FILTER_A_NUMBER = 'div.forum-post-number>noindex>a';
-    var FILTER_DIV_POST_TEXT = 'div.forum-post-text';
-    var FILER_SPAN_DATE = '.forum-post-date>span:contains(".")';
+var FILTER_DIV_LINKS = 'div.forum-action-links';
+var FILTER_TABLE_POST = 'table.forum-post-table';
+var FILTER_SPAN_NAME = 'div.forum-user-name>a>span';
+var FILTER_A_NUMBER = 'div.forum-post-number>noindex>a';
+var FILTER_DIV_POST_TEXT = 'div.forum-post-text';
+var FILER_SPAN_DATE = '.forum-post-date>span:contains(".")';
+var CLASS_PRE_CITATE = prefix+'pre_citate';
+var SPAN_A_CLASS = 'forum-action-quote';
+
+/** Возвращает выделенный текст в посте или весь пост, если ничего не выделено */
+function getSelectedTextInPost(post) {
     
+    var table_post = $(post).parents(FILTER_TABLE_POST);
+    var name = table_post.find(FILTER_SPAN_NAME).text();
+    var href = table_post.find(FILTER_A_NUMBER).attr('href');
+    //var date = $.trim(table_post.find(FILER_SPAN_DATE).text().substr(0,10));
+    
+    var selection = document.getSelection();
+    var text = selection.toString();
+    if (text === '') { text = table_post.find(FILTER_DIV_POST_TEXT).text(); }
+    text = $.trim(text);
+    
+    return {'href':href, 'name':name, 'text':text};
+}
+
+/** Добавляет в функцию вызова цитаты ссылку на сообщение */
+page.addHrefToQuotes = function() {
+    
+    var A_TEXT = 'Цитировать с ссылкой';
+     
     if (this.isClosed) {
         var citate =  new ModalWindow('citate',150,'Нажмите Ctrl-C', 600);
         $('body').on('keyup', function(e) {
@@ -1257,20 +1289,14 @@ page.addHrefToQuotes = function() {
         });
         $('<a href="#">'+A_TEXT+'</a>').appendTo(FILTER_DIV_LINKS).on('click', function(e) {
             e.preventDefault();
-            
-            var table_post = $(this).parents(FILTER_TABLE_POST);
-            var name = table_post.find(FILTER_SPAN_NAME).text();
-            var href = table_post.find(FILTER_A_NUMBER).attr('href');
-            //var date = $.trim(table_post.find(FILER_SPAN_DATE).text().substr(0,10));
-                       
-            var selection = document.getSelection();
-            var text = selection.toString();
-            if (text === '') { text = table_post.find(FILTER_DIV_POST_TEXT).text(); }
-            text = $.trim(text);
-            text = text.replace(/\n/g,'<br\>');
-            citate.changeInner('<span class="'+CLASS_PRE_CITATE+'">[QUOTE]'+name+' [URL='+href+']пишет[/URL]:<br\>'+text+'[/QUOTE]</span>');
+
+            var temp = getSelectedTextInPost(this);
+           
+            temp.text = temp.text.replace(/\n/g,'<br\>');
+            citate.changeInner('<span class="'+CLASS_PRE_CITATE+'">[QUOTE]'+temp.name+' [URL='+temp.href+']пишет[/URL]:<br\>'+temp.text+'[/QUOTE]</span>');
             citate.open();
             
+            var selection = document.getSelection();
             var range = document.createRange();
             range.selectNode($('.'+CLASS_PRE_CITATE)[0]);
             selection.removeAllRanges();
@@ -1296,6 +1322,25 @@ page.addHrefToQuotes = function() {
     }
 }
 page.addHrefToQuotes.nameForUser = 'Цитата с ссылкой на сообщение в форуме'; 
+
+
+/** Добавляет в функцию вызова цитаты ссылку на сообщение */
+page.addPMwithQuotes = function() {
+    var A_TEXT = 'ЛС с цитатой';
+    var FILTER_A_MAIL = 'a.mail';
+    
+    $('<a href="#">'+A_TEXT+'</a>').prependTo(FILTER_DIV_LINKS+', .'+CLASS_PRE_CITATE+' :first').after('&nbsp;&nbsp;')
+    .each(function() {
+        $(this).attr('href', $(this).parents(FILTER_TABLE_POST).find(FILTER_A_MAIL).attr('href')+'&'+prefix+'pm_mode=citate');
+    }) 
+    .on('click, mouseup', function(e) {
+        if ((e.type!=='click') && (e.which!==2)) return;
+        var temp = getSelectedTextInPost(this);
+        setParam('citate', '[QUOTE]'+temp.name+' [URL='+temp.href+']пишет[/URL]:\n'+temp.text+'[/QUOTE]');
+        setParam('citate_origin', temp.text);
+    });        
+}
+page.addPMwithQuotes.nameForUser = 'Добавить ссылку на ЛС с цитатой сообщения в форуме'; 
 
 // Добавляет ссылку на комментарии пользователя в теме
 page.addUserPostSearch = function() {
