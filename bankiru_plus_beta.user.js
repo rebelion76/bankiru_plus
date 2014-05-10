@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.6.0
+// @version        0.92.6.1
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.6.0";
+var version = "0.92.6.1";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -1333,8 +1333,10 @@ page.addPMwithQuotes = function() {
     .each(function() {
         $(this).attr('href', $(this).parents(FILTER_TABLE_POST).find(FILTER_A_MAIL).attr('href')+'&'+prefix+'pm_mode=citate');
     }) 
-    .on('click, mouseup', function(e) {
-        if ((e.type!=='click') && (e.which!==2)) return;
+    .on('mouseup', function(e) {
+        alert(e.type);
+        if (e.which===3) { return; }
+        alert(e.type);
         var temp = getSelectedTextInPost(this);
         setParam('citate', '[QUOTE]'+temp.name+' [URL='+temp.href+']пишет[/URL]:\n'+temp.text+'[/QUOTE]');
         setParam('citate_origin', temp.text);
