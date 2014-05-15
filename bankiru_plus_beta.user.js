@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.6.3
+// @version        0.92.6.4
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.6.3";
+var version = "0.92.6.4";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -72,7 +72,7 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/forum\\/(\\?modern=\\d|#|$|.*?'+prefix+'theme_search.*|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?TOPIC_SUBSCRIBE=Y&.*', functions: 'repairPageHrefsIfSubscribe', isLast : false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
-       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes, addPMwithQuotes', isLast: true }, 
+       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes, addPMwithQuotes, repairSubscribeAddDelete', isLast: true }, 
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM, addCitateFromForum', isLast: true },
        /* Поиск по депозитам */
        { address: 'banki\\.ru\\/products\\/deposits\\/search\\/', functions: 'addRSSToDepositsSearch', isLast : true },
@@ -1170,6 +1170,15 @@ page.addRSSToListOfBanks = function() {
 }
 page.addRSSToListOfBanks.nameForUser = 'RSS на отзывы и ответы ПБ в списке банков НР';
 
+/** Исправление ошибки c пропавшими кнопками подписки http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=2777418#message2777418  */
+page.repairSubscribeAddDelete = function() {
+    $('i.icon-delete-circled + span').text('Отписаться');
+    $('i.delete').parent().html('<i class="delete"></i>Отписаться');
+    $('i.icon-add-circled + span').text('Подписаться');
+    $('i.add').parent().html('<i class="add"></i>Подписаться');
+}
+page.repairSubscribeAddDelete.nameForUser ='Исправление ошибки c пропавшими кнопками'; 
+ 
 /** Исправление ошибки в ссылках в случае подписки http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2501456#message2501456  */
 page.repairPageHrefsIfSubscribe = function() {
     $(".forum-page-navigation>a").attr('href', function(i, val) {
