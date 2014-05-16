@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.6.4
+// @version        0.92.6.5
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.6.4";
+var version = "0.92.6.5";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -1735,7 +1735,7 @@ page.addUserScriptMenu = function() {
         $("li.menu__item.js-menu__item:has(div i[class*='facebook'])").clone(true).addClass(prefix+'menu menu__item--right')
         .find("div").addClass(prefix+'menu_div').attr('isOpened',false)
         // меняем иконку
-        .find('i').attr('class','icon-16x16').css({"background-image":'url('+favicon+')','width':25, 'height':25,'margin-top':12})  
+        .find('i').attr('class','icon-16x16').css({"background-image":'url('+favicon+')','width':25, 'height':25, 'vertical-align' : '-7px'})  
         .end().end().find("li.spoiler__item").remove() //удаляем ссылки
         .end().find("ul.item__spoiler") // добавляем ссылки
             .append("<li class='spoiler__item'><a href='#' id="+prefix+"options_popup_show>Настройки</a></li>")
@@ -1850,8 +1850,8 @@ page.addOptionsWindow = function() {
 }
 
 page.loadFilesEtc = function() {
-    loadJsOrCssFile('/_lib/jquery/plugins/popup/popup.css','css');
-    loadJsOrCssFile('/bitrix/templates/.default/components/bitrix/system.auth.form/redesign/style.css','css');
+    loadJsOrCssFile('/static/common/ui-elements/popup/popup.css','css');
+    //loadJsOrCssFile('/bitrix/templates/.default/components/bitrix/system.auth.form/redesign/style.css','css');
 }
 
 // ----------------------- Конструкторы ----------------------------------------------
@@ -1861,9 +1861,9 @@ function ModalWindow(name, top, title, width) {
     this.name = name;
     this.title = title;
     this.width = (width === undefined) ? 0 : width;
-    this.FILTER_DIV_OVERLAY = 'div.b-popup__overlay';
-    this.CLASS_DIV_OVERLAY = 'b-popup__overlay';
-    this.CLASS_DIV_OVERLAY_BLACK = 'b-popup__overlay_black';
+    this.FILTER_DIV_OVERLAY = 'div.ui-popup__overlay';
+    this.CLASS_DIV_OVERLAY = 'ui-popup__overlay';
+    this.CLASS_DIV_OVERLAY_BLACK = 'ui-popup__overlay_black';
     this.CLASS_DIV_SHOW = 'b-popup_show';    
     this.CLASS_DIV_MAIN = prefix+name;
     this.CLASS_I_CLOSE = prefix+name+'_close';
@@ -1871,7 +1871,7 @@ function ModalWindow(name, top, title, width) {
     
     if ( $(this.FILTER_DIV_OVERLAY).length === 0) { $('body').prepend('<div class="'+this.CLASS_DIV_OVERLAY+'" style="display: none;"></div>'); }
     $('body')
-    .prepend('<div class="'+this.CLASS_DIV_MAIN+' b-popup b-popup_white" style="padding: 20px 27px 20px 22px; top: '+this.top+'px; opacity: 1; margin-top: 0px; display:none;"><span class="b-el-link b-el-link_popup"><i class="b-el-link__icon b-el-link__icon_close '+this.CLASS_I_CLOSE+'"></i></span><h6 class="b-loginPopup__title">'+this.title+'</h6><div class='+this.CLASS_DIV_INNER+'></div></div>')
+    .prepend('<div class="'+this.CLASS_DIV_MAIN+' ui-popup ui-popup_white" style="padding: 20px 27px 20px 22px; top: '+this.top+'px; opacity: 1; margin-top: 0px; display:none;"><span class="b-el-link b-el-link_popup"><i class="b-el-link__icon b-el-link__icon_close '+this.CLASS_I_CLOSE+'"></i></span><h6 class="b-loginPopup__title">'+this.title+'</h6><div class='+this.CLASS_DIV_INNER+'></div></div>')
     
     this.close = function() {
         $(this.FILTER_DIV_OVERLAY).removeClass(this.CLASS_DIV_OVERLAY_BLACK).hide();
