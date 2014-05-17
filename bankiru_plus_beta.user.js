@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.6.6
+// @version        0.92.6.7
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.6.6";
+var version = "0.92.6.7";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -58,7 +58,7 @@ var functionsSequence = [
        /* ВИО */ 
        { address: 'banki\\.ru\\/services\\/questions-answers', functions: 'addRSSToQA', isLast: true },
        /* Новости */
-       { address: 'banki\\.ru(\\/.*?)*\\/news\\/.*?id=.*', functions: 'changeNewsCommentsHref, repairNewsCommentsAuthorAndCitateHrefs', isLast: false },
+       { address: 'banki\\.ru(\\/.*?)*\\/news\\/.*?id=.*', functions: 'changeNewsCommentsHref, repairNewsCommentsAuthorAndCitateHrefs, repairDoubleMenuInNews', isLast: false },
        { address: 'banki\\.ru\\/news\\/lenta\\/.+\\/', functions: 'addRSSToLenta', isLast: true },
        { address: 'banki\\.ru\\/banks\\/bank\\/.*?\\/news\\/', functions: 'addRSSToBankNews', isLast: true },
        /* Профиль */
@@ -716,6 +716,12 @@ page.repairNewsCommentsAuthorAndCitateHrefs = function() {
     $(".control").css({"background-image" : "none", "width":"auto"});
 }
 
+// Исправляет ошибку с двойным меню в новостях для старого дизайна http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=2780960#message2780960
+page.repairDoubleMenuInNews =function() {
+    if (!this.oldDesign) return;
+    $('.hor-indents:not(:first)').remove();
+} 
+        
 /** Изменяет страницу поиска по форуму, когда это поиcк по теме */
 page.changeSearchInForumPage = function() {
     var query = $('#searchTextInput').val();
