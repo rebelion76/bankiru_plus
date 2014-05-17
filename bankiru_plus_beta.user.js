@@ -58,7 +58,8 @@ var functionsSequence = [
        /* ВИО */ 
        { address: 'banki\\.ru\\/services\\/questions-answers', functions: 'addRSSToQA', isLast: true },
        /* Новости */
-       { address: 'banki\\.ru(\\/.*?)*\\/news\\/.*?id=.*', functions: 'changeNewsCommentsHref, repairNewsCommentsAuthorAndCitateHrefs, repairDoubleMenuInNews', isLast: false },
+       { address: 'banki\\.ru(\\/.*?)*\\/news\\.*', functions: 'repairDoubleMenuInNews', isLast: false },
+       { address: 'banki\\.ru(\\/.*?)*\\/news\\/.*?id=.*', functions: 'changeNewsCommentsHref, repairNewsCommentsAuthorAndCitateHrefs', isLast: false },
        { address: 'banki\\.ru\\/news\\/lenta\\/.+\\/', functions: 'addRSSToLenta', isLast: true },
        { address: 'banki\\.ru\\/banks\\/bank\\/.*?\\/news\\/', functions: 'addRSSToBankNews', isLast: true },
        /* Профиль */
