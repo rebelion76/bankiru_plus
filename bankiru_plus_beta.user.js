@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.6.7
+// @version        0.92.6.8
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.6.7";
+var version = "0.92.6.8";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -1053,8 +1053,11 @@ page.addForumFormToHP = function() {
         var forum_bbcode_line = document.createElement("div");
         forum_bbcode_line.innerHTML = bbcodes;
 
-        form_table.children[1].children[0].insertBefore(forum_bbcode_line,form_table.children[1].children[0].children[3]);
-        form_table.children[1].children[0].children[4].removeChild(form_table.children[1].children[0].children[4].children[0]);
+        
+        //form_table.children[1].children[0].insertBefore(forum_bbcode_line,form_table.children[1].children[0].children[3]);
+        $(forum_bbcode_line).insertBefore('div.b-editor>ul.b-bbcode');
+        $('div.b-editor>ul.b-bbcode').remove();
+        //form_table.children[1].children[0].children[4].removeChild(form_table.children[1].children[0].children[4].children[0]);
       
         forum_bbcode_line.onclick =
         function (e)
