@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.6.8
+// @version        0.92.7.0
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.6.8";
+var version = "0.92.7.0";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -49,7 +49,7 @@ var waiticon = "data:image/gif;base64,R0lGODlhEAAQAMQAAP///+7u7t3d3bu7u6qqqpmZmY
  */
 var functionsSequence = [
        /* Все страницы */  
-       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, repairRightBlock, repairLoginForm', isLast : false },
+       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, repairRightBlock, repairLoginForm, changeOldToDesign', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP', isLast: true },
@@ -89,7 +89,7 @@ var functionsSequence = [
  * @param {string} value Значение параметра
  */
 function setParam(name, value) {
-   if (typeof(localStorage)=='undefined') { document.cookie = prefix+name+'='+value+';'+'expires=Tue, 19 Jan 2038 00:00:00 GMT'; }
+   if (typeof(localStorage)=='undefined') { setCookie(prefix+name, value); }
    else { localStorage.setItem(prefix+name, value); }
 }
 
@@ -100,6 +100,15 @@ function setParam(name, value) {
 function getParam(name) {
     if (typeof(localStorage)=='undefined') { return getCookie(prefix+name); }
     else { return localStorage.getItem(prefix+name); }
+}
+
+
+/** Записать параметр в cookie 'навсегда'
+ * @param {string} cookie_name Имя параметра
+ * @param {string} cookie_value Значение параметра
+ */
+function setCookie(cookie_name, cookie_value) {
+    document.cookie = cookie_name+'='+cookie_value+'; path=/; domain=.banki.ru;'+' expires=Tue, 19 Jan 2038 00:00:00 GMT'; 
 }
 
 /** Прочитать параметр из cookie
@@ -693,7 +702,9 @@ page.forumPage = function() {
     this.mid = this.params['MID'];
     this.themeName = $.trim($("h1.topic-page__title:first").text());
     this.isClosed = ($('.post_message').length === 0); 
+    setParam('oldDesign',this.oldDesign?0:1); this.changeOldToDesign();
 }
+
 
 // Считает коэфициент полезности пользователя, null если не удовлетворяет условиям (больше 100 сообщений, положительное число спасибо)
 function userCoeff (messages, thanks) {
@@ -774,6 +785,14 @@ page.repairRightBlock = function() {
     $(FILTER_RIGTH_COLUMN).css({"display":"block"});
 } 
 page.repairRightBlock.nameForUser = 'Исправлять ошибку с правым блоком (только для старого дизайна)';
+
+// Принудительно переводить на старый дизайн если было выбрано в форуме
+page.changeOldToDesign = function() {
+    var temp = getParam('oldDesign');
+    setCookie('redesign', temp);
+    setCookie('modern', temp);
+}
+page.changeOldToDesign.nameForUser = 'Принудительно на старый дизайн, если было выбрано в форуме' 
 
 // исправляет ошибку в форме логина http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=2754220#message2754220
 page.repairLoginForm = function() {
