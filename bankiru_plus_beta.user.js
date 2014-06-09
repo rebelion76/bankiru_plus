@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.7.0
+// @version        0.92.7.1
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.7.0";
+var version = "0.92.7.1";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -52,7 +52,7 @@ var functionsSequence = [
        { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, repairRightBlock, repairLoginForm, changeOldToDesign', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
-       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP', isLast: true },
+       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP, autoSubscribeInHP', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'deleteHRRigthBlock, addRSSToResponces, recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/#add', functions: 'deleteHRRigthBlock', isLast: true },
        /* ВИО */ 
@@ -884,7 +884,7 @@ page.changeNewsCommentsHref = function() {
     }
     
     function addLinks(themeHref) { 
-        var $commentsHref = $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea']");
+        var $commentsHref = $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea'], .news__info>a[href*='reviewArea']:last , .widget__info>a[href*='review_anchor']");
         if ($commentsHref.length === 0) { 
             $commentsHref = $("<a class='b-el-link' title='Комментарии' href='#comments'><i class='comments'></i>Комментарии</a><span class='delimiter'></span>")
                             .insertBefore("span.b-el-link"); 
@@ -1046,6 +1046,17 @@ page.deleteHRRigthBlock = function() {
     $("div.l-c-column").css("width","95%");
 }
 page.deleteHRRigthBlock.nameForUser = 'Перенос правого блока в НР на верх (только для старого дизайна)';
+
+/** Автоподписываться в НР, если пришли по ссылке из RSS  */
+page.autoSubscribeInHP = function() {
+    var FILTER_A_SUBSCRIBE = 'a#buttonResponseSubscribe:visible';
+    if (page.afterHash === prefix+'subscribe_on') {
+        var href = $(FILTER_A_SUBSCRIBE);
+        if (href.length>0) { href[0].click(); }
+    } 
+} 
+page.autoSubscribeInHP.nameForUser = 'Автоподписываться в НР, если пришли по ссылке из RSS';
+
 
 page.addForumFormToHP = function() {
     loadJsOrCssFile("/bitrix/templates/.default/components/bitrix/forum/banki/style.css","css");
