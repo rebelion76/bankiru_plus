@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.7.1
+// @version        0.92.7.2
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.7.1";
+var version = "0.92.7.2";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -73,7 +73,7 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/forum\\/(\\?modern=\\d|#|$|.*?'+prefix+'theme_search.*|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?TOPIC_SUBSCRIBE=Y&.*', functions: 'repairPageHrefsIfSubscribe', isLast : false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
-       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes, addPMwithQuotes, repairSubscribeAddDelete', isLast: true }, 
+       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes, addPMwithQuotes, repairSubscribeAddDelete, repairNamesForLoggedFromOuter', isLast: true }, 
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM, addCitateFromForum', isLast: true },
        /* Поиск по депозитам */
        { address: 'banki\\.ru\\/products\\/deposits\\/search\\/', functions: 'addRSSToDepositsSearch', isLast : true },
@@ -1229,6 +1229,27 @@ page.repairPageHrefsIfSubscribe = function() {
 }
 page.repairPageHrefsIfSubscribe.nameForUser = 'Исправление ошибки в ссылках на страницы форума при подписке';
 
+var FILTER_DIV_LINKS = 'div.forum-action-links';
+var FILTER_TABLE_POST = 'table.forum-post-table';
+var FILTER_SPAN_NAME = 'div.forum-user-name>a>span';
+var FILTER_A_NUMBER = 'div.forum-post-number>noindex>a';
+var FILTER_DIV_POST_TEXT = 'div.forum-post-text';
+var FILER_SPAN_DATE = '.forum-post-date>span:contains(".")';
+var CLASS_PRE_CITATE = prefix+'pre_citate';
+var SPAN_A_CLASS = 'forum-action-quote';
+var FILTER_REPLAY_NAME='.forum-action-reply>a';
+
+/** Исправление ошибки с именами залогиненных через сторонние сервисы http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=86463&MID=3126810#message3126810 */
+page.repairNamesForLoggedFromOuter = function() {
+    $(FILTER_SPAN_NAME).text(function(){
+        var ret = $(this).text();
+        var href = $(this).parents(FILTER_TABLE_POST).find(FILTER_REPLAY_NAME).attr('onmousedown');
+        if (/reply2author\('(.*?),/.test(href)) { ret = /reply2author\('(.*?),/.exec(href)[1] ; }  
+        return ret;
+    });
+}
+page.repairNamesForLoggedFromOuter.nameForUser = 'Исправление ошибки с именами залогинившихся через сторонние сервисы';
+
 /** Добавляет дополнительные смайлы  */
 page.addAdditionalSmiles = function() {
     
@@ -1301,15 +1322,6 @@ page.addSpacesToSmallThank = function() {
     });    
 }
 page.addSpacesToSmallThank.nameForUser="Спасибо в форуме с любым числом знаков";
-
-var FILTER_DIV_LINKS = 'div.forum-action-links';
-var FILTER_TABLE_POST = 'table.forum-post-table';
-var FILTER_SPAN_NAME = 'div.forum-user-name>a>span';
-var FILTER_A_NUMBER = 'div.forum-post-number>noindex>a';
-var FILTER_DIV_POST_TEXT = 'div.forum-post-text';
-var FILER_SPAN_DATE = '.forum-post-date>span:contains(".")';
-var CLASS_PRE_CITATE = prefix+'pre_citate';
-var SPAN_A_CLASS = 'forum-action-quote';
 
 /** Возвращает выделенный текст в посте или весь пост, если ничего не выделено */
 function getSelectedTextInPost(post) {
