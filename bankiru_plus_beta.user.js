@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.7.2
+// @version        0.92.7.3
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -64,7 +64,8 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/banks\\/bank\\/.*?\\/news\\/', functions: 'addRSSToBankNews', isLast: true },
        /* Профиль */
        { address: 'banki\\.ru\/profile\/\\?UID=\\d+#\\d', functions: 'filterThanksByUserId', isLast: false },
-       { address: 'banki\\.ru\/profile\/\\?UID=\\d+', functions: 'addUserCoeffToProfile, addHrefsToProfile, change10ThanksToAll', isLast: true },
+       // , changeLastVisit
+       { address: 'banki\\.ru\/profile\/\\?UID=\\d+', functions: 'addUserCoeffToProfile, addHrefsToProfile', isLast: true },
        /* Поиск по темам форума */
        { address: 'banki\\.ru\\/forum\\/.*?'+prefix+'searchInTheme', functions : 'changeSearchInForumPage', isLast: true }, 
        /* Форум */
@@ -73,7 +74,7 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/forum\\/(\\?modern=\\d|#|$|.*?'+prefix+'theme_search.*|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?TOPIC_SUBSCRIBE=Y&.*', functions: 'repairPageHrefsIfSubscribe', isLast : false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
-       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes, addPMwithQuotes, repairSubscribeAddDelete, repairNamesForLoggedFromOuter', isLast: true }, 
+       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLastVisit, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes, addPMwithQuotes, repairSubscribeAddDelete, repairNamesForLoggedFromOuter', isLast: true }, 
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM, addCitateFromForum', isLast: true },
        /* Поиск по депозитам */
        { address: 'banki\\.ru\\/products\\/deposits\\/search\\/', functions: 'addRSSToDepositsSearch', isLast : true },
@@ -722,7 +723,7 @@ function themeSearchAfterLoadParce(responce) {
     return responce;
 }
 
-// УЖЕ НЕАКТУАЛЬНО
+// УЖЕ НЕ АКТУАЛЬНО
 // Исправляет ошибку с ссылками в коментариях к некоторым новостным колонкам http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=2427451#message2427451
 page.repairNewsCommentsAuthorAndCitateHrefs = function() { 
     $(".control").css({"background-image" : "none", "width":"auto"});
@@ -831,6 +832,7 @@ page.enableSmilesInPM = function()
 }
 page.enableSmilesInPM.nameForUser = 'Принудительно разрешить смайлы в ЛС';
 
+
 /** подменяет ссылку на новые ЛС  */
 page.changeLinkToPM = function() {
    
@@ -847,7 +849,6 @@ page.changeLinkToPM = function() {
                $('.'+CLASS_PMWAIT).hide();
         });
     }    
-   
 }
 page.changeLinkToPM.nameForUser = 'Подменять ссылку-оповещении о новых ЛС';
 
@@ -884,7 +885,8 @@ page.changeNewsCommentsHref = function() {
     }
     
     function addLinks(themeHref) { 
-        var $commentsHref = $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea'], .news__info>a[href*='reviewArea']:last , .widget__info>a[href*='review_anchor']");
+        var $commentsHref = $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea'], .news__info>a[href*='reviewArea']:last, main .widget__info>a[href*='review']:last");
+        console.log($commentsHref.text());
         if ($commentsHref.length === 0) { 
             $commentsHref = $("<a class='b-el-link' title='Комментарии' href='#comments'><i class='comments'></i>Комментарии</a><span class='delimiter'></span>")
                             .insertBefore("span.b-el-link"); 
@@ -977,7 +979,8 @@ page.addUserCoeffToProfile = function() {
 }
 page.addUserCoeffToProfile.nameForUser = 'Коэффициент полезности сообщений в профиле';
 
-// заменяем вывод +10 спасибо на вывод всех спасибо TODO ERR
+// НЕ АКТУАЛЬНО, РЕАЛИЗОВАНО НА САЙТЕ 
+// заменяем вывод +10 спасибо на вывод всех спасибо TODO ERR 
 page.change10ThanksToAll = function()
 {
     $("div.switch_page.linck > a.pseudo_link").attr("onclick","$('tr.event-ban, tr.event-thank').show();").attr("href","#user-reputation").html(function (i, old) {
@@ -988,7 +991,7 @@ page.change10ThanksToAll = function()
     //<div class="switch_page linck"><a 
     //class="pseudo_link" href="#" onclick="return LoadMoreUserDetails()">Показать еще 10</a></div>
 }
-page.change10ThanksToAll.nameForUser = 'Замена в профиле "еще 10 спасибо" на "все записи"';
+// page.change10ThanksToAll.nameForUser = 'Замена в профиле "еще 10 спасибо" на "все записи"';
 
 page.addHrefsToProfile = function()
 {
@@ -1028,6 +1031,68 @@ page.addHrefsToProfile = function()
     }
 }
 page.addHrefsToProfile.nameForUser = 'Дополнительные кнопки в профиле';
+
+
+/** Подменяет дату и время последнго визита на более точные  */
+page.changeLastVisit = function() {
+    
+    var userNameAndId = getUserNameAndIdFromProfile(page.href);
+    if ((!userNameAndId) || (page.userId===userNameAndId.id)) return false;
+    
+    var CLASS_TEMP_DIV = prefix + 'tempVisitDate';
+    var FILTER_FIRSTACTIVITY_DIV = 'div#last-activity-items span.widget__info:first';
+    var FILTER_LASTVISIT_DD = ".b-profile>dl>dt:contains('Последний визит')+dd";
+    var CLASS_VISITWAIT = prefix + 'visitWait';
+    var FILTER_USERINFORUM_A = ".forum-users-online>a:contains('"+userNameAndId.name+"')";
+        
+    $('body').append('<div class='+CLASS_TEMP_DIV+' style="display:none"></div>');
+    $('<img src="'+waiticon+'">').insertAfter(FILTER_LASTVISIT_DD).addClass(CLASS_VISITWAIT);
+    //console.log('/profile/?UID='+userNameAndId.id+'&action=activity '+FILTER_FIRSTACTIVITY_DIV);
+    //$('.'+CLASS_TEMP_DIV).load('/profile/?UID='+userNameAndId.id+'&action=activity '+FILTER_FIRSTACTIVITY_DIV, function() {
+    $.ajax({url: '/profile/?UID='+userNameAndId.id+'&action=activity', dataType:'text'
+       
+       //,beforeSend: function (xhr) {console.log('!'); console.dir(xhr); console.log('!');}
+       })
+       .done(function(responce) {    
+        console.log('wea re');
+        var lastVisitSite = new Date($(FILTER_LASTVISIT_DD).text().replace(/(\d{2}).(\d{2}).(\d{4}) (\d{2}):(\d{2})/,'$3-$2-$1T$4:$5:00.000+03:00'));
+        console.log('!');
+        var now = new Date(); var todayString = now.toISOString().replace(/(\d{4})-(\d{2})-(\d{2})T.*$/,'$3.$2.$1');
+        var yesterday = new Date(now.toISOString()); yesterday.setDate(yesterday.getDate()-1); var yesterdayString = yesterday.toISOString().replace(/(\d{4})-(\d{2})-(\d{2})T.*$/,'$3.$2.$1');
+        var lastVisitActivityString = ''; // $('.'+CLASS_TEMP_DIV).text();
+        console.log('!');
+        var regActivity = new RegExp('<span class="widget__info">(.*?)<\/span>');
+        console.log('!');
+        console.log(regActivity.test(responce));
+        if (regActivity.test(responce)) { lastVisitActivityString = regActivity.exec(responce)[1]; }
+        var lastVisitActivity;
+        if (lastVisitActivityString==='') lastVisitActivity=lastVisitSite; 
+        else lastVisitActivity = new Date(lastVisitActivityString.replace('Сегодня',todayString).replace('Вчера', yesterdayString).replace(/(\d{2}).(\d{2}).(\d{4}) (\d{2}):(\d{2})/,'$3-$2-$1T$4:$5:00.000+03:00'));
+        
+        var nowMinus10Minutes = new Date(now.toISOString()); nowMinus10Minutes.setMinutes(nowMinus10Minutes.getMinutes()-10);
+        console.log(lastVisitActivityString, now, nowMinus10Minutes, lastVisitActivity, lastVisitSite);
+        
+        if (lastVisitActivity > nowMinus10Minutes) { $('.'+CLASS_VISITWAIT).hide(); $(FILTER_LASTVISIT_DD).text(lastVisitActivityString); return; }
+        
+        if (lastVisitSite > nowMinus10Minutes) { $('.'+CLASS_VISITWAIT).hide(); return; }
+        
+        console.log('!');
+        //$('.'+CLASS_TEMP_DIV).load('/forum/ '+FILTER_USERINFORUM_A, function() {
+        $.ajax({url: '/forum/', dataType:'text'}).done(function(responce) {
+            $('.'+CLASS_VISITWAIT).hide();
+            var regForumStat = new RegExp('UID='+userNameAndId.id);
+            if (regForumStat.test(responce))  
+            //if (userNameAndId.name===$('.'+CLASS_TEMP_DIV).text()) 
+            { $(FILTER_LASTVISIT_DD).text('Был на форуме в последние 10 минут'); }
+            
+            else if (lastVisitSite >= lastVisitActivity) return;
+                 else $(FILTER_LASTVISIT_DD).text(lastVisitActivityString);  
+        }).fail(function(){$('.'+CLASS_VISITWAIT).hide();});
+        
+    }).fail(function(){$('.'+CLASS_VISITWAIT).hide();});;  
+}
+//page.changeLastVisit.nameForUser = 'Подменять дату и время последнего визита';
+
 
 page.addRSSToResponces = function() {
     addRSS('responces'); 
@@ -1229,6 +1294,7 @@ page.repairPageHrefsIfSubscribe = function() {
 }
 page.repairPageHrefsIfSubscribe.nameForUser = 'Исправление ошибки в ссылках на страницы форума при подписке';
 
+
 var FILTER_DIV_LINKS = 'div.forum-action-links';
 var FILTER_TABLE_POST = 'table.forum-post-table';
 var FILTER_SPAN_NAME = 'div.forum-user-name>a>span';
@@ -1237,7 +1303,15 @@ var FILTER_DIV_POST_TEXT = 'div.forum-post-text';
 var FILER_SPAN_DATE = '.forum-post-date>span:contains(".")';
 var CLASS_PRE_CITATE = prefix+'pre_citate';
 var SPAN_A_CLASS = 'forum-action-quote';
-var FILTER_REPLAY_NAME='.forum-action-reply>a';
+var FILTER_REPLAY_NAME = '.forum-action-reply>a';
+var FILTER_DIV_FORUM_USER_ADDINIONAL = 'div.forum-user-additional';
+
+/** Форcировать отображение меню в форуме */
+page.forceForumMenu = function() { 
+    $('.section-menu-wrap').removeClass('loader-icon');
+}
+//page.forceForumMenu = 'Форcировать отображение меню в форуме';
+
 
 /** Исправление ошибки с именами залогиненных через сторонние сервисы http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=86463&MID=3126810#message3126810 */
 page.repairNamesForLoggedFromOuter = function() {
@@ -1257,7 +1331,7 @@ page.addAdditionalSmiles = function() {
     var aS = new AdditionalSmiles();
     
 }
-page.addAdditionalSmiles.nameForUser = 'Добавлять смайлы пользователя';
+//page.addAdditionalSmiles.nameForUser = 'Добавлять смайлы пользователя';
 
 function AdditionalSmiles() {
     this.HIDDEN_SIMLES_FILTER = '#forum_smiles_hidden';
@@ -1313,6 +1387,19 @@ function AdditionalSmiles() {
     $('.'+this.SMILE_ADD_A_CLASS).on("click", $.proxy(this.addSmile, this));
  }    
    
+/** Подменяет дату и время последнго визита на более точные  */
+page.addLastVisit = function() {
+    $.ajax({url: '/forum/', dataType:'text', async:true, crossDomain: true}).done(function(responce) {
+        $(FILTER_DIV_FORUM_USER_ADDINIONAL).append(function(){
+            var userId = getUserIdFromUrl($(this).find('a').attr('href'));
+            if (userId===null) return;
+            var regForumStat = new RegExp('UID='+userId);
+            var ret;
+            if (regForumStat.test(responce)) return "<span style='color:green'>На форуме</span>";
+        });
+    });
+}
+page.addLastVisit.nameForUser = 'Статус присутствия на форуме';
 
 // добавление пробелов в текст "Спасибо", чтобы достичь необходимых 20 символов 
 page.addSpacesToSmallThank = function() {
@@ -1990,7 +2077,6 @@ function BankiruPage() {
 } 
 
 (function() {
-    
     try {
         for (var i=0; i<functionsSequence.length; i++) {
             var addressPattern = new RegExp(functionsSequence[i].address);
