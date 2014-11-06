@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.7.2";
+var version = "0.92.7.3";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
