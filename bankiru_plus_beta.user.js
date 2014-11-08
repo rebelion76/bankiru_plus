@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.7.4
+// @version        0.92.7.5
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.7.4";
+var version = "0.92.7.5";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -52,8 +52,8 @@ var functionsSequence = [
        { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, repairRightBlock, repairLoginForm, changeOldToDesign', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
-       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP, autoSubscribeInHP', isLast: true },
-       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'deleteHRRigthBlock, addRSSToResponces, recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
+       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'repairCtrlLeftRigth, deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP, autoSubscribeInHP', isLast: true },
+       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'repairCtrlLeftRigth, deleteHRRigthBlock, addRSSToResponces, recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/#add', functions: 'deleteHRRigthBlock', isLast: true },
        /* ВИО */ 
        { address: 'banki\\.ru\\/services\\/questions-answers', functions: 'addRSSToQA', isLast: true },
@@ -1181,14 +1181,21 @@ page.addForumFormToHP = function() {
         };
     } 
     
-    // исправление ошибки http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=191017&MID=2341244#message2341244
-    $("#REVIEW_TEXT").on('keydown', function(e){
+    
+}
+page.addForumFormToHP.nameForUser = 'Замена формы ответа в комментариях НР на "как в форуме"';
+
+// исправление ошибок сайта с самопроизвольным переходом по страницам во время написания отзыва по Ctrl-Left-Rigth
+// http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=191017&MID=2341244#message2341244
+// http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2912811#message2912811
+page.repairCtrlLeftRigth = function () {
+    $("textarea, input").on('keydown', function(e){
         if ((e.ctrlKey) && ((e.keyCode == 37) || (e.keyCode == 39))) {
             e.stopImmediatePropagation();
         }
     });
 }
-page.addForumFormToHP.nameForUser = 'Замена формы ответа в комментариях НР на "как в форуме"';
+page.repairCtrlLeftRigth.nameForUser = 'Отмена самопроизвольных переходов в НР по Ctrl-><-'
 
 page.addHrefsToHP = function() {
     
