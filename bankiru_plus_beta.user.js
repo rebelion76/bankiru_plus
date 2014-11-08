@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.7.3
+// @version        0.92.7.4
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.7.3";
+var version = "0.92.7.4";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -1393,7 +1393,7 @@ page.addLastVisit = function() {
         $(FILTER_DIV_FORUM_USER_ADDINIONAL).append(function(){
             var userId = getUserIdFromUrl($(this).find('a').attr('href'));
             if (userId===null) return;
-            var regForumStat = new RegExp('UID='+userId);
+            var regForumStat = new RegExp('<div class="forum-info-box forum-users-online">[\\s\\S]*?UID='+userId+'"[\\s\\S]*?<div class="forum-info-box forum-users-birthday">');
             var ret;
             if (regForumStat.test(responce)) return "<span style='color:green'>На форуме</span>";
         });
