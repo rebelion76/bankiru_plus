@@ -1886,8 +1886,8 @@ page.addUserScriptMenu = function() {
         .end().end().find("li.spoiler__item").remove() //удаляем ссылки
         .end().find("ul.item__spoiler") // добавляем ссылки
             .append("<li class='spoiler__item'><a href='#' id="+prefix+"options_popup_show>Настройки</a></li>")
-            .append("<li class='spoiler__item'><a href='/forum/?PAGE_NAME=read&FID=9&TID=211756'>FAQ</a></li>")
-            .append("<li class='spoiler__item'><a href='/forum/?PAGE_NAME=read&FID=9&TID=129799'>Поддержка</a></li>")
+            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3320.html'>FAQ</a></li>")
+            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2531.html'>Поддержка</a></li>")
             .append("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+">Последняя версия</a></li>")
             .append("<li class='spoiler__item'>-----------------------</li>")
             .append("<li class='spoiler__item'><a href='http://bankiforum.ru/showthread.php/290-RSS-ленты-на-banki-ru'>RSS-ленты</a></li>")
