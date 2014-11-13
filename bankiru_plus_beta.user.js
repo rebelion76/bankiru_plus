@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.7.5
+// @version        0.92.7.6
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.7.5";
+var version = "0.92.7.6";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -1886,13 +1886,14 @@ page.addUserScriptMenu = function() {
         .end().end().find("li.spoiler__item").remove() //удаляем ссылки
         .end().find("ul.item__spoiler") // добавляем ссылки
             .append("<li class='spoiler__item'><a href='#' id="+prefix+"options_popup_show>Настройки</a></li>")
-            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3320.html'>FAQ</a></li>")
-            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2531.html'>Поддержка</a></li>")
+            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2531.html'>FAQ & Поддержка</a></li>")
+            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2874.html'>Что нового?</a></li>")
             .append("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+">Последняя версия</a></li>")
             .append("<li class='spoiler__item'>-----------------------</li>")
-            .append("<li class='spoiler__item'><a href='http://bankiforum.ru/showthread.php/290-RSS-ленты-на-banki-ru'>RSS-ленты</a></li>")
-            .append("<li class='spoiler__item'><a href='http://bankiforum.ru/showthread.php/255-%D0%9F%D0%BE%D0%B4%D0%BF%D0%B8%D1%81%D0%BA%D0%B0-%D0%B4%D0%BB%D1%8F-Adblock-Plus'>Подписка AdBlock+</a></li>")
-    
+            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3392.html'>RSS-ленты</a></li>")
+            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3801.html'>Подписка AdBlock+</a></li>")
+            .append("<li class='spoiler__item'>-----------------------</li>")
+            .append("<li class='spoiler__item'>Банки.ру+ "+version+" </li>")
         .end().insertBefore(".menu__item.menu__item--right:not(."+prefix+"menu):first");
         if ((new_version!==null)&&(new_version>version)) { 
             $("."+prefix+"getlastversion").after("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>").remove();
