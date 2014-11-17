@@ -48,7 +48,8 @@ var waiticon = "data:image/gif;base64,R0lGODlhEAAQAMQAAP///+7u7t3d3bu7u6qqqpmZmY
  *  Формат : { address: '<регулярка адреса, \ нужен двойной!>', functions: '<список функций через пробел запятая>', isLast: <true, если после выполнения закончить> }
  */
 var functionsSequence = [
-       /* Все страницы */  
+       /* Все страницы */ 
+       // messageWhatsNew,
        { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, repairRightBlock, repairLoginForm, changeOldToDesign', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
@@ -1114,11 +1115,14 @@ page.deleteHRRigthBlock.nameForUser = 'Перенос правого блока 
 
 /** Автоподписываться в НР, если пришли по ссылке из RSS  */
 page.autoSubscribeInHP = function() {
-    var FILTER_A_SUBSCRIBE = 'a#buttonResponseSubscribe:visible';
-    if (page.afterHash === prefix+'subscribe_on') {
-        var href = $(FILTER_A_SUBSCRIBE);
-        if (href.length>0) { href[0].click(); }
-    } 
+    var FILTER_DIV_SUBSCRIBE = 'div#divResponseSubscribe:visible';
+    var FILTER_DIV_UNSUBSCRIBE = 'div#divResponseUnsubscribe';
+    if (page.afterHash === prefix+'subscribe_on') { 
+        $(FILTER_DIV_SUBSCRIBE).find("a").attr('href', function(i, href) {
+            href = href.replace(/^.*?\/(\d+)\/.*$/,"/bitrix/components/custom/forum.subscribe/asubscribe.php?sect_id=responses&response_id=$1&type=subscribe");  
+            $.get(href, function() { $(FILTER_DIV_SUBSCRIBE).hide(); $(FILTER_DIV_UNSUBSCRIBE).show();});
+        });
+    }    
 } 
 page.autoSubscribeInHP.nameForUser = 'Автоподписываться в НР, если пришли по ссылке из RSS';
 
@@ -1875,6 +1879,31 @@ page.addLinkInMainMenu = function() {
 }    
 page.addLinkInMainMenu.nameForUser = 'Заголовки главного меню - ссылки на разделы';
 
+page.messageWhatsNew = function () {
+    var MESSAGE = 'message_0.92.7.7';
+    var DIV_WN_TOP = 25;
+    var isShown = getParam(MESSAGE);
+    //if (isShown!==null) return;
+    setParam(MESSAGE,1);
+    var whatsNewWindow = new ModalWindow('whatsNew', DIV_WN_TOP, 'Что нового?',600);
+    whatsNewWindow.changeInner("<div>Всем привет!<br>Представляю вам новую фичу - окно 'Что нового?', которое будет появляются после некоторых обновлений. Как обычно, все строго добровольно - опцию можно отключить в настройках. Но  данное сообщение просьба дочитать до конца :-).<br>Если кто не в курсе - меня снова забанили 'навсегда', но в этот раз пожесче - закрыли тему обсуждения Б+ и т.д. Посему FAQ и поддержка переехали по новому адресу.</div>")
+ 
+    
+    chanceToOpen();
+    function chanceToOpen() {
+        var isNoJS = true;
+        for (var key in document.scripts) {
+           if  ((/hor-not-fit-element\.js/.test(document.scripts[key].src))) { isNoJS=false; break; }
+        }
+        if (!isNoJS) {
+            whatsNewWindow.open();
+        }
+        else { setTimeout(chanceToOpen, 100);  } 
+    }
+}
+//page.messageWhatsNew.nameForUser = "Сообщения 'Что нового?'";  
+
+
 // ------------------------------ Предварительные функции ----------------------------------------------
 /** Добавляем меню скрипта в шапку */
 page.addUserScriptMenu = function() {
@@ -1964,8 +1993,6 @@ page.updateUserScript = function() {
         else { setTimeout(chanceToUpdate, 100); }
     }
 } 
-
-
 
 /** Опции скрипта */
 page.addOptionsWindow = function() {
