@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.7.6
+// @version        0.92.8.0
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.7.6";
+var version = "0.92.8.0";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -49,8 +49,7 @@ var waiticon = "data:image/gif;base64,R0lGODlhEAAQAMQAAP///+7u7t3d3bu7u6qqqpmZmY
  */
 var functionsSequence = [
        /* Все страницы */ 
-       // messageWhatsNew,
-       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, repairRightBlock, repairLoginForm, changeOldToDesign', isLast : false },
+       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, newsMessage, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, repairRightBlock, repairLoginForm, changeOldToDesign', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'repairCtrlLeftRigth, deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP, autoSubscribeInHP', isLast: true },
@@ -131,6 +130,35 @@ function loadJsOrCssFile(filename, filetype) {
     switch (filetype) {
         case 'js' :  $('body').append('<script type="text/javascript" src="'+filename+'"></script>');
         case 'css' : $('body').append('<link href="'+filename+'" type="text/css" rel="stylesheet" />')
+    }
+}
+
+/** Запуск функции после загрузки конкретного скрипта или после всех  
+ * @param {function} func Функция на исполнение после загрузки
+ * @param {string} Имя скрипта. По умолчанию пустой 
+ * @param {interval} ИНтервал проверки. По умолчанию 250
+ */ 
+function runAfterScriptLoad(func, scriptName, interval) {
+    
+    if (interval===undefined) { interval=250; }
+    
+    var numOfScripts = document.scripts.length;
+    var almostReady = false; 
+    chanceToDo();
+    function chanceToDo() {
+        var scriptComplete = false;
+        if (scriptName!==undefined) {
+            for (var key in document.scripts) {
+                if  (document.scripts[key].src!==undefined && document.scripts[key].src.indexOf(scriptName)!==-1) { scriptComplete=true; break; }
+            } 
+        }    
+        if ((scriptName===undefined && almostReady && document.scripts.length===numOfScripts) || (scriptName!==undefined && scriptComplete)) {  
+            try { func(); }
+            catch (err) { 
+                page.showErrors(err, true); 
+            }
+        }
+        else { almostReady=(document.scripts.length===numOfScripts); numOfScripts=document.scripts.length; setTimeout(chanceToDo, interval);  } 
     }
 }
 
@@ -876,10 +904,12 @@ page.changeNewsCommentsHref = function() {
         function(index, attr) {
             return attr+'#comments';
         });
-    // менят и добаляет ссылку на комментарии в форуме                
+    // менят и добаляет ссылку на комментарии в форуме
+    runAfterScriptLoad( function() { // временно, потом надо поменять на загрузку блока!! 
     var needLoadTheme = true; 
     var themeHref = '';
     var messageString = $(".date>a[href*='message']:first").attr('href');
+    //console.log(messageString);
     if (/.*message(\d+)/.test(messageString))  {
         needLoadTheme = false;
         themeHref = '/forum/?PAGE_NAME=read&MID='+/.*message(\d+)/.exec(messageString)[1];
@@ -887,7 +917,7 @@ page.changeNewsCommentsHref = function() {
     
     function addLinks(themeHref) { 
         var $commentsHref = $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea'], .news__info>a[href*='reviewArea']:last, main .widget__info>a[href*='review']:last");
-        console.log($commentsHref.text());
+        //console.log($commentsHref.text());
         if ($commentsHref.length === 0) { 
             $commentsHref = $("<a class='b-el-link' title='Комментарии' href='#comments'><i class='comments'></i>Комментарии</a><span class='delimiter'></span>")
                             .insertBefore("span.b-el-link"); 
@@ -919,7 +949,7 @@ page.changeNewsCommentsHref = function() {
         });       
     }
     else addLinks(themeHref); 
-  
+    });
   
    /*$(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea']").attr('href', function(index, attr)  {
         $(this).html(function (index, html) { return html+' в форуме'; }); 
@@ -1115,14 +1145,8 @@ page.deleteHRRigthBlock.nameForUser = 'Перенос правого блока 
 
 /** Автоподписываться в НР, если пришли по ссылке из RSS  */
 page.autoSubscribeInHP = function() {
-    var FILTER_DIV_SUBSCRIBE = 'div#divResponseSubscribe:visible';
-    var FILTER_DIV_UNSUBSCRIBE = 'div#divResponseUnsubscribe';
-    if (page.afterHash === prefix+'subscribe_on') { 
-        $(FILTER_DIV_SUBSCRIBE).find("a").attr('href', function(i, href) {
-            href = href.replace(/^.*?\/(\d+)\/.*$/,"/bitrix/components/custom/forum.subscribe/asubscribe.php?sect_id=responses&response_id=$1&type=subscribe");  
-            $.get(href, function() { $(FILTER_DIV_SUBSCRIBE).hide(); $(FILTER_DIV_UNSUBSCRIBE).show();});
-        });
-    }    
+    var FILTER_A_SUBSCRIBE = 'a#buttonResponseSubscribe:visible';
+    if ($(FILTER_A_SUBSCRIBE).length>0) runAfterScriptLoad(function() {var href=$(FILTER_A_SUBSCRIBE); href[0].click();}, 'forum.subscribe.js', 100);
 } 
 page.autoSubscribeInHP.nameForUser = 'Автоподписываться в НР, если пришли по ссылке из RSS';
 
@@ -1879,29 +1903,18 @@ page.addLinkInMainMenu = function() {
 }    
 page.addLinkInMainMenu.nameForUser = 'Заголовки главного меню - ссылки на разделы';
 
-page.messageWhatsNew = function () {
-    var MESSAGE = 'message_0.92.7.7';
+page.newsMessage = function () {
+    var MESSAGE = 'message_first'; 
     var DIV_WN_TOP = 25;
     var isShown = getParam(MESSAGE);
-    //if (isShown!==null) return;
-    setParam(MESSAGE,1);
-    var whatsNewWindow = new ModalWindow('whatsNew', DIV_WN_TOP, 'Что нового?',600);
-    whatsNewWindow.changeInner("<div>Всем привет!<br>Представляю вам новую фичу - окно 'Что нового?', которое будет появляются после некоторых обновлений. Как обычно, все строго добровольно - опцию можно отключить в настройках. Но  данное сообщение просьба дочитать до конца :-).<br>Если кто не в курсе - меня снова забанили 'навсегда', но в этот раз пожесче - закрыли тему обсуждения Б+ и т.д. Посему FAQ и поддержка переехали по новому адресу.</div>")
+    if (isShown!==null) return;
+    setParam(MESSAGE,1); 
+    var whatsNewWindow = new ModalWindow('whatsNew', DIV_WN_TOP, 'Новости проекта',600);
+    whatsNewWindow.changeInner("Всем привет!<br><br>Представляю вам новую фичу - окно 'Новости проекта', которое будет появляться после некоторых обновлений.<br><br>Как обычно, все строго добровольно - опцию можно отключить в настройках. Но  данное сообщение просьба дочитать до конца :-).<br><br>Если кто не в курсе - меня снова забанили 'навсегда', но в этот раз модераторы взялись за дело жестче - сначала удаляли сообщения форумчан, а потом и вовсе закрыли <a href='http://www.banki.ru/forum/index.php?PAGE_NAME=read&FID=9&TID=129799' target='blank_'>тему</a> обсуждения Б+. Посему <a href='http://rebelion76.livejournal.com/2531.html' target='blank_'>FAQ и поддержка</a> окончательно переехали по новому адресу. Вопросы, замечания и предложения как всегда приветствуются! Там же недалеко обновляемый список версий с описанием изменений <a href='http://rebelion76.livejournal.com/2874.html' target='blank_'>Что нового</a>.<br><br>Работа над скриптом продолжается. Дальше - больше! :-)<br><br>P.S. Для будущего развития проекта, просьба пройти <b><a href='http://rebelion76.livejournal.com/4047.html'>небольшой опрос</a></b> по использованию Б+.");
  
-    
-    chanceToOpen();
-    function chanceToOpen() {
-        var isNoJS = true;
-        for (var key in document.scripts) {
-           if  ((/hor-not-fit-element\.js/.test(document.scripts[key].src))) { isNoJS=false; break; }
-        }
-        if (!isNoJS) {
-            whatsNewWindow.open();
-        }
-        else { setTimeout(chanceToOpen, 100);  } 
-    }
+    runAfterScriptLoad(function() {whatsNewWindow.open();}, 'hor-not-fit-element.js', 100);
 }
-//page.messageWhatsNew.nameForUser = "Сообщения 'Что нового?'";  
+page.newsMessage.nameForUser = "Новости проекта";  
 
 
 // ------------------------------ Предварительные функции ----------------------------------------------
@@ -1917,6 +1930,7 @@ page.addUserScriptMenu = function() {
             .append("<li class='spoiler__item'><a href='#' id="+prefix+"options_popup_show>Настройки</a></li>")
             .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2531.html'>FAQ & Поддержка</a></li>")
             .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2874.html'>Что нового?</a></li>")
+            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/4047.html'>Опросы!</a></li>")
             .append("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+">Последняя версия</a></li>")
             .append("<li class='spoiler__item'>-----------------------</li>")
             .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3392.html'>RSS-ленты</a></li>")
@@ -2046,7 +2060,7 @@ function ModalWindow(name, top, title, width) {
     
     if ( $(this.FILTER_DIV_OVERLAY).length === 0) { $('body').prepend('<div class="'+this.CLASS_DIV_OVERLAY+'" style="display: none;"></div>'); }
     $('body')
-    .prepend('<div class="'+this.CLASS_DIV_MAIN+' ui-popup ui-popup_white" style="padding: 20px 27px 20px 22px; top: '+this.top+'px; opacity: 1; margin-top: 0px; display:none;"><span class="b-el-link b-el-link_popup"><i class="b-el-link__icon b-el-link__icon_close '+this.CLASS_I_CLOSE+'"></i></span><h6 class="b-loginPopup__title">'+this.title+'</h6><div class='+this.CLASS_DIV_INNER+'></div></div>')
+    .prepend('<div class="'+this.CLASS_DIV_MAIN+' ui-popup ui-popup_white" style="padding: 20px 27px 20px 22px; top: '+this.top+'px; opacity: 1; margin-top: 0px; display:none;"><span class="b-el-link b-el-link_popup"><i class="b-el-link__icon b-el-link__icon_close '+this.CLASS_I_CLOSE+'"></i></span><h2 class="b-loginPopup__title">'+this.title+'</h2><div class='+this.CLASS_DIV_INNER+'></div></div>')
     
     this.close = function() {
         $(this.FILTER_DIV_OVERLAY).removeClass(this.CLASS_DIV_OVERLAY_BLACK).hide();
