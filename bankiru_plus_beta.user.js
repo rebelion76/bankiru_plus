@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.8.0
+// @version        0.92.8.1
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.8.0";
+var version = "0.92.8.1";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -53,7 +53,7 @@ var functionsSequence = [
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'repairCtrlLeftRigth, deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP, autoSubscribeInHP', isLast: true },
-       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'repairCtrlLeftRigth, deleteHRRigthBlock, addRSSToResponces, recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
+       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'repairHrefsInResponces, repairCtrlLeftRigth, deleteHRRigthBlock, addRSSToResponces, recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/#add', functions: 'deleteHRRigthBlock', isLast: true },
        /* ВИО */ 
        { address: 'banki\\.ru\\/services\\/questions-answers', functions: 'addRSSToQA', isLast: true },
@@ -806,6 +806,15 @@ page.addCitateFromForum = function() {
     
 } 
 
+/** подменяет ссылки на отзывы, чтобы не было перехода на https */
+page.repairHrefsInResponces = function() {
+   var FILTER_A = 'a';
+   $(FILTER_A).attr('href', function(i, val) {
+       console.log(val);
+       if (val!==undefined) return val.replace(/(^.*\/services\/responses\/bank\/response\/)(\d+)([#]?.*$)/,'$1$2/$3'); 
+   }); 
+} 
+
 // --------------------------- Функции, доступные для отключения пользователю ----------------------- 
 
 // исправляет ошибку с правым блоком в старом дизайне  http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=2640928#message2640928
@@ -1145,8 +1154,10 @@ page.deleteHRRigthBlock.nameForUser = 'Перенос правого блока 
 
 /** Автоподписываться в НР, если пришли по ссылке из RSS  */
 page.autoSubscribeInHP = function() {
-    var FILTER_A_SUBSCRIBE = 'a#buttonResponseSubscribe:visible';
-    if ($(FILTER_A_SUBSCRIBE).length>0) runAfterScriptLoad(function() {var href=$(FILTER_A_SUBSCRIBE); href[0].click();}, 'forum.subscribe.js', 100);
+    if (page.afterHash === prefix+'subscribe_on') { 
+        var FILTER_A_SUBSCRIBE = 'a#buttonResponseSubscribe:visible';
+        if ($(FILTER_A_SUBSCRIBE).length>0) runAfterScriptLoad(function() {var href=$(FILTER_A_SUBSCRIBE); href[0].click();}, 'forum.subscribe.js', 100);
+    }    
 } 
 page.autoSubscribeInHP.nameForUser = 'Автоподписываться в НР, если пришли по ссылке из RSS';
 
