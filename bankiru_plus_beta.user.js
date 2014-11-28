@@ -52,8 +52,8 @@ var functionsSequence = [
        { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, newsMessage, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, repairRightBlock, repairLoginForm, changeOldToDesign', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
-       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'repairCtrlLeftRigth, deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP, autoSubscribeInHP', isLast: true },
-       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'repairHrefsInResponces, repairCtrlLeftRigth, deleteHRRigthBlock, addRSSToResponces, recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
+       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'deleteHRRigthBlock, recollapseResponses, addForumFormToHP, addHrefsToHP, autoSubscribeInHP', isLast: true },
+       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'repairHrefsInResponces, deleteHRRigthBlock, addRSSToResponces, recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/#add', functions: 'deleteHRRigthBlock', isLast: true },
        /* ВИО */ 
        { address: 'banki\\.ru\\/services\\/questions-answers', functions: 'addRSSToQA', isLast: true },
@@ -1224,7 +1224,7 @@ page.addForumFormToHP = function() {
 }
 page.addForumFormToHP.nameForUser = 'Замена формы ответа в комментариях НР на "как в форуме"';
 
-// исправление ошибок сайта с самопроизвольным переходом по страницам во время написания отзыва по Ctrl-Left-Rigth
+// исправление ошибок сайта/Б+ с самопроизвольным переходом по страницам по Ctrl-Left-Rigth при редактировании iput, textarea
 // http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=191017&MID=2341244#message2341244
 // http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2912811#message2912811
 page.repairCtrlLeftRigth = function () {
@@ -1234,7 +1234,7 @@ page.repairCtrlLeftRigth = function () {
         }
     });
 }
-page.repairCtrlLeftRigth.nameForUser = 'Отмена самопроизвольных переходов в НР по Ctrl-><-'
+page.repairCtrlLeftRigth.nameForUser = 'Отмена переходов по страницам при редактировании'
 
 page.addHrefsToHP = function() {
     
@@ -2152,6 +2152,13 @@ function BankiruPage() {
                 }
                 if (functionsSequence[i].isLast) break;
             }
+        }
+        
+        var canRun = getParam('repairCtrlLeftRigth');
+        if ( ((canRun === null) && (typeof(page.repairCtrlLeftRigth.firstRunIsFalse)==='undefined')) || (+canRun === 1)) 
+        try { page.repairCtrlLeftRigth(); }
+        catch (err) {
+            page.showErrors(err, false);
         }
      //$('.page-body').wrap('<section contextmenu="my-right-click-menu" class="temp"></section>');
      //$('.page-body').append('<menu type="context" id="my-right-click-menu"><menuitem label="Не надо тырить картинки" icon="img/forbidden.png"></menuitem> <menuitem label="Facebook" onclick="goTo(\'//facebook.com/sharer/sharer.php?u=\' +window.location.href);"></menuitem><menuitem label="Обновить" onclick="window.location.reload()"></menuitem></menu>');
