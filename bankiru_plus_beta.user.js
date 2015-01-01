@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.92.8.1
+// @version        0.92.8.2
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -30,7 +30,7 @@
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.92.8.1";
+var version = "0.92.8.2";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -185,7 +185,6 @@ function escape1251(str)
         }
         else ret += String.fromCharCode(n);
     }
-
     return ret;
 }
 
@@ -1540,7 +1539,7 @@ page.addPMwithQuotes.nameForUser = 'Добавить ссылку на ЛС с �
 
 // Добавляет ссылку на комментарии пользователя в теме
 page.addUserPostSearch = function() {
-    var themeName = this.themeName;
+    var themeName = escape1251(this.themeName);
     $("div.forum-user-additional :first-child:has(span a)").after(function(){
         var user = getUserIdFromUrl($(this).find('a').attr('href'));
         return "<span>Сообщения в теме: <span><a href='http://www.banki.ru/forum/?PAGE_NAME=user_post&UID="+user+"&topic="+themeName+"'>&gt;&gt;&gt;</a></span></span>";
@@ -1827,7 +1826,7 @@ page.addSelectToSearchInTop = function() {
     $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='search[type]' value='name'>");
     $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='set_filter' value='Фильтровать'>");
         
-    $('<select name="where" style="margin-top:12px"><option value="0">по всему сайту</option><option value="'+prefix+'banks">в банках России</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option value="iblock_responses">в народном рейтинге</option><option value="'+prefix+'theme_search">в темах форума</option><option value="forum">в форуме</option><option value="'+prefix+'users">в пользователях</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>')
+    $('<select name="where" style="margin-top:12px"><option value="0">по всему сайту</option><option value="'+prefix+'banks">в банках России</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option value="iblock_responses">в народном рейтинге</option><option value="'+prefix+'theme_search">в названиях тем</option><option value="forum">в форуме</option><option value="'+prefix+'users">в пользователях</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>')
     .prependTo("form.item__node.js-search-input-form")
     .on("change", function() {
         var value = $(this).find('option:selected').attr('value');
