@@ -9,6 +9,10 @@
 // @include        https://*.banki.ru/*
 // @include        http://banki.ru/*
 // @include        https://banki.ru/*
+// @exclude	   https://banki.ru/news/* 
+// @exclude	   http://*.banki.ru/news/* 
+// @exclude	   http://banki.ru/news/* 
+// @exclude	   https://*.banki.ru/news/*
 // @match          *://banki.ru/*   
 // @match          *://*.banki.ru/*   
 // ==/UserScript==
@@ -34,9 +38,9 @@ var version = "0.92.8.2";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
-var UPDATE_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js";
+var UPDATE_URL = "http://rawgithub.com/rebelion76/bankiru_plus/nonews/bankiru_plus_beta.user.js";
 /** Адрес скрипта с версией */
-var VERSION_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/version.js";
+var VERSION_URL = "http://rawgithub.com/rebelion76/bankiru_plus/nonews/version.js";
 /** Объект класса-страницы */
 var page = new BankiruPage; 
 /** Иконка для меню скрипта */
