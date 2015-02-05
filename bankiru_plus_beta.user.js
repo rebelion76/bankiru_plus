@@ -36,9 +36,9 @@ var version = "0.92.8.2";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
-var UPDATE_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/bankiru_plus_beta.user.js";
+var UPDATE_URL = "http://rawgithub.com/rebelion76/bankiru_plus/greasemonkey/bankiru_plus_beta.user.js";
 /** Адрес скрипта с версией */
-var VERSION_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/version.js";
+var VERSION_URL = "http://rawgithub.com/rebelion76/bankiru_plus/greasemonkey/version.js";
 /** Объект класса-страницы */
 var page = new BankiruPage; 
 /** Иконка для меню скрипта */
