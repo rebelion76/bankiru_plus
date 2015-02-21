@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.93.0.1
+// @version        0.93.0.2
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -32,7 +32,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.93.0.1";
+var version = "0.93.0.2";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -60,8 +60,7 @@ var functionsSequence = [
        /* ВИО */ 
        { address: 'banki\\.ru\\/services\\/questions-answers', functions: 'addRSSToQA', isLast: true },
        /* Новости */
-       { address: 'banki\\.ru(\\/.*?)*\\/news\\.*', functions: 'repairDoubleMenuInNews', isLast: false },
-       { address: 'banki\\.ru(\\/.*?)*\\/news\\/.*?id=.*', functions: 'changeNewsCommentsHref, repairNewsCommentsAuthorAndCitateHrefs', isLast: false },
+       { address: 'banki\\.ru(\\/.*?)*\\/news\\/.*?id=.*', functions: 'changeNewsCommentsHref', isLast: false },
        { address: 'banki\\.ru\\/news\\/lenta\\/.+\\/', functions: 'addRSSToLenta', isLast: true },
        { address: 'banki\\.ru\\/banks\\/bank\\/.*?\\/news\\/', functions: 'addRSSToBankNews', isLast: true },
        /* Профиль */
