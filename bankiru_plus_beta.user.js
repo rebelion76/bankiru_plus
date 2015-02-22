@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.93.0.2
+// @version        0.93.0.3
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
@@ -32,7 +32,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.93.0.2";
+var version = "0.93.0.3";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -56,7 +56,7 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/services\\/responses\\/', functions: 'removeFeedbackButton', isLast: false },
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'recollapseResponses, addForumFormToHP, addHrefsToHP, autoSubscribeInHP', isLast: true },
-       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'repairHrefsInResponces, addRSSToResponces, recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
+       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'addRSSToResponces, recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
        /* ВИО */ 
        { address: 'banki\\.ru\\/services\\/questions-answers', functions: 'addRSSToQA', isLast: true },
        /* Новости */
@@ -794,14 +794,6 @@ page.addCitateFromForum = function() {
     $(FILTER_INPUT_SUBJECT).val('Re: '+temp.substr(0,46));
     $(FILTER_TEXTAREA).val(getParam('citate'));
     
-} 
-
-/** подменяет ссылки на отзывы, чтобы не было перехода на https */
-page.repairHrefsInResponces = function() {
-   var FILTER_A = 'a';
-   $(FILTER_A).attr('href', function(i, val) {
-       if (val!==undefined) return val.replace(/(^.*\/services\/responses\/bank\/response\/)(\d+)([#]?.*$)/,'$1$2/$3'); 
-   }); 
 } 
 
 // --------------------------- Функции, доступные для отключения пользователю ----------------------- 
