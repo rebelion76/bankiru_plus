@@ -1,16 +1,16 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Банки.ру + BETA
-// @version        0.93.0.4
+// @version        0.93.1.0
 // @namespace      
 // @author         rebelion76
 // @description    Расширение возможностей сайта banki.ru. Дальше - больше!
-// @include        http://*.banki.ru/*
-// @include        https://*.banki.ru/*
+// @include        http://www.banki.ru/*
+// @include        https://www.banki.ru/*
 // @include        http://banki.ru/*
 // @include        https://banki.ru/*
-// @match          http://*.banki.ru/*  
-// @match          https://*.banki.ru/*
+// @match          http://www.banki.ru/*  
+// @match          https://www.banki.ru/*
 // @match          http://banki.ru/*
 // @match          https://banki.ru/*
 // @grant          none    
@@ -18,7 +18,8 @@
 
 //---------------------- Библиотеки ----------------------------------------------
 
-/*! jQuery v1.11.0 | (c) 2005, 2014 jQuery Foundation, Inc. | jquery.org/license */
+//jQuery v1.11.0 | (c) 2005, 2014 jQuery Foundation, Inc. | jquery.org/license 
+// 
 // ,a.addEventListener("load",K,!1)  удалено 
 // оно же // A fallback to window.onload, that will always work  Illegal invocation 
 //        window.addEventListener( "load", completed, false );
@@ -30,13 +31,8 @@
 
 this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wiki.greasespot.net/@grant
 
-/** jQuery.scrollTo  
-* Copyright (c) 2007-2014 Ariel Flesler - aflesler<a>gmail<d>com | http://flesler.blogspot.com
-* Licensed under MIT
-* @author Ariel Flesler
-* @version 1.4.14
-*/
-;(function(k){'use strict';k(['jquery'],function($){var j=$.scrollTo=function(a,b,c){return $(window).scrollTo(a,b,c)};j.defaults={axis:'xy',duration:0,limit:!0};j.window=function(a){return $(window)._scrollable()};$.fn._scrollable=function(){return this.map(function(){var a=this,isWin=!a.nodeName||$.inArray(a.nodeName.toLowerCase(),['iframe','#document','html','body'])!=-1;if(!isWin)return a;var b=(a.contentWindow||a).document||a.ownerDocument||a;return/webkit/i.test(navigator.userAgent)||b.compatMode=='BackCompat'?b.body:b.documentElement})};$.fn.scrollTo=function(f,g,h){if(typeof g=='object'){h=g;g=0}if(typeof h=='function')h={onAfter:h};if(f=='max')f=9e9;h=$.extend({},j.defaults,h);g=g||h.duration;h.queue=h.queue&&h.axis.length>1;if(h.queue)g/=2;h.offset=both(h.offset);h.over=both(h.over);return this._scrollable().each(function(){if(f==null)return;var d=this,$elem=$(d),targ=f,toff,attr={},win=$elem.is('html,body');switch(typeof targ){case'number':case'string':if(/^([+-]=?)?\d+(\.\d+)?(px|%)?$/.test(targ)){targ=both(targ);break}targ=win?$(targ):$(targ,this);if(!targ.length)return;case'object':if(targ.is||targ.style)toff=(targ=$(targ)).offset()}var e=$.isFunction(h.offset)&&h.offset(d,targ)||h.offset;$.each(h.axis.split(''),function(i,a){var b=a=='x'?'Left':'Top',pos=b.toLowerCase(),key='scroll'+b,old=d[key],max=j.max(d,a);if(toff){attr[key]=toff[pos]+(win?0:old-$elem.offset()[pos]);if(h.margin){attr[key]-=parseInt(targ.css('margin'+b))||0;attr[key]-=parseInt(targ.css('border'+b+'Width'))||0}attr[key]+=e[pos]||0;if(h.over[pos])attr[key]+=targ[a=='x'?'width':'height']()*h.over[pos]}else{var c=targ[pos];attr[key]=c.slice&&c.slice(-1)=='%'?parseFloat(c)/100*max:c}if(h.limit&&/^\d+$/.test(attr[key]))attr[key]=attr[key]<=0?0:Math.min(attr[key],max);if(!i&&h.queue){if(old!=attr[key])animate(h.onAfterFirst);delete attr[key]}});animate(h.onAfter);function animate(a){$elem.animate(attr,g,h.easing,a&&function(){a.call(this,targ,h)})}}).end()};j.max=function(a,b){var c=b=='x'?'Width':'Height',scroll='scroll'+c;if(!$(a).is('html,body'))return a[scroll]-$(a)[c.toLowerCase()]();var d='client'+c,html=a.ownerDocument.documentElement,body=a.ownerDocument.body;return Math.max(html[scroll],body[scroll])-Math.min(html[d],body[d])};function both(a){return $.isFunction(a)||$.isPlainObject(a)?a:{top:a,left:a}}return j})}(typeof define==='function'&&define.amd?define:function(a,b){if(typeof module!=='undefined'&&module.exports){module.exports=b(require('jquery'))}else{b(jQuery)}}));
+// jQuery.scrollTo v1.4.14 | Copyright (c) 2007-2014 Ariel Flesler - aflesler<a>gmail<d>com | http://flesler.blogspot.com | Licensed under MIT 
+!function(k){'use strict';k(['jquery'],function($){var j=$.scrollTo=function(a,b,c){return $(window).scrollTo(a,b,c)};j.defaults={axis:'xy',duration:0,limit:!0};j.window=function(a){return $(window)._scrollable()};$.fn._scrollable=function(){return this.map(function(){var a=this,isWin=!a.nodeName||$.inArray(a.nodeName.toLowerCase(),['iframe','#document','html','body'])!=-1;if(!isWin)return a;var b=(a.contentWindow||a).document||a.ownerDocument||a;return/webkit/i.test(navigator.userAgent)||b.compatMode=='BackCompat'?b.body:b.documentElement})};$.fn.scrollTo=function(f,g,h){if(typeof g=='object'){h=g;g=0}if(typeof h=='function')h={onAfter:h};if(f=='max')f=9e9;h=$.extend({},j.defaults,h);g=g||h.duration;h.queue=h.queue&&h.axis.length>1;if(h.queue)g/=2;h.offset=both(h.offset);h.over=both(h.over);return this._scrollable().each(function(){if(f==null)return;var d=this,$elem=$(d),targ=f,toff,attr={},win=$elem.is('html,body');switch(typeof targ){case'number':case'string':if(/^([+-]=?)?\d+(\.\d+)?(px|%)?$/.test(targ)){targ=both(targ);break}targ=win?$(targ):$(targ,this);if(!targ.length)return;case'object':if(targ.is||targ.style)toff=(targ=$(targ)).offset()}var e=$.isFunction(h.offset)&&h.offset(d,targ)||h.offset;$.each(h.axis.split(''),function(i,a){var b=a=='x'?'Left':'Top',pos=b.toLowerCase(),key='scroll'+b,old=d[key],max=j.max(d,a);if(toff){attr[key]=toff[pos]+(win?0:old-$elem.offset()[pos]);if(h.margin){attr[key]-=parseInt(targ.css('margin'+b))||0;attr[key]-=parseInt(targ.css('border'+b+'Width'))||0}attr[key]+=e[pos]||0;if(h.over[pos])attr[key]+=targ[a=='x'?'width':'height']()*h.over[pos]}else{var c=targ[pos];attr[key]=c.slice&&c.slice(-1)=='%'?parseFloat(c)/100*max:c}if(h.limit&&/^\d+$/.test(attr[key]))attr[key]=attr[key]<=0?0:Math.min(attr[key],max);if(!i&&h.queue){if(old!=attr[key])animate(h.onAfterFirst);delete attr[key]}});animate(h.onAfter);function animate(a){$elem.animate(attr,g,h.easing,a&&function(){a.call(this,targ,h)})}}).end()};j.max=function(a,b){var c=b=='x'?'Width':'Height',scroll='scroll'+c;if(!$(a).is('html,body'))return a[scroll]-$(a)[c.toLowerCase()]();var d='client'+c,html=a.ownerDocument.documentElement,body=a.ownerDocument.body;return Math.max(html[scroll],body[scroll])-Math.min(html[d],body[d])};function both(a){return $.isFunction(a)||$.isPlainObject(a)?a:{top:a,left:a}}return j})}(typeof define==='function'&&define.amd?define:function(a,b){if(typeof module!=='undefined'&&module.exports){module.exports=b(require('jquery'))}else{b(jQuery)}});
 
 
 // --------------------- Основные переменные --------------------------------------
@@ -44,7 +40,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "0.93.0.4";
+var version = "0.93.1.0";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -63,7 +59,7 @@ var waiticon = "data:image/gif;base64,R0lGODlhEAAQAMQAAP///+7u7t3d3bu7u6qqqpmZmY
  */
 var functionsSequence = [
        /* Все страницы */ 
-       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, newsMessage, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, repairRightBlock, repairLoginForm, changeOldToDesign, changeHrefToResponses', isLast : false },
+       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, newsMessage, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, changeHrefToResponses', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/', functions: 'removeFeedbackButton', isLast: false },
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
@@ -87,13 +83,10 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/forum\\/(\\?modern=\\d|#|$|.*?'+prefix+'theme_search.*|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?TOPIC_SUBSCRIBE=Y&.*', functions: 'repairPageHrefsIfSubscribe', isLast : false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
-       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLastVisit, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes, addPMwithQuotes, repairSubscribeAddDelete, repairNamesForLoggedFromOuter', isLast: true }, 
+       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLastVisit, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addHrefToQuotes, addPMwithQuotes', isLast: true }, 
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM, addCitateFromForum', isLast: true },
        /* Поиск по депозитам */
        { address: 'banki\\.ru\\/products\\/deposits\\/search\\/', functions: 'addRSSToDepositsSearch', isLast : true },
-       /* Перегрузка друзей, не понятно работает ли */
-       // { address: 'banki\\.ru\\/friends\\/group\\/.*?\\/forum\\/.*', functions: 'reloadFriendsToForum', isLast: true },
-       // { address: 'banki\\.ru\\/(.*)FID=72', functions: 'addCommentFormToForum', isLast: true },
     ];
 
 // ------------------- Вспомогательные функции ------------------------------------
@@ -403,206 +396,12 @@ function addRSS(typeOfRSS)
     });    
 }
 
-function reloadFriendsToForum()
-{
-    var tid;
-    var mid;
-    var page;
-    var location = page.href;
-     
-    if (/\/forum\/message\/(\d+)\//.test(location)) { tid = /\/forum\/message\/(\d+)\//.exec(location)[1] ; }
-    else if (/\/forum\/(\d+)\//.test(location)) { tid = /\/forum\/(\d+)\//.exec(location)[1] ; }
-    else return false;
-
-    var groupName;
-    
-    if (/\/group\/(.*?)\//.test(location)) { groupName = /\/group\/(.*?)\//.exec(location)[1]; }
-    else return false;
-    
-    var isFriend = "no";
-    if (document.getElementsByClassName("b-notation").length > 0) { isFriend ="no"; }
-    else { isFriend = "yes"; }
-    
-    var bankName = encodeURI($(".b-fr-bank-header__name").text());
-    
-    var sessionId = document.getElementById("sessid").value;
-    if (!sessionId) return false; 
-    
-    var newLocation = "http://www.banki.ru/forum/index.php?PAGE_NAME=message"+"&bankname="+bankName+"&sessid="+sessionId+"&isfr="+isFriend+"&group="+groupName+"&FID=72&TID="+tid;
-    
-    if (/\/message\/(\d+)\/(\d+)\/.*/.test(location)) { mid = /.*message\/(\d+)\/(\d+)\/.*/.exec(location)[2]; }
-    else if (/PAGEN_1=(\d+)&#(\d+)/.test(location)) { mid = /PAGEN_1=(\d+)&#(\d+)/.exec(location)[2]; }  
-    else if (/#(.*)$/.test(location)) { mid = /#(.*)$/.exec(location)[1]; }
-    if (mid)  { newLocation = newLocation+"&MID="+mid+"#message"+mid; } 
-    else if (/PAGEN_1=(\d+?)/.test(location)) { page = /PAGEN_1=(\d+?)/.exec(location)[1]; newLocation = newLocation +"&PAGEN_1="+page; }
-        
-    window.location.href = newLocation;
-}
-
-function fromForumToFriends(href,group)
-{
-    href = "/friends/group/"+group+"/forum/";
-    
-    var tid;
-    if (/TID=(\d+)/.test(location)) { tid = /TID=(\d+)/.exec(location)[1] ; href = href + tid+ "/";}
-    href = href + "#postform";
-    return href;
-}
-
-function fromForumToFriendsMess(href,group)
-{
-    newHref = "/friends/group/"+group+"/forum/message/";
-        
-    var tid, mid;
-    
-    if (/TID=(\d+)/.test(href)) { tid = /TID=(\d+)/.exec(href)[1] ; newHref = newHref + tid+ "/";}
-
-    if (/MID=(\d+)/.test(href)) { mid = /MID=(\d+)/.exec(href)[1] ; newHref = newHref + mid+ "/#"+mid;}
-   
-    return newHref;
-}
-
-function addCommentFormToForum()
-{
-    var href = location.href; 
-    if (location.hash) { href = href.replace(/#(.*)$/,"#postform"); }
-    else { href= href + "#postform"; }
-    href = href.replace(/http:\/\/.*banki\.ru/,"");
-   
-    var groupName, isFriend, nonMember = "", bankName = "неизвестного сообщества", sessid;
-   
-    var tid;   
-    if (/TID=(\d+)/.test(location)) { tid = /TID=(\d+)/.exec(location)[1]; } 
-    
-    var noImportantData = false;
-    
-    if (/group=(.*?)&/.test(href)) { groupName = /group=(.*?)&/.exec(href)[1]; href = href.replace(/group=(.*?)&/,""); }
-    else { noImportantData = true; }
-    if (/isfr=(.*?)&/.test(href)) { isFriend = /isfr=(.*?)&/.exec(href)[1]; href = href.replace(/isfr=(.*?)&/,""); }
-    if (/bankname=(.*?)&/.test(href)) {
-        bankName = decodeURI(/bankname=(.*?)&/.exec(href)[1]);
-        bankName = bankName.replace(/\+/g," ");
-        href = href.replace(/bankname=(.*?)&/,""); 
-    }
-   
-    
-    if (/sessid=(.*?)&/.test(href)) { sessid = /sessid=(.*?)&/.exec(href)[1]; href = href.replace(/sessid=(.*?)&/,""); }
-    else { noImportantData = true; };
-    
-    if (noImportantData) {
-        if (tid == localStorage.getItem("banki.ru.plus_tid")) {
-            groupName = localStorage.getItem("banki.ru.plus_groupName");
-            isFriend = localStorage.getItem("banki.ru.plus_isFriend");
-            bankName = localStorage.getItem("banki.ru.plus_bankName");
-            sessid = localStorage.getItem("banki.ru.plus_sessid");
-            if ((!groupName) && (!sessid)) return;
-        }
-        else return;
-    }
-    else {   
-        localStorage.setItem("banki.ru.plus_groupName", groupName);
-        localStorage.setItem("banki.ru.plus_isFriend", isFriend);
-        localStorage.setItem("banki.ru.plus_bankName", bankName);
-        localStorage.setItem("banki.ru.plus_sessid", sessid);
-        localStorage.setItem("banki.ru.plus_tid", tid);
-    }
-    
-    var areaValue="";
-    if ( document.getElementsByClassName("forum-info-box forum-post-preview").length>0) {
-        areaValue = localStorage.getItem("banki.ru.plus_preview");
-    }
-    
-       
-    if (isFriend === "yes") { isFriend = "";  }
-    else { isFriend = "disabled"; nonMember = '<span><b>Комментирование доступно только участникам сообщества.</b> <a href="http://www.banki.ru/friends/">Вступить?</a></span>'; }
-  
-   var script = 'var smallEngLettersReg = new Array(/e\'/g, /ch/g, /sh/g, /yo/g, /jo/g, /zh/g, /yu/g, /ju/g, /ya/g, /ja/g, /a/g, /b/g, /v/g, /g/g, /d/g, /e/g, /z/g, /i/g, /j/g, /k/g, /l/g, /m/g, /n/g, /o/g, /p/g, /r/g, /s/g, /t/g, /u/g, /f/g, /h/g, /c/g, /w/g, /~/g, /y/g, /\'/g); var smallRusLetters = new Array("э", "ч", "ш", "ё", "ё", "ж", "ю", "ю", "я", "я", "а", "б", "в", "г", "д", "е", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "щ", "ъ", "ы", "ь");  var capitEngLettersReg = new Array(  /Ch/g, /Sh/g,   /Yo/g, /Zh/g,   /Yu/g, /Ya/g,   /E\'/g, /CH/g, /SH/g, /YO/g, /JO/g, /ZH/g, /YU/g, /JU/g, /YA/g, /JA/g, /A/g, /B/g, /V/g, /G/g, /D/g, /E/g, /Z/g, /I/g, /J/g, /K/g, /L/g, /M/g, /N/g, /O/g, /P/g, /R/g, /S/g, /T/g, /U/g, /F/g, /H/g, /C/g, /W/g, /Y/g); var capitRusLetters = new Array(  "Ч", "Ш",  "Ё", "Ж",  "Ю", "Я",  "Э", "Ч", "Ш", "Ё", "Ё", "Ж", "Ю", "Ю", "\Я", "\Я", "А", "Б", "В", "Г", "Д", "Е", "З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Щ", "Ы");  var smallRusLettersReg = new Array(/э/g, /ч/g, /ш/g, /ё/g, /ё/g,/ж/g, /ю/g, /ю/g, /я/g, /я/g, /а/g, /б/g, /в/g, /г/g, /д/g, /е/g, /з/g, /и/g, /й/g, /к/g, /л/g, /м/g, /н/g, /о/g, /п/g, /р/g, /с/g, /т/g, /у/g, /ф/g, /х/g, /ц/g, /щ/g, /ъ/g, /ы/g, /ь/g ); var smallEngLetters = new Array("e", "ch", "sh", "yo", "jo", "zh", "yu", "ju", "ya", "ja", "a", "b", "v", "g", "d", "e", "z", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "f", "h", "c", "w", "~", "y", "\'");  var capitRusLettersReg = new Array(  /Ч(?=[^А-Я])/g, /Ш(?=[^А-Я])/g,   /Ё(?=[^А-Я])/g, /Ж(?=[^А-Я])/g,   /Ю(?=[^А-Я])/g, /Я(?=[^А-Я])/g,   /Э/g, /Ч/g, /Ш/g, /Ё/g, /Ё/g, /Ж/g, /Ю/g, /Ю/g, /Я/g, /Я/g, /А/g, /Б/g, /В/g, /Г/g, /Д/g, /Е/g, /З/g, /И/g, /Й/g, /К/g, /Л/g, /М/g, /Н/g, /О/g, /П/g, /Р/g, /С/g, /Т/g, /У/g, /Ф/g, /Х/g, /Ц/g, /Щ/g, /Ъ/g, /Ы/g, /Ь/g); var capitEngLetters = new Array(  "Ch", "Sh",  "Yo", "Zh",  "Yu", "Ya",  "E", "CH", "SH", "YO", "JO", "ZH", "YU", "JU", "YA", "JA", "A", "B", "V", "G", "D", "E", "Z", "I", "J", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "H", "C", "W", "~", "Y", "\'"); function AttachFile(iNumber, iCount, sIndex, oObj) { var element = null;  var bFined = false;  iNumber = parseInt(iNumber);  iCount = parseInt(iCount);  document.getElementById("upload_files_info_" + sIndex).style.display = "block";  for (var ii = iNumber; ii < (iNumber + iCount); ii++)  {  element = document.getElementById("upload_files_" + ii + "_" + sIndex);  if (!element || typeof(element) == null)    break;   if (element.style.display == "none")   {    bFined = true;    element.style.display = "block";    break;   }   }  var bHide = (!bFined ? true : (ii >= (iNumber + iCount - 1)));  if (bHide == true)   oObj.style.display = "none"; } function AddTags(a) {  if (a != null)  {   var div = a.parentNode.previousSibling;  div.style.display = "block";    a.parentNode.style.display = "none";  var inputs = div.getElementsByTagName("INPUT");    for (var i = 0 ; i < inputs.length ; i++ )        {    if (inputs[i].type.toUpperCase() == "TEXT")    {     CorrectTags(inputs[i]);     inputs[i].focus();     break;    }   }        if (a.parentNode.lastChild && a.parentNode.lastChild.name == "from_tag")       {    a.parentNode.lastChild.style.display = "none";          if (document.getElementById("vote_switcher"))        {     document.getElementById("vote_switcher").style.display = "";}        }       }  return false; }  function CorrectTags(oObj) {  if (document.getElementById("TAGS_div_frame"))   document.getElementById("TAGS_div_frame").id = oObj.id + "_div_frame"; }  var bSendForm = false;  if (typeof oText != "object")  var oText = {}; oText["author"] = " пишет:\\n"; oText["enter_url"] = "Введите полный адрес (URL)"; oText["enter_url_name"] = "Введите название сайта";  oText["enter_image"] = "Введите полный адрес (URL) изображения";     oText["list_prompt"] = "Введите пункт списка. Нажмите Отмена или оставьте пробел для завершения списка";        oText["video"] = "Видео";        oText["path"] = "Путь (http://):";       oText["preview"] = "Картинка (http://):";       oText["width"] = "Ширина:";        oText["height"] = "Высота:";        oText["vote_drop_answer_confirm"] = "Вы действительно хотите удалить вариант ответа?:";        oText["vote_drop_question_confirm"] = "Вы действительно хотите удалить вопрос?:";       oText["BUTTON_OK"] = "Вставить";        oText["BUTTON_CANCEL"] = "Отмена";       oText["smile_hide"] = "Скрыть"; if (typeof oErrors != "object")  var oErrors = {}; oErrors["no_topic_name"] = "Вы должны ввести название темы. "; oErrors["no_message"] = "Вы должны ввести сообщение. "; oErrors["max_len"] = "Максимальная длина сообщения #MAX_LENGTH# символов. Всего символов: #LENGTH#."; oErrors["no_url"] = "Вы должны ввести адрес (URL)";  oErrors["no_title"] = "Ведите название."; oErrors["no_path"] = "Укажите путь к видео."; ';
-   
-   // клизму пока уберем <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/klizma.gif" class="smiles" alt=":klizma:" title="и тебя вылечат" width="42" border="0" height="25"></a></span>     
-   var html = '<a name="postform"></a> <div class="forum-header-box">  <div class="forum-header-options">   <span class="forum-option-bbcode"><a href="/forum/index.php?PAGE_NAME=help#bbcode">BBCode</a></span>&nbsp;&nbsp;   <span class="forum-option-rules"><a href="/forum/index.php?PAGE_NAME=rules">Правила</a></span>  </div>  <div class="forum-header-title"><span>Форма ответов</span></div> </div> <div class="forum-reply-form"> <form name="REPLIER" id="REPLIER" action="@banki.ru.plus_action@" method="POST" enctype="multipart/form-data" onsubmit="return ValidateForm(this, \'N\');" onkeydown="if(null != init_form){init_form(this)}" onmouseover="if(init_form){init_form(this)}" class="forum-form">  <input name="PAGE_NAME" value="read" type="hidden">  <input name="FID" value="14" type="hidden">  <input name="TID" value="4272" type="hidden">  <input name="MID" value="0" type="hidden">  <input name="MESSAGE_TYPE" value="REPLY" type="hidden">  <input name="AUTHOR_ID" value="" type="hidden">  <input name="forum_post_action" value="save" type="hidden">  <input name="MESSAGE_MODE" value="NORMAL" type="hidden">  <input name="sessid" id="sessid" value="@banki.ru.plus_sessid@" type="hidden">  <div class="forum-reply-header">Текст сообщения<span class="forum-required-field">*</span></div>   <div class="forum-reply-fields">    <div class="forum-reply-field forum-reply-field-bbcode">     <div class="forum-bbcode-line" id="forum_bbcode_line">     <a href="#postform" class="forum-bbcode-button forum-bbcode-bold" id="form_b" title="Полужирный (alt+b)">      <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a>     <a href="#postform" class="forum-bbcode-button forum-bbcode-italic" id="form_i" title="Курсив (alt+i)">      <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a>     <a href="#postform" class="forum-bbcode-button forum-bbcode-underline" id="form_u" title="Подчеркнутый (alt+u)">      <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a>     <a href="#postform" class="forum-bbcode-button forum-bbcode-strike" id="form_s" title="Перечеркнутый (alt+s)">      <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a>     <a href="#postform" class="forum-bbcode-button forum-bbcode-quote" id="form_quote" title="Оформление текста в виде цитаты (alt+q)">      <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a>     <a href="#postform" class="forum-bbcode-button forum-bbcode-code" id="form_code" title="Оформление текста в виде кода (alt+p)">      <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a>     <a href="#postform" class="forum-bbcode-button forum-bbcode-url" id="form_url" title="Ввод гиперссылки (alt+h)">      <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a>     <a href="#postform" class="forum-bbcode-button forum-bbcode-img" id="form_img" title="Подключение изображения (alt+g)">      <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a>     <a href="#postform" class="forum-bbcode-button forum-bbcode-video" id="form_video" title="Подключение видео (alt+v)">      <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a>     <a href="#postform" class="forum-bbcode-button forum-bbcode-list" id="form_list" title="Оформление текста в виде списка (alt+l)">      <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a>     <a href="#postform" class="forum-bbcode-button forum-bbcode-color" id="form_palette" title="Цвет">      <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a>     <a href="#postform" class="forum-bbcode-button forum-bbcode-translit" id="form_translit" title="Перекодировка транслит/латиница (alt+t)">      <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a>     <select name="FONT" class="forum-bbcode-font" id="form_font" title="Шрифт">      <option value="none">Шрифт</option>      <option value="Arial" style="font-family: Arial;">Arial</option>      <option value="Times" style="font-family: Times;">Times</option>      <option value="Courier" style="font-family: Courier;">Courier</option>      <option value="Impact" style="font-family: Impact;">Impact</option>      <option value="Geneva" style="font-family: Geneva;">Geneva</option>      <option value="Optima" style="font-family: Optima;">Optima</option>      <option value="Verdana" style="font-family: Verdana;">Verdana</option>     </select>    </div>    <div class="forum-clear-float"></div>    <div class="forum-smiles-line" id="forum_smiles_showed" style="display: none;">     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ab.gif" class="smiles" alt=":)" title="улыбка" width="20" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ad.gif" class="smiles" alt=";)" title="шутливо" width="20" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/ag.gif" class="smiles" alt=":D" title="широкая улыбка" width="20" border="0" height="20"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/ai.gif" class="smiles" alt=":o" title="удивленно" width="20" border="0" height="20"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/bl.gif" class="smiles" alt=":|" title="скептически" width="36" border="0" height="26"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/af.gif" class="smiles" alt="8)" title="круто" width="21" border="0" height="21"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ac.gif" class="smiles" alt=":(" title="печально" width="20" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/evil.gif" class="smiles" alt=":evil:" title="злюсь" width="35" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/qr.gif" class="smiles" alt=":wall:" title="бешусь" width="31" border="0" height="26"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ah.gif" class="smiles" alt=":oops:" title="смущенно" width="25" border="0" height="25"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/aj.gif" class="smiles" alt=":{}" title="поцелуй" width="34" border="0" height="23"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/ak.gif" class="smiles" alt=":cry:" title="очень грустно" width="31" border="0" height="22"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/facepalm.gif" class="smiles" alt=":omg:" title="только не это" width="28" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 9px;"><img src="/bitrix/images/forum/smile/inlove.gif" class="smiles" alt=":inlove:" title="влюбленный" width="22" border="0" height="29"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/23247378e1dac5dd917b2695aad1baa8.gif" class="smiles" alt=":notiam:" title="я?! нет." width="42" border="0" height="26"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/197.gif" class="smiles" alt=":shuffle:" title="а чего я?" width="18" border="0" height="23"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/bp.gif" class="smiles" alt=":ura:" title="ура!" width="42" border="0" height="27"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/am.gif" class="smiles" alt=":nunu:" title="ну-ну" width="36" border="0" height="27"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/aa.gif" class="smiles" alt=":angel:" title="просто ангел!" width="27" border="0" height="23"></a></span>     <div class="forum-smiles-item" style="height: 46px;">      <a href="#postform" id="form_smiles_static" name="smile_show" style="margin-top: 15px;">       Еще</a>     </div>    </div><div class="forum-smiles-line" id="forum_smiles_hidden" style="display: block;">     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ab.gif" class="smiles" alt=":)" title="улыбка" width="20" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ad.gif" class="smiles" alt=";)" title="шутливо" width="20" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/ag.gif" class="smiles" alt=":D" title="широкая улыбка" width="20" border="0" height="20"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/ai.gif" class="smiles" alt=":o" title="удивленно" width="20" border="0" height="20"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/bl.gif" class="smiles" alt=":|" title="скептически" width="36" border="0" height="26"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/af.gif" class="smiles" alt="8)" title="круто" width="21" border="0" height="21"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ac.gif" class="smiles" alt=":(" title="печально" width="20" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/evil.gif" class="smiles" alt=":evil:" title="злюсь" width="35" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/qr.gif" class="smiles" alt=":wall:" title="бешусь" width="31" border="0" height="26"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ah.gif" class="smiles" alt=":oops:" title="смущенно" width="25" border="0" height="25"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/aj.gif" class="smiles" alt=":{}" title="поцелуй" width="34" border="0" height="23"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/ak.gif" class="smiles" alt=":cry:" title="очень грустно" width="31" border="0" height="22"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/facepalm.gif" class="smiles" alt=":omg:" title="только не это" width="28" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 9px;"><img src="/bitrix/images/forum/smile/inlove.gif" class="smiles" alt=":inlove:" title="влюбленный" width="22" border="0" height="29"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/23247378e1dac5dd917b2695aad1baa8.gif" class="smiles" alt=":notiam:" title="я?! нет." width="42" border="0" height="26"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/197.gif" class="smiles" alt=":shuffle:" title="а чего я?" width="18" border="0" height="23"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/bp.gif" class="smiles" alt=":ura:" title="ура!" width="42" border="0" height="27"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/am.gif" class="smiles" alt=":nunu:" title="ну-ну" width="36" border="0" height="27"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/aa.gif" class="smiles" alt=":angel:" title="просто ангел!" width="27" border="0" height="23"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ae.gif" class="smiles" alt=":-p" title="дразнится" width="20" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/secret.gif" class="smiles" alt=":-X" title="секрет" width="22" border="0" height="26"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/fool.gif" class="smiles" alt=":fool:" title="ты чё, дурак?!" width="29" border="0" height="23"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/boredom.gif" class="smiles" alt=":tired:" title="скучно" width="26" border="0" height="22"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/good.gif" class="smiles" alt=":thumbsup:" title="отлично!" width="26" border="0" height="23"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/ok.gif" class="smiles" alt=":ок:" title="Ок!" width="40" border="0" height="26"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 8px;"><img src="/bitrix/images/forum/smile/bx.gif" class="smiles" alt=":yes!!!:" title="Yes!!!" width="42" border="0" height="30"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/cg.gif" class="smiles" alt=":painful:" title="больно!" width="23" border="0" height="20"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/yep.gif" class="smiles" alt=":yep:" title="угу" width="20" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 9px;"><img src="/bitrix/images/forum/smile/dj.gif" class="smiles" alt=":zzz:" title="сплю" width="29" border="0" height="29"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 8px;"><img src="/bitrix/images/forum/smile/dl.gif" class="smiles" alt=":bonk:" title="подзатыльник" width="48" border="0" height="30"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/mosking.gif" class="smiles" alt=":jokingly:" title="хи-хи" width="25" border="0" height="25"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/crazy.gif" class="smiles" alt=":crazy:" title="crazy!" width="20" border="0" height="27"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/scratch_one-s_head.gif" class="smiles" alt=":scratch:" title="Хмм..." width="27" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/pardon.gif" class="smiles" alt=":pardon:" title="пардон!" width="36" border="0" height="26"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 9px;"><img src="/bitrix/images/forum/smile/beee.gif" class="smiles" alt=":fi:" title="зазнался" width="28" border="0" height="28"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/ponty.gif" class="smiles" alt=":vnature:" title="чистА-кАнкретнА" width="35" border="0" height="26"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 1px;"><img src="/bitrix/images/forum/smile/d_daisy.gif" class="smiles" alt=":flowers:" title="вам букет!" width="43" border="0" height="44"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 8px;"><img src="/bitrix/images/forum/smile/dm.gif" class="smiles" alt=":magic:" title="колдунство!" width="42" border="0" height="31"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/stop.gif" class="smiles" alt=":stop:" title="стоп!" width="36" border="0" height="23"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 7px;"><img src="/bitrix/images/forum/smile/help.gif" class="smiles" alt=":help:" title="помогите!" width="30" border="0" height="33"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/rofl.gif" class="smiles" alt=":rofl:" title="я валяюсь!" width="29" border="0" height="25"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/cd.gif" class="smiles" alt=":quotes:" title="кавычки" width="36" border="0" height="26"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 7px;"><img src="/bitrix/images/forum/smile/cj.gif" class="smiles" alt=":relax:" title="relax" width="34" border="0" height="33"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 9px;"><img src="/bitrix/images/forum/smile/dh.gif" class="smiles" alt=":gramercy:" title="благодарю" width="36" border="0" height="29"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 4px;"><img src="/bitrix/images/forum/smile/cl.gif" class="smiles" alt=":achtung:" title="ахтунг!" width="48" border="0" height="38"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 6px;"><img src="/bitrix/images/forum/smile/dr.gif" class="smiles" alt=":nightmare:" title="а-а-а, кошмар!" width="42" border="0" height="34"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 9px;"><img src="/bitrix/images/forum/smile/drinks.gif" class="smiles" alt=":drink:" title="выпьем!" width="51" border="0" height="28"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 9px;"><img src="/bitrix/images/forum/smile/bt.gif" class="smiles" alt=":uncap:" title="здрасти!" width="42" border="0" height="28"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/cm.gif" class="smiles" alt=":dramatics:" title="я в истерике" width="38" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/bad.gif" class="smiles" alt=":puke:" title="тошнит" width="21" border="0" height="21"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ar.gif" class="smiles" alt=":music:" title="тын-тыдын, парам-пам-пам" width="28" border="0" height="25"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/2.gif" class="smiles" alt=":?:" title="Вопрос" width="20" border="0" height="20"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/1.gif" class="smiles" alt=":!:" title="восклицание" width="20" border="0" height="20"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 14px;"><img src="/bitrix/images/forum/smile/idea.gif" class="smiles" alt=":idea:" title="идея" width="18" border="0" height="18"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/bomb.gif" class="smiles" alt="@=" title="бомба" width="28" border="0" height="24"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/wiki_go.gif" class="smiles" alt=":wikigo:" title="Пиши в словарь!" width="72" border="0" height="25"></a></span>     <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 0px;"><img src="/bitrix/images/forum/smile/nr_table.gif" class="smiles" alt=":write_nr:" title="Пиши в народный рейтинг!" width="48" border="0" height="46"></a></span>     <div class="forum-smiles-item" style="height: 46px;">      <a href="#postform" id="form_smiles_static" name="smile_hide" style="margin-top: 15px;">Скрыть</a>     </div>    </div>    <div class="forum-clear-float"></div>   </div>   <div class="forum-reply-field forum-reply-field-text">    <textarea name="POST_MESSAGE" class="post_message" cols="55" rows="14" tabindex="10" @banki.ru.plus_isfr@>@banki.ru.plus_areavalue@</textarea>   </div>   <div class="forum-reply-field forum-reply-field-upload">    <div class="forum-upload-info" style="display: none;" id="upload_files_info_">     <span>Разрешенные расширения файлов: gif, jpg, jpeg, png, doc, rtf, xls, ppt, pps.</span>     <span>Размер файла не должен превышать 512 КБ.</span>    </div>     <div class="forum-upload-file" style="display: none;" id="upload_files_0_">     <input name="FILE_NEW_0" value="" size="30" type="file">    </div>     <div class="forum-upload-file" style="display: none;" id="upload_files_1_">     <input name="FILE_NEW_1" value="" size="30" type="file">    </div>     <div class="forum-upload-file" style="display: none;" id="upload_files_2_">     <input name="FILE_NEW_2" value="" size="30" type="file">    </div>     <div class="forum-upload-file" style="display: none;" id="upload_files_3_">     <input name="FILE_NEW_3" value="" size="30" type="file">    </div>     <div class="forum-upload-file" style="display: none;" id="upload_files_4_">     <input name="FILE_NEW_4" value="" size="30" type="file">    </div>  @banki.ru.plus_nonmember@ <!-- <a href="javascript:void(0);" onclick="AttachFile(\’0\’, \’5\’, \’\’, this); return false;">     <span>Прикрепить файл</span>    </a> -->  </div>   <div class="forum-reply-field forum-reply-field-settings">    <div class="forum-reply-field-setting">     <input name="USE_SMILES" id="USE_SMILES" value="Y" checked="checked" tabindex="11" type="checkbox">&nbsp;<label for="USE_SMILES">Показывать графические смайлы в этом сообщении</label></div>    <div class="forum-reply-field-setting">     <input name="TOPIC_SUBSCRIBE" id="TOPIC_SUBSCRIBE" value="Y" disabled="disabled" tabindex="12" type="checkbox">&nbsp;<label for="TOPIC_SUBSCRIBE">Подписаться на новые сообщения этой темы</label></div>    <div class="forum-reply-field-setting">     <input name="FORUM_SUBSCRIBE" id="FORUM_SUBSCRIBE" value="Y" tabindex="13" type="checkbox" disabled="disabled">&nbsp;<label for="FORUM_SUBSCRIBE">Подписаться на новые сообщения этого форума</label></div>   </div>   <div class="forum-reply-buttons">    <input name="send_button" value="Ответить" tabindex="14" onclick="this.form.MESSAGE_MODE.value = \'NORMAL\';" type="submit" @banki.ru.plus_isfr@>    <input name="view_button" value="Просмотр" tabindex="15" onclick="localStorage.setItem(\'banki.ru.plus_preview\',this.form.POST_MESSAGE.value); this.form.action=\'@banki.ru.plus_action_view@\'; this.form.MESSAGE_MODE.value = \'VIEW\'; " type="submit">   </div>   </div> </form></div>';
-   
-   html = html.replace("@banki.ru.plus_action_view@",href); 
-   href = fromForumToFriends(href,groupName);
-   html = html.replace("@banki.ru.plus_action@",href);
-   html = html.replace("@banki.ru.plus_sessid@",sessid);
-   html = html.replace(/@banki.ru.plus_isfr@/g,isFriend);
-   html = html.replace("@banki.ru.plus_nonmember@",nonMember);
-   html = html.replace("@banki.ru.plus_areavalue@",areaValue);
-
-   tempSPAN = document.createElement("span");
-   tempSPAN.innerHTML = html;
-  
-   loadjscssfile("/bitrix/templates/.default/components/bitrix/forum.post_form/.default/script.js","js");
-
-   var tempDIV = document.getElementsByClassName("forum-info-box forum-users-online")[0];
-   tempDIV.parentNode.insertBefore(tempSPAN,tempDIV.nextSibling);
-   contentEval(script);
-   
-   if (document.getElementsByClassName("forum-action-edit").length>0)
-   {
-        var tempA = document.getElementsByClassName("forum-action-edit")[0].firstChild.firstChild;
-        tempA.href = tempA.href.replace(/forum\/index\.php\?PAGE_NAME=topic_new&FID=72&TID=(\d+)&/,"friends/group/"+groupName+"/forum/edit/$1/?"); 
-    }
-   var tempArrayDIV = document.getElementsByClassName("forum-breadcrumb forum-breadcrumb-top");
-   var i; var length = tempArrayDIV.length; var bankSPAN; 
-   for  (i=0;i<length;i++)
-   {
-        
-        bankSPAN = document.createElement("span");
-        bankSPAN.className= "forum-crumb-item";
-        bankSPAN.innerHTML = '&nbsp;<span>&raquo;&nbsp;</span><a href="/friends/group/'+groupName+'/#nav_start" title="Форум '+bankName+'">Форум '+bankName+'</a>';
-        tempArrayDIV[i].appendChild(bankSPAN);
-   }
-  
-   tempArrayDIV =  document.getElementsByClassName("forum-post-number");
-  
-   length = tempArrayDIV.length; var tempNOINDEX; 
-   
-   for  (i=0;i<length;i++)   
-   {
-        tempNOINDEX = tempArrayDIV[i].getElementsByTagName("noindex")[0];
-        tempNOINDEX.children[0].href = fromForumToFriendsMess(tempNOINDEX.children[0].href, groupName);
-   }
-  
-   tempArrayDIV =  document.getElementsByClassName("forum-action-links");
-  
-   length = tempArrayDIV.length; var linksSPAN; 
-   
-   for  (i=0;i<length;i++)
-   {
-        //tempArrayDIV[i].innerHTML="";
-        var messageId = tempArrayDIV[i].parentNode.parentNode.parentNode.parentNode.parentNode.id.replace("message","");
-        
-        var userName = tempArrayDIV[i].parentNode.parentNode.parentNode.parentNode.children[0].children[0].children[0].children[2].children[0].children[0].innerHTML;
-              
-        linksSPAN = document.createElement("span");
-        linksSPAN.className = "forum-action-quote";
-        linksSPAN.innerHTML = "<a href=\"#postform\" onmousedown=\"if (window['quoteMessageEx']){quoteMessageEx('"+userName+"', 'message_text_"+messageId+"')}\">Цитировать</a>&nbsp;&nbsp;";
-        tempArrayDIV[i].appendChild(linksSPAN);
-        linksSPAN = document.createElement("span");
-        linksSPAN.className = "forum-action-reply";
-        linksSPAN.innerHTML = "<a href=\"#postform\" title=\"Вставить в ответ имя\" onmousedown=\"reply2author('"+userName+",', 'message_text_"+messageId+"')\">Имя</a>";
-        tempArrayDIV[i].appendChild(linksSPAN);
-  }
-  
-  
-  if (!page.isLogged) return false;
-   
-  document.getElementsByName("AUTHOR_ID")[0].value = page.userId;
-  document.getElementsByName("PAGE_NAME")[0].value = "group_forum_message";
-  
-  // http://www.banki.ru/forum/index.php?PAGE_NAME=topic_new&FID=72&TID=87239&MID=1690602&MESSAGE_TYPE=EDIT&sessid=f14eb8268689ddbd83adea4784c02440
-  // http://www.banki.ru/friends/group/avangard/forum/edit/87239/?MID=1690602&ACTION=EDIT&MESSAGE_TYPE=EDIT&sessid=f14eb8268689ddbd83adea4784c02440
-   
-}
-
 // автодобавление просьбы восстановить отзыв с responseID таким-то TODO
 function addUrlToRecovery()
 {
     var responseId = /&banki_ru_plus_hidden_rid=(\d*)#/.exec(page.href)[1]; // заменить на выбор параметра
     $("textarea.post_message").val("Прошу восстановить скрытый отзыв http://www.banki.ru/services/responses/bank/?responseID="+responseId);
 }
-
 
 function getUserIdFromUrl(url)
 {
@@ -643,7 +442,6 @@ function getUserNameAndIdFromProfile(url)
 // дополнительный поиск по теме форума и НР
 function addAditionalSearch (type)
 {
-
     var googleSearchQuery = 'http://google.ru/search?hl=ru&output=search&filter=1&pws=0&sclient=psy-ab&as_q=site:banki.ru ';
     var bankiSearchQuery = 'http://www.banki.ru/forum/?PAGE_NAME=search&where=forum&'+prefix+'searchInTheme='+prefix+'themeName&how=d&q=';
     var searchType; if ((searchType=getParam('inThemeSearchType')) === null) { searchType='banki'; setParam('inThemeSearchType','banki'); }
@@ -682,7 +480,7 @@ function addAditionalSearch (type)
     
     function additionalSearchSubmit(e) {
         if ((e.type=='keydown') && (e.keyCode!=13)) return;
-        
+
         var input = $("[name='"+prefix+"input_search']").val();
         if (codepage === '1251') { input = escape1251(input); }  
         
@@ -690,8 +488,8 @@ function addAditionalSearch (type)
         searchWindow.focus();
     }
     
-    $("[name='"+prefix+"input_search']").bind("keydown", additionalSearchSubmit);
-    page.oldDesign ? $("[name='"+prefix+"button_search']").hide() : $("[name='"+prefix+"button_search']").bind("click", additionalSearchSubmit);
+    $("[name='"+prefix+"input_search']").on("keydown", additionalSearchSubmit);
+    page.oldDesign ? $("[name='"+prefix+"button_search']").hide() : $("[name='"+prefix+"button_search']").on("click", additionalSearchSubmit);
     
     $('#'+prefix+'inThemeSearchType').on('click', function() {
         var searchType = getParam('inThemeSearchType'); 
@@ -747,7 +545,6 @@ page.forumPage = function() {
     this.mid = this.params['MID'];
     this.themeName = $.trim($("h1.topic-page__title:first").text());
     this.isClosed = ($('.post_message').length === 0); 
-    setParam('oldDesign',this.oldDesign?0:1); this.changeOldToDesign();
 }
 
 
@@ -822,42 +619,6 @@ function selectAllIfNoSelection(elem) {
 
 
 // --------------------------- Функции, доступные для отключения пользователю ----------------------- 
-
-// исправляет ошибку с правым блоком в старом дизайне  http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=2640928#message2640928
-page.repairRightBlock = function() {
-    if (!this.oldDesign) return; 
-    var FILTER_RIGTH_COLUMN = ".l-bigR-column";
-    $(FILTER_RIGTH_COLUMN).css({"display":"block"});
-} 
-page.repairRightBlock.nameForUser = 'Исправлять ошибку с правым блоком (только для старого дизайна)';
-
-// Принудительно переводить на старый дизайн если было выбрано в форуме
-page.changeOldToDesign = function() {
-    var temp = getParam('oldDesign');
-    setCookie('redesign', temp);
-    setCookie('modern', temp);
-}
-page.changeOldToDesign.nameForUser = 'Принудительно на старый дизайн, если было выбрано в форуме' 
-
-// исправляет ошибку в форме логина http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=2754220#message2754220
-page.repairLoginForm = function() {
-    if (this.isLogged) return;
-    
-    var FILTER_HREF_LOGIN = ".item__call--login";
-    var FILTER_INPUT_BACKURL = "section.b-loginPopup input[name='backurl']";
-    var FILTER_INPUTS_LOGIN_PASS = "#login, #password";
-    var FILTER_FORM_LOGIN = "section.b-loginPopup form:first";
-    
-    $(FILTER_HREF_LOGIN).one('click', function() { 
-        $(FILTER_INPUT_BACKURL).val(window.location.pathname+window.location.search);
-        $(FILTER_INPUTS_LOGIN_PASS).keydown(function(e) { 
-            if (e.which == 13) {
-                $(FILTER_FORM_LOGIN).submit();
-            }
-        });
-    });    
-} 
-page.repairLoginForm.nameForUser = 'Исправлять ошибку в форме логина';
 
 /** Вывод ошибок  */                                
 page.showErrors = function(err, global) {
@@ -974,10 +735,9 @@ page.changeNewsCommentsHref = function() {
         this.disconnect();
     });
     observer.observe($(FILTER_MAIN)[0], {childList: true });
-    //runAfterScriptLoad( 
-    //
 }
 page.changeNewsCommentsHref.nameForUser = "В новостях менять ссылку на комментарии на форум";
+page.changeNewsCommentsHref.mustMT = true;
 
 page.addRSSToLenta = function() {
     addRSS('lenta');
@@ -1011,7 +771,7 @@ page.filterThanksByUserId = function()
         return oldhtml.replace("Репутация", "Спасибо от " + userName+" (всего "+$('tr.event-thank a.name[href*="UID='+userId+'"]').length+")");
     });
     // когда нажимаем "показать все записи", надо вернуть слово "Репутация" обратно 
-    $("div.switch_page.linck > a.pseudo_link").bind("click", function () {
+    $("div.switch_page.linck > a.pseudo_link").on("click", function () {
         $("#user-reputation ~ h2").html(function (index, oldhtml) {
             return oldhtml.replace(/(.*?)(<span)/,"Репутация $2"); 
         });
@@ -1032,8 +792,6 @@ page.addUserCoeffToProfile.nameForUser = 'Коэффициент полезно�
 
 page.addHrefsToProfile = function()
 {
-    if (!page.isLogged) return false;
-
     var userNameAndId = { 'id': page.userId, 'name' : page.userName };
    
     var oppNameAndId = getUserNameAndIdFromProfile(page.href);
@@ -1068,6 +826,7 @@ page.addHrefsToProfile = function()
     }
 }
 page.addHrefsToProfile.nameForUser = 'Дополнительные кнопки в профиле';
+page.addHrefsToProfile.mustbeLogged = true;
 
 
 /** Подменяет дату и время последнго визита на более точные  */
@@ -1132,6 +891,7 @@ page.changeLastVisit = function() {
 
 
 page.addRSSToResponces = function() {
+    return; // надо сначала починить RSS 
     addRSS('responces'); 
 }
 page.addRSSToResponces.nameForUser = "RSS на отзывы и ответы ПБ в 'хлебных крошках' НР";
@@ -1221,9 +981,7 @@ page.repairCtrlLeftRigth = function () {
 page.repairCtrlLeftRigth.nameForUser = 'Отмена переходов по страницам при редактировании'
 
 page.addHrefsToHP = function() {
-    
-    if (!page.isLogged) return;
-   
+     
     var DIV_COMMENT_WIDGET_FILTER = "div#commentsWidget";
     var ARTICLE_COMMENT_FILTER = "article.comment";
     var DIV_COMMENT_LINKS_FILTER = "div.comment__links";
@@ -1232,12 +990,20 @@ page.addHrefsToHP = function() {
     var TEXTAREA_COMMENT_FILTER = ".comments__add-form__textarea:first";
     var SPAN_QUOTE_FILTER =  "#"+prefix+"quote";
     var BUTTON_SUBMIT_FILTER = ".button.submit-form";
+    var TIME_COMMENT_DAMAGED_FILTER = ".comment__time:contains('NaN')";
+    
      
     var observer = new MutationObserver(function(mutations) {
         
         if ($(ARTICLE_COMMENT_FILTER).length === 0) return;
        
-                
+        $(TIME_COMMENT_DAMAGED_FILTER).each(function() {   //исрпавлем ошибку с NaN.NaN.NaN NaN:NaN вместо даты-времени комментария
+            var TIME_COMMENT_DAMAGED_FILTER = ".comment__time:contains('NaN')"; 
+            $(TIME_COMMENT_DAMAGED_FILTER).text(function() {
+                return($(this).attr('datetime'));
+            });
+        });
+        
         if ($(this).find(SPAN_QUOTE_FILTER).length===0) {
         	$(BUTTON_SUBMIT_FILTER).on('mousedown',function() { observer.observe($(DIV_COMMENT_WIDGET_FILTER)[0], {childList: true, subtree:true}); });
         }    
@@ -1264,6 +1030,8 @@ page.addHrefsToHP = function() {
    
 }
 page.addHrefsToHP.nameForUser = 'Цитата и имя в комментариях HP';
+page.addHrefsToHP.mustMT = true;
+page.addHrefsToHP.mustBeLogged = true;
 
 var FILTER_ARTICLE_EXPAND = 'article.responses__item';
 // раскрытие "свернутых" отзывов и ответов ПБ
@@ -1273,12 +1041,14 @@ page.recollapseResponses = function() {
 page.recollapseResponses.nameForUser = 'Разворачивать отзывы и ответы ПБ в НР';
 
 var FILTER_SECTION_BANK_RAITING = "#banks-rating-container";
+var FILTER_SECTION_WIDGET_TOP_BANKS = "section.widget:has(div[data-ajax-widget*='top-banks'])";
+var FILTER_LI_TOP_BANKS = "ul.widget-top-banks__list>li.list__item";
 // везде подменяем ссылку на отзывы с параметром is_countable=off
 page.changeHrefToResponses = function() {
     
     changeFunc = function() {  
-    $('a[href*="/services/responses/bank/"]').attr('href', function(index, attr) {
-            var regexp = /(^.*?\/services\/responses\/bank\/[^\/]*?\/$)/;
+    $('a[href*="/services/responses/"]').attr('href', function(index, attr) {
+            var regexp = /(^.*?\/services\/responses\/(?:bank|list)\/[^\d]*\/$)/;
             if (regexp.test(attr)) {
                 attr = attr.replace(regexp,'$1?is_countable=off');
             }
@@ -1287,15 +1057,26 @@ page.changeHrefToResponses = function() {
     };    
     
     changeFunc();
-    if ($(FILTER_SECTION_BANK_RAITING).length == 0) return; 
     
-    var observer = new MutationObserver(function(mutations) {
-        changeFunc();
-        this.disconnect();
-    });
-    observer.observe($(FILTER_SECTION_BANK_RAITING)[0], {attributes: true });
+    if ($(FILTER_SECTION_BANK_RAITING).length > 0) { 
+        var observer1 = new MutationObserver(function() {
+            changeFunc(); 
+            this.disconnect(); 
+        }); 
+        observer1.observe($(FILTER_SECTION_BANK_RAITING)[0], {attributes: true});
+    }
+    if ($(FILTER_SECTION_WIDGET_TOP_BANKS).length > 0) {
+        var observer2 = new MutationObserver(function() { 
+            if ($(FILTER_LI_TOP_BANKS).length > 0) { 
+                changeFunc(); 
+                this.disconnect(); 
+            }
+        });
+        observer2.observe($(FILTER_SECTION_WIDGET_TOP_BANKS)[0], {childList: true, subtree: true});
+    }    
 }
 page.changeHrefToResponses.nameForUser = 'Всегда "все отзывы" в НР';
+page.changeHrefToResponses.mustMT = true;
 
 var FILTER_SECTION_PAGE_BODY_WRAPPER = ".page-body.wrapper";
 var FILTER_DIV_FEEDBACK_PANEL = '.feedback-panel' 
@@ -1311,7 +1092,7 @@ page.removeFeedbackButton = function() {
     observer.observe($(FILTER_SECTION_PAGE_BODY_WRAPPER)[0], {childList: true });
 }
 page.removeFeedbackButton.nameForUser = 'Отключить кнопку отзыв об НР';
-
+page.removeFeedbackButton.mustMT = true;
 
 page.addAdditionalSearchToResponces = function() {
     addAditionalSearch('responces');
@@ -1320,6 +1101,7 @@ page.addAdditionalSearchToResponces.nameForUser="Поиск по отзывам 
 
 // добавление ссылок на rss-каналы на отзывы и ответы ПБ в списке банков в НР
 page.addRSSToListOfBanks = function() {
+    return; //  надо сначала починить RSS
     // ориентируясь по имеющимся классам, выходим на поля в столбце название банка
     $("td.solves").parent().find("td:first-child + td").html(function(index, oldhtml) {
         // если это не последняя строка с итогами
@@ -1334,15 +1116,6 @@ page.addRSSToListOfBanks = function() {
 }
 page.addRSSToListOfBanks.nameForUser = 'RSS на отзывы и ответы ПБ в списке банков НР';
 
-/** Исправление ошибки c пропавшими кнопками подписки http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=2777418#message2777418  */
-page.repairSubscribeAddDelete = function() {
-    $('i.icon-delete-circled + span').text('Отписаться');
-    $('i.delete').parent().html('<i class="delete"></i>Отписаться');
-    $('i.icon-add-circled + span').text('Подписаться');
-    $('i.add').parent().html('<i class="add"></i>Подписаться');
-}
-page.repairSubscribeAddDelete.nameForUser ='Исправление ошибки c пропавшими кнопками'; 
- 
 /** Исправление ошибки в ссылках в случае подписки http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2501456#message2501456  */
 page.repairPageHrefsIfSubscribe = function() {
     $(".forum-page-navigation>a").attr('href', function(i, val) {
@@ -1370,19 +1143,7 @@ page.forceForumMenu = function() {
 }
 //page.forceForumMenu = 'Форcировать отображение меню в форуме';
 
-
-/** Исправление ошибки с именами залогиненных через сторонние сервисы http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=86463&MID=3126810#message3126810 */
-page.repairNamesForLoggedFromOuter = function() {
-    $(FILTER_SPAN_NAME).text(function(){
-        var ret = $(this).text();
-        var href = $(this).parents(FILTER_TABLE_POST).find(FILTER_REPLAY_NAME).attr('onmousedown');
-        if (/reply2author\('(.*?),/.test(href)) { ret = /reply2author\('(.*?),/.exec(href)[1] ; }  
-        return ret;
-    });
-}
-page.repairNamesForLoggedFromOuter.nameForUser = 'Исправление ошибки с именами залогинившихся через сторонние сервисы';
-
-/** Добавляет дополнительные смайлы  */
+/** Добавляет дополнительные смайлы НЕ РАБОТАЕТ */
 page.addAdditionalSmiles = function() {
     
     if (!page.isLogged) return;
@@ -1559,8 +1320,8 @@ page.addUserPostSearch.nameForUser = 'Ссылка на поиск по сооб
 // Добавляет коэффициент полезности сообщений в теме форума
 page.addUserCoeffToForum = function() {
     
-    $("div.forum-user-additional").append(function(){
-        var coeff = userCoeff($(this).find("span:contains('Сообщений') span a").text(), $(this).find("span:contains('Репутация') span a").text());
+    $("div.forum-user-additional>span:contains('Репутация')").after(function(){
+        var coeff = userCoeff($(this).parent().find("span:contains('Сообщений') span a").text(), $(this).parent().find("span:contains('Репутация') span a").text());
         if (coeff === null) return;
         return "<span>Полезность: <span style='color:black'>"+coeff+"%</span></span>";
     });
@@ -1592,14 +1353,14 @@ page.addCutBBCodeToForum = function () {
     var ID_CUT_HREF = prefix+'cut'; 
     $('<a title="Спойлер (cut)" id="'+ID_CUT_HREF+'" class="forum-bbcode-button forum-bbcode-quote" href="#postform"><img src="/bitrix/templates/.default/components/bitrix/blog/banki/bitrix/blog.post.edit/.default/images/cut.gif"></a>')
     .insertAfter("#form_quote");
-    $('#'+ID_CUT_HREF).on("click", function (event) { event.preventDefault(); try {insertIntoTextarea('cut', null, '.post_message' ,null);} catch (err) { page.showErrors(err, false); }  });
+    $('#'+ID_CUT_HREF).on("click", function (event) { event.preventDefault(); insertIntoTextarea('cut', null, '.post_message' ,null);});
     
     $(".forum-spoiler>thead>tr>th>div").css({"border-bottom-style":"dashed","border-bottom-width":"1px"});
 }
 page.addCutBBCodeToForum.nameForUser = 'Добавить BB-код CUT в форум'
 
 page.addLinksToHiddenUserInfo = function() {
-    if (!page.isLogged)  return false;
+ 
     $(".b-el-dropDown>ul").css('width', 180);
   
     var tempUl;
@@ -1628,6 +1389,7 @@ page.addLinksToHiddenUserInfo = function() {
     });
 }
 page.addLinksToHiddenUserInfo.nameForUser = 'Дополнительные пункты в меню пользователя в форуме';
+page.addLinksToHiddenUserInfo.mustBeLogged = true;
 
 page.addHotKeysToForum = function()
 {
@@ -1874,13 +1636,13 @@ page.deleteAutoSave = function () {
         }
         // если браузер поддерживает событие oniput, повесим на него запись комментария и адреса текущей страницы
         if ("oninput" in Element) {
-            $(Element).bind("input", function () {
+            $(Element).on("input", function () {
             localStorage.setItem('autoSaveComment',Element.value);
             localStorage.setItem('banki.ru.plus_autoSaveHref',href);
             });
         }
         // на все осталыьне события, связаныне с изменением textarea добавим запись адреса текущей страницы
-        $(Element).bind("click select keyup", function (){
+        $(Element).on("click select keyup", function (){
             localStorage.setItem('banki.ru.plus_autoSaveHref',href);
             });
         });
@@ -1938,39 +1700,39 @@ page.newsMessage.nameForUser = "Новости проекта";
 // ------------------------------ Предварительные функции ----------------------------------------------
 /** Добавляем меню скрипта в шапку */
 page.addUserScriptMenu = function() {
-    if (!page.oldDesign) {
-        $("li.menu__item.js-menu__item:has(div i[class*='facebook'])").clone(true).addClass(prefix+'menu menu__item--right')
-        .find("div").addClass(prefix+'menu_div').attr('isOpened',false)
-        // меняем иконку
-        .find('i').attr('class','icon-16x16').css({"background-image":'url('+favicon+')','width':25, 'height':25, 'vertical-align' : '-7px'})  
-        .end().end().find("li.spoiler__item").remove() //удаляем ссылки
-        .end().find("ul.item__spoiler") // добавляем ссылки
-            .append("<li class='spoiler__item'><a href='#' id="+prefix+"options_popup_show>Настройки</a></li>")
-            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2531.html'>FAQ & Поддержка</a></li>")
-            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2874.html'>Что нового?</a></li>")
-            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/4047.html'>Опросы!</a></li>")
-            .append("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+">Последняя версия</a></li>")
-            .append("<li class='spoiler__item'>-----------------------</li>")
-            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3392.html'>RSS-ленты</a></li>")
-            .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3801.html'>Подписка AdBlock+</a></li>")
-            .append("<li class='spoiler__item'>-----------------------</li>")
-            .append("<li class='spoiler__item'>Банки.ру+ "+version+" </li>")
-        .end().insertBefore(".menu__item.menu__item--right:not(."+prefix+"menu):first");
-        if ((new_version!==null)&&(new_version>version)) { 
-            $("."+prefix+"getlastversion").after("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>").remove();
-        }    
-        
-        $('.'+prefix+'menu').on('click', function (e) {
-            var div = $(this).find('div'); 
-            if (div.attr('isOpened') == 'false')  { div.addClass('item__node--expanded').attr('isOpened', true); }
-            else { div.removeClass('item__node--expanded').attr('isOpened', false); }
-            e.stopPropagation();
-        });
-        $('body').on('click', function () {
-            $('.'+prefix+'menu_div.item__node--expanded').removeClass('item__node--expanded').attr('isOpened', false); 
-        });
-    }
+
+    $("li.menu__item.js-menu__item:has(div i[class*='facebook'])").clone(true).addClass(prefix+'menu menu__item--right')
+    .find("div").addClass(prefix+'menu_div').attr('isOpened',false)
+    // меняем иконку
+    .find('i').attr('class','icon-16x16').css({"background-image":'url('+favicon+')','width':25, 'height':25, 'vertical-align' : '-7px'})  
+    .end().end().find("li.spoiler__item").remove() //удаляем ссылки
+    .end().find("ul.item__spoiler") // добавляем ссылки
+        .append("<li class='spoiler__item'><a href='#' id="+prefix+"options_popup_show>Настройки</a></li>")
+        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2531.html'>FAQ & Поддержка</a></li>")
+        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2874.html'>Что нового?</a></li>")
+        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/4047.html'>Опросы!</a></li>")
+        .append("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+">Последняя версия</a></li>")
+        .append("<li class='spoiler__item'>-----------------------</li>")
+        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3392.html'>RSS-ленты</a></li>")
+        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3801.html'>Подписка AdBlock+</a></li>")
+        .append("<li class='spoiler__item'>-----------------------</li>")
+        .append("<li class='spoiler__item'>Банки.ру+ "+version+" </li>")
+    .end().insertBefore(".menu__item.menu__item--right:not(."+prefix+"menu):first");
+    if ((new_version!==null)&&(new_version>version)) { 
+        $("."+prefix+"getlastversion").after("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>").remove();
+    }    
+
+    $('.'+prefix+'menu').on('click', function (e) {
+        var div = $(this).find('div'); 
+        if (div.attr('isOpened') == 'false')  { div.addClass('item__node--expanded').attr('isOpened', true); }
+        else { div.removeClass('item__node--expanded').attr('isOpened', false); }
+        e.stopPropagation();
+    });
+    $('body').on('click', function () {
+        $('.'+prefix+'menu_div.item__node--expanded').removeClass('item__node--expanded').attr('isOpened', false); 
+    });
 }
+page.addUserScriptMenu.mustNotOldDesign = true;  
 
 /** Обновление скрипта */
 page.updateUserScript = function() {
@@ -2127,7 +1889,9 @@ function BankiruPage() {
         this.userId = getUserIdFromUrl($("a.link-with-icon").attr("href"));
     }    
     this.isLogged = (this.userName!="")&&(this.userId!==null);
-   
+    
+    this.MT = (typeof(MutationObserver) !== 'undefined'); // есть поддержка MutationObserver
+       
     this.title=$("title").text(); 
       
     // делаем разбор строки get-параметров и сохраняем их в свойстве-массиве params
@@ -2143,33 +1907,53 @@ function BankiruPage() {
     this.afterHash = window.location.hash.substring(1);
 } 
 
+// декоратор фунцкции с выдачей сообщения об ошибке
+function tryFunction(f, contex, args) {
+    try  { f.apply(contex, args); }
+    catch (err) {
+        page.showErrors(err, false);
+    }
+ }
+ 
+
+
 (function() {
     try {
+        // переопределяем jQuery.on, чтобы обрабатывались ошибки в функциях, вызываемых по событию
+        var oldJQueryOn = $.fn.on;
+        $.fn.on = function () {
+            for (var i=1; i<=3; i++) // см. параметры jQuery.on 
+                if (typeof (arguments[i]) === 'function') {
+                var f = arguments[i];
+                arguments[i] = function() { tryFunction(f, this, arguments); };
+                break;
+            }
+            return oldJQueryOn.apply(this, arguments);
+        };
+        
         for (var i=0; i<functionsSequence.length; i++) {
             var addressPattern = new RegExp(functionsSequence[i].address);
             if (addressPattern.test(page.href)) {
                 var functions = functionsSequence[i].functions.split(', ');
                 for (var j=0; j<functions.length; j++) {
                     var canRun = getParam(functions[j]);
-                    if ( ((canRun === null) && (typeof(page[functions[j]].firstRunIsFalse)==='undefined')) || (+canRun === 1)) 
-                    try { page[functions[j]](); }
-                    catch (err) {
-                        console.log(functions[j]);
-                        page.showErrors(err, false);
-                    }
+                    if ( (((canRun === null) && (typeof(page[functions[j]].firstRunIsFalse)==='undefined')) || (+canRun === 1))  
+                         && (page.MT || page[functions[j]].mustMT!==true)
+                         && (page.isLogged || page[functions[j]].mustbeLogged!==true)
+                         && (!page.oldDesign || page[functions[j]].mustNotOldDesign!==true)    
+                       ) 
+                    tryFunction(page[functions[j]], page);
                 }
                 if (functionsSequence[i].isLast) break;
             }
         }
-        
+        // т.к. необходимо, чтобы эта функция отработала в самом конце
         var canRun = getParam('repairCtrlLeftRigth');
         if ( ((canRun === null) && (typeof(page.repairCtrlLeftRigth.firstRunIsFalse)==='undefined')) || (+canRun === 1)) 
-        try { page.repairCtrlLeftRigth(); }
-        catch (err) {
-            page.showErrors(err, false);
-        }
-     //$('.page-body').wrap('<section contextmenu="my-right-click-menu" class="temp"></section>');
-     //$('.page-body').append('<menu type="context" id="my-right-click-menu"><menuitem label="Не надо тырить картинки" icon="img/forbidden.png"></menuitem> <menuitem label="Facebook" onclick="goTo(\'//facebook.com/sharer/sharer.php?u=\' +window.location.href);"></menuitem><menuitem label="Обновить" onclick="window.location.reload()"></menuitem></menu>');
+        tryFunction(page.repairCtrlLeftRigth, page);
+    // заготовка для контекстного меню    
+    //$('.page-body').wrap('<section contextmenu="my-right-click-menu" class="temp"></section>');
+    //$('.page-body').append('<menu type="context" id="my-right-click-menu"><menuitem label="Не надо тырить картинки" icon="img/forbidden.png"></menuitem> <menuitem label="Facebook" onclick="goTo(\'//facebook.com/sharer/sharer.php?u=\' +window.location.href);"></menuitem><menuitem label="Обновить" onclick="window.location.reload()"></menuitem></menu>');
     }
     catch (err) { 
         page.showErrors(err, true); 
