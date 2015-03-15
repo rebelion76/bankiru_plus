@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.0.1
+// @version        1.0.0.2
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -41,7 +41,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.0.1";
+var version = "1.0.0.2";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -1629,7 +1629,7 @@ page.addUserScriptMenu = function() {
     .end().find("ul.item__spoiler") // добавляем ссылки
         .append("<li class='spoiler__item'><a href='#' id="+prefix+"options_popup_show>Настройки</a></li>")
         .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2531.html'>FAQ & Поддержка</a></li>")
-        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/tag/bancomas,changelog'>Что нового?</a></li>")
+        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/tag/bancomas%20changelog'>Что нового?</a></li>")
         .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/4047.html'>Опросы!</a></li>")
         .append("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+">Последняя версия</a></li>")
         .append("<li class='spoiler__item'>-----------------------</li>")
@@ -1837,8 +1837,8 @@ function BankiruPage() {
             catch (err) {
                 page.showErrors(err, false);
             }
-        }*/
-        /*Function.prototype.call = function(context) {
+        }
+        Function.prototype.call = function(context) {
             var args = [];
             for(var i=1; i<arguments.length; i++) {
                 args[i-1] = arguments[i];
