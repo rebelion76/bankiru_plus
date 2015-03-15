@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.0.0
+// @version        1.0.0.1
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -41,7 +41,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.0.0";
+var version = "1.0.0.1";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -1831,27 +1831,27 @@ function BankiruPage() {
     try {
         // в jQuery, а вскоре всего и в других библиотеках, коллбэки будут запускаться через appply и call
         // декорируем их, чтобы ловить исключения
-        Function.prototype.oldApply = Function.prototype.apply;
+        /*Function.prototype.oldApply = Function.prototype.apply;
         Function.prototype.apply = function(context, args) { 
             try  { return this.oldApply(context, args); }
             catch (err) {
                 page.showErrors(err, false);
             }
-        }
-        Function.prototype.call = function(context) {
+        }*/
+        /*Function.prototype.call = function(context) {
             var args = [];
             for(var i=1; i<arguments.length; i++) {
                 args[i-1] = arguments[i];
             }
             return this.apply(context, args); 
-        }
+        }*/
         // декорируем MutationObserver, чтобы ловить исключения в его коллбэках
-        if (page.MO) {
+        /*if (page.MO) {
             oldMO = MutationObserver;
             MutationObserver = function (f) {
                 return new oldMO(function() { f.apply(this, arguments); });
             };
-        } 
+        }*/ 
           
         for (var i=0; i<functionsSequence.length; i++) {
             var addressPattern = new RegExp(functionsSequence[i].address);
