@@ -1629,7 +1629,7 @@ page.addUserScriptMenu = function() {
     .end().find("ul.item__spoiler") // добавляем ссылки
         .append("<li class='spoiler__item'><a href='#' id="+prefix+"options_popup_show>Настройки</a></li>")
         .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2531.html'>FAQ & Поддержка</a></li>")
-        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/tag/bancomas,changelog'>Что нового?</a></li>")
+        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/tag/bancomas%20changelog'>Что нового?</a></li>")
         .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/4047.html'>Опросы!</a></li>")
         .append("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+">Последняя версия</a></li>")
         .append("<li class='spoiler__item'>-----------------------</li>")
