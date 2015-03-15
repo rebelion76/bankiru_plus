@@ -45,7 +45,7 @@ var version = "1.0.0.0";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
-var UPDATE_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/bankomas.user.js";
+var UPDATE_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/bancomas.user.js";
 /** Адрес скрипта с версией */
 var VERSION_URL = "http://rawgithub.com/rebelion76/bankiru_plus/master/version.js";
 /** Объект класса-страницы */
