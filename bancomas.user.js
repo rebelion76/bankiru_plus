@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.1.0
+// @version        1.0.1.1
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -53,7 +53,7 @@ var $$ = jQuery.noConflict(true);
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.1.0";
+var version = "1.0.1.1";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -96,7 +96,7 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/forum\\/(\\?modern=\\d|#|$|.*?'+prefix+'theme_search.*|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?TOPIC_SUBSCRIBE=Y&.*', functions: 'repairPageHrefsIfSubscribe', isLast : false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
-       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLastVisit, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addQuotesToClosedThemes, addPMwithQuotes', isLast: true }, 
+       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLastVisit, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addQuotesToClosedThemes, addPMwithQuotes, addAllToQuotes', isLast: true }, 
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM, addCitateFromForum', isLast: true },
        /* Поиск по депозитам */
        { address: 'banki\\.ru\\/products\\/deposits\\/search\\/', functions: 'addRSSToDepositsSearch', isLast : true },
@@ -1192,6 +1192,17 @@ page.addQuotesToClosedThemes = function() {
 }
 page.addQuotesToClosedThemes.nameForUser = 'Цитата сообщений из закрытых тем'; 
 page.addQuotesToClosedThemes.mustBeLogged = true;
+
+var A_FORUM_QUOTE_FILTER = ".forum-action-quote a";
+/** При цитировании в форуме выделять все сообщение, если ничего не было выделено */
+page.addAllToQuotes = function() {
+
+        var selectAllTextInMessage = 'var messages = $(this).parents("'+FILTER_TABLE_POST+'").find("'+FILTER_DIV_POST_TEXT+'"); var selection = document.getSelection(); if (selection.toString()=="") { $(".post_message")[0].hasfocus=false; var range = document.createRange(); range.selectNode(messages[0]);  selection.addRange(range); }';
+        //var rewriteGetSelection = ' PostForm.GetSelection = function() { if (this.form["POST_MESSAGE"].hasfocus == true && typeof(this.form["POST_MESSAGE"].selectionStart) != "undefined") { return this.form["POST_MESSAGE"].value.substr(this.form["POST_MESSAGE"].selectionStart, this.form["POST_MESSAGE"].selectionEnd - this.form["POST_MESSAGE"].selectionStart); } else if (this.saveSelection) { return this.saveSelection; } else if (document.selection && document.selection.createRange) { return document.selection.createRange().text; } else if (document.getSelection) { return document.getSelection() + "";} else { return false; }}';    
+        $$(A_FORUM_QUOTE_FILTER).attr('onmousedown', function (i ,val) { return selectAllTextInMessage+val; });
+    }
+page.addAllToQuotes.nameForUser = 'При цитировании в форуме выделять все сообщение'; 
+page.addAllToQuotes.mustBeLogged = true;
                                     
 /** Добавляет в функцию вызова цитаты ссылку на сообщение */
 page.addPMwithQuotes = function() {
