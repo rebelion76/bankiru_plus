@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.1.2
+// @version        1.0.2.0
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -50,7 +50,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.1.2";
+var version = "1.0.2.0";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -69,11 +69,11 @@ var waiticon = "data:image/gif;base64,R0lGODlhEAAQAMQAAP///+7u7t3d3bu7u6qqqpmZmY
  */
 var functionsSequence = [
        /* Все страницы */ 
-       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, newsMessage, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, changeHrefToResponses', isLast : false },
+       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, newsMessage, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, changeHrefToResponses, repairMainMenuToggle', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/', functions: 'removeFeedbackButton', isLast: false },
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
-       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'addForumFormToHP, addHrefsToHP, autoSubscribeInHP', isLast: true },
+       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'addHrefsToHP, autoSubscribeInHP', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'addRSSToResponces, recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
        /* ВИО */ 
        { address: 'banki\\.ru\\/services\\/questions-answers', functions: 'addRSSToQA', isLast: true },
@@ -332,8 +332,7 @@ function addRSS(typeOfRSS)
 }
 
 // автодобавление просьбы восстановить отзыв с responseID таким-то TODO
-function addUrlToRecovery()
-{
+page.addUrlToRecovery = function () {
     var responseId = /&banki_ru_plus_hidden_rid=(\d*)#/.exec(page.href)[1]; // заменить на выбор параметра
     $("textarea.post_message").val("Прошу восстановить скрытый отзыв http://www.banki.ru/services/responses/bank/?responseID="+responseId);
 }
@@ -564,14 +563,14 @@ page.showErrors = function(err, global) {
     if (global || (+showErrors === 1) || (showErrors === null)) { alert('Возникла необработанная ошибка. Пожалуйста, сообщите автору в комментариях по ссылке "FAQ & Поддержка"(в меню скрипта) или на e-mail rebelion76@gmail.com текст ошибки:\n'+errorText); }
     console.log(errorText);
 }    
-page.showErrors.nameForUser = 'Выводить сообщения об ошибках';
+page.showErrors.nameForUser = 'Показывать сообщения об ошибках';
 
 // принудительная установка галочки "разрешить смайлы" в личных сообщениях
 page.enableSmilesInPM = function()
 {
     $("#USE_SMILES:not(:checked)").click();
 }
-page.enableSmilesInPM.nameForUser = 'Принудительно разрешить смайлы в ЛС';
+page.enableSmilesInPM.nameForUser = 'Разрешать в ЛС смайлы по умолчанию';
 
 
 /** подменяет ссылку на новые ЛС  */
@@ -591,7 +590,7 @@ page.changeLinkToPM = function() {
         });
     }    
 }
-page.changeLinkToPM.nameForUser = 'Подменять ссылку-оповещении о новых ЛС';
+page.changeLinkToPM.nameForUser = 'Изменять ссылку на оповещение о новых ЛС';
 
 page.addRSSToDepositsSearch = function() {
     var FILTER_DIV_SEARCHED_COUNTS = 'div.b-note';
@@ -607,7 +606,14 @@ page.addRSSToDepositsSearch = function() {
        $('.'+CLASS_A_DEPOSITE_RSS).attr('href', function(i, val) { return val.replace(/numberinput1=.*?&/,'numberinput1='+$percent+'&'); });
     });
 }
-page.addRSSToDepositsSearch.nameForUser = 'RSS на выборку в поиске по вкладам';
+page.addRSSToDepositsSearch.nameForUser = 'Добавлять в поиске по вкладам ссылку на RSS';
+
+var NAV_MAIN_MENU_FILTER = "nav#mainMenu";
+var MAIN_MENU_CLASS = "main-menu";
+page.repairMainMenuToggle = function() {
+    if (!$(NAV_MAIN_MENU_FILTER).hasClass(MAIN_MENU_CLASS)) $(NAV_MAIN_MENU_FILTER).addClass(MAIN_MENU_CLASS); 
+}
+page.repairMainMenuToggle.nameForUser = 'Исправлять ошибку с отсутствием "показать меню"';
 
 // В новостях меняет ссылку на комментарии на форумскую и исправляет недоработку с #comments http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2451541#message2451541
 page.changeNewsCommentsHref = function() {
@@ -673,23 +679,23 @@ page.changeNewsCommentsHref = function() {
     });
     observer.observe($(FILTER_MAIN)[0], {childList: true });
 }
-page.changeNewsCommentsHref.nameForUser = "В новостях менять ссылку на комментарии на форум";
+page.changeNewsCommentsHref.nameForUser = "Изменять в новостях ссылку на комментарии (на форум)";
 page.changeNewsCommentsHref.mustMO = true;
 
 page.addRSSToLenta = function() {
     addRSS('lenta');
 }
-page.addRSSToLenta.nameForUser = "RSS на разделы новостей в 'хлебных крошках'";
+page.addRSSToLenta.nameForUser = "Добавлять в новостях ссылку на RSS";
 
 page.addRSSToBankNews = function() {
     addRSS('banknews');
 }
-page.addRSSToBankNews.nameForUser = "RSS новостей банка в 'хлебных крошках'";
+page.addRSSToBankNews.nameForUser = "Добавлять в новостях банков ссылку на RSS";
 
 page.addRSSToQA = function() {
     addRSS('qa');
 }
-page.addRSSToQA.nameForUser = "RSS на ответы в 'хлебных крошках' ВИО";
+page.addRSSToQA.nameForUser = "Добавлять в ВИО ссылку на RSS ответов";
 
 // показывает спасибо от пользователя с uid и именем в hash TODO ERR
 page.filterThanksByUserId = function()
@@ -725,7 +731,7 @@ page.addUserCoeffToProfile = function() {
         return "<div class='reputation'>полезность: <b>"+coeff+"%</b></div>";
     });
 }
-page.addUserCoeffToProfile.nameForUser = 'Коэффициент полезности сообщений в профиле';
+page.addUserCoeffToProfile.nameForUser = 'Добавлять в профиле коэффициент полезности сообщений';
 
 page.addHrefsToProfile = function()
 {
@@ -762,7 +768,7 @@ page.addHrefsToProfile = function()
         location.reload();
     }
 }
-page.addHrefsToProfile.nameForUser = 'Дополнительные кнопки в профиле';
+page.addHrefsToProfile.nameForUser = 'Добавлять в профиле дополнительные кнопки';
 page.addHrefsToProfile.mustBeLogged = true;
 
 
@@ -832,51 +838,21 @@ page.addRSSToResponces = function() {
     return; // надо сначала починить RSS 
     addRSS('responces'); 
 }
-page.addRSSToResponces.nameForUser = "RSS на отзывы и ответы ПБ в 'хлебных крошках' НР";
+page.addRSSToResponces.nameForUser = "Добавлять в HP ссылки на RSS отзывов и ответов ПБ (временно не работает)";
 
-/** Автоподписываться в НР, если пришли по ссылке из RSS  */
+/** Автоподписываться в НР, если пришли по ссылке из RSS (временно не работает)  */
 page.autoSubscribeInHP = function() {
     if (page.afterHash === prefix+'subscribe_on') { 
         var FILTER_A_SUBSCRIBE = 'a#buttonResponseSubscribe:visible';
         if ($(FILTER_A_SUBSCRIBE).length>0) runAfterScriptLoad(function() {var href=$(FILTER_A_SUBSCRIBE); href[0].click();}, 'forum.subscribe.js', 100);
     }    
 } 
-page.autoSubscribeInHP.nameForUser = 'Автоподписываться в НР, если пришли по ссылке из RSS';
+page.autoSubscribeInHP.nameForUser = 'Автоподписываться в НР, если пришли по ссылке из RSS (временно не работает)';
 
 /** Форма коментариев в НР */
 var TEXTAREA_COMMENT_FILTER = ".comments__add-form__textarea:first";
 /* Сюда загружаются комменты и форма */
 var DIV_COMMENT_WIDGET_FILTER = "div#commentsWidget";
-/** Блок bb-кодов и смайлов */
-var FORUM_BBCODE_FILTER = "div.forum-bbcode-line, div.forum-smiles-line";
-/** Тулбар с BB кодами */
-var DIV_BBTOOLBAR_FILTER = "div.wysibb-toolbar";
-
-page.addForumFormToHP = function() {
-    
-    if ( ($(DIV_COMMENT_WIDGET_FILTER).length === 0) || ($(DIV_BBTOOLBAR_FILTER).length === 0))  return;
-    
-    loadJsOrCssFile("/bitrix/templates/.default/components/bitrix/forum/banki/style.css","css");
-    // клизму пока уберем <span class="forum-smiles-item" style="height: 46px;"><a href="#postform" name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/klizma.gif" class="smiles" alt=":klizma:" title="и тебя вылечат" width="42" border="0" height="25"></a></span>     
-    // видео и картинки тоже убрали <a  class="forum-bbcode-button forum-bbcode-img " id="form_img" title="Подключение изображения (alt+g)"><img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a><a  class="forum-bbcode-button forum-bbcode-video " id="form_video" title="Подключение видео (alt+v)"><img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif"></a>
-    var bbcodes='<div class="forum-bbcode-line" id="forum_bbcode_line"><a  class="forum-bbcode-button forum-bbcode-bold" id="form_b" title="Жирный (alt+b)"> <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif" /></a> <a  class="forum-bbcode-button forum-bbcode-italic" id="form_i" title="Курсив (alt+i)"> <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif" /></a> <a  class="forum-bbcode-button forum-bbcode-underline" id="form_u" title="Подчеркнутый (alt+u)"> <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif" /></a> <a  class="forum-bbcode-button forum-bbcode-strike" id="form_s" title="Перечеркнутый (alt+s)"> <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif" /></a> <a  class="forum-bbcode-button forum-bbcode-quote" id="form_quote" title="Оформление текста в виде цитаты (alt+q)"> <img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif" /></a>		<a  class="forum-bbcode-button forum-bbcode-url" id="form_url" title="Ввод гиперссылки (alt+h)"><img src="/bitrix/components/bitrix/forum.post_form/templates/.default/images/bbcode/empty_for_ie.gif" /></a></div><div class="forum-smiles-line" id="forum_smiles_hidden" style="display: block; padding-top: 20px;"><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ab.gif" class="smiles" alt=":)" title="улыбка" height="24" width="20" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ad.gif" class="smiles" alt=";)" title="шутливо" height="24" width="20" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/ag.gif" class="smiles" alt=":D" title="широкая улыбка" height="20" width="20" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/ai.gif" class="smiles" alt=":o" title="удивленно" height="20" width="20" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/bl.gif" class="smiles" alt=":|" title="скептически" height="26" width="36" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/af.gif" class="smiles" alt="8)" title="круто" height="21" width="21" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ac.gif" class="smiles" alt=":(" title="печально" height="24" width="20" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/evil.gif" class="smiles" alt=":evil:" title="злюсь" height="24" width="35" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/qr.gif" class="smiles" alt=":wall:" title="бешусь" height="26" width="31" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ah.gif" class="smiles" alt=":oops:" title="смущенно" height="25" width="25" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/aj.gif" class="smiles" alt=":{}" title="поцелуй" height="23" width="34" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/ak.gif" class="smiles" alt=":cry:" title="очень грустно" height="22" width="31" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/facepalm.gif" class="smiles" alt=":omg:" title="только не это" height="24" width="28" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 9px;"><img src="/bitrix/images/forum/smile/inlove.gif" class="smiles" alt=":inlove:" title="влюбленный" height="29" width="22" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/23247378e1dac5dd917b2695aad1baa8.gif" class="smiles" alt=":notiam:" title="я?! нет." height="26" width="42" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/197.gif" class="smiles" alt=":shuffle:" title="а чего я?" height="23" width="18" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/bp.gif" class="smiles" alt=":ura:" title="ура!" height="27" width="42" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/am.gif" class="smiles" alt=":nunu:" title="ну-ну" height="27" width="36" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/aa.gif" class="smiles" alt=":angel:" title="просто ангел!" height="23" width="27" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ae.gif" class="smiles" alt=":-p" title="дразнится" height="24" width="20" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/secret.gif" class="smiles" alt=":-X" title="секрет" height="26" width="22" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/fool.gif" class="smiles" alt=":fool:" title="ты чё, дурак?!" height="23" width="29" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/boredom.gif" class="smiles" alt=":tired:" title="скучно" height="22" width="26" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/good.gif" class="smiles" alt=":thumbsup:" title="отлично!" height="23" width="26" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/ok.gif" class="smiles" alt=":ок:" title="Ок!" height="26" width="40" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 8px;"><img src="/bitrix/images/forum/smile/bx.gif" class="smiles" alt=":yes!!!:" title="Yes!!!" height="30" width="42" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/cg.gif" class="smiles" alt=":painful:" title="больно!" height="20" width="23" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/yep.gif" class="smiles" alt=":yep:" title="угу" height="24" width="20" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 9px;"><img src="/bitrix/images/forum/smile/dj.gif" class="smiles" alt=":zzz:" title="сплю" height="29" width="29" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 8px;"><img src="/bitrix/images/forum/smile/dl.gif" class="smiles" alt=":bonk:" title="подзатыльник" height="30" width="48" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/mosking.gif" class="smiles" alt=":jokingly:" title="хи-хи" height="25" width="25" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/crazy.gif" class="smiles" alt=":crazy:" title="crazy!" height="27" width="20" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/scratch_one-s_head.gif" class="smiles" alt=":scratch:" title="Хмм..." height="24" width="27" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/pardon.gif" class="smiles" alt=":pardon:" title="пардон!" height="26" width="36" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 9px;"><img src="/bitrix/images/forum/smile/beee.gif" class="smiles" alt=":fi:" title="зазнался" height="28" width="28" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/ponty.gif" class="smiles" alt=":vnature:" title="чистА-кАнкретнА" height="26" width="35" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 1px;"><img src="/bitrix/images/forum/smile/d_daisy.gif" class="smiles" alt=":flowers:" title="вам букет!" height="44" width="43" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 8px;"><img src="/bitrix/images/forum/smile/dm.gif" class="smiles" alt=":magic:" title="колдунство!" height="31" width="42" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 12px;"><img src="/bitrix/images/forum/smile/stop.gif" class="smiles" alt=":stop:" title="стоп!" height="23" width="36" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 7px;"><img src="/bitrix/images/forum/smile/help.gif" class="smiles" alt=":help:" title="помогите!" height="33" width="30" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/rofl.gif" class="smiles" alt=":rofl:" title="я валяюсь!" height="25" width="29" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 10px;"><img src="/bitrix/images/forum/smile/cd.gif" class="smiles" alt=":quotes:" title="кавычки" height="26" width="36" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 7px;"><img src="/bitrix/images/forum/smile/cj.gif" class="smiles" alt=":relax:" title="relax" height="33" width="34" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 9px;"><img src="/bitrix/images/forum/smile/dh.gif" class="smiles" alt=":gramercy:" title="благодарю" height="29" width="36" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 4px;"><img src="/bitrix/images/forum/smile/cl.gif" class="smiles" alt=":achtung:" title="ахтунг!" height="38" width="48" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 6px;"><img src="/bitrix/images/forum/smile/dr.gif" class="smiles" alt=":nightmare:" title="а-а-а, кошмар!" height="34" width="42" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 9px;"><img src="/bitrix/images/forum/smile/drinks.gif" class="smiles" alt=":drink:" title="выпьем!" height="28" width="51" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 9px;"><img src="/bitrix/images/forum/smile/bt.gif" class="smiles" alt=":uncap:" title="здрасти!" height="28" width="42" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/cm.gif" class="smiles" alt=":dramatics:" title="я в истерике" height="24" width="38" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/bad.gif" class="smiles" alt=":puke:" title="тошнит" height="21" width="21" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/ar.gif" class="smiles" alt=":music:" title="тын-тыдын, парам-пам-пам" height="25" width="28" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/2.gif" class="smiles" alt=":?:" title="Вопрос" height="20" width="20" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 13px;"><img src="/bitrix/images/forum/smile/1.gif" class="smiles" alt=":!:" title="восклицание" height="20" width="20" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 14px;"><img src="/bitrix/images/forum/smile/idea.gif" class="smiles" alt=":idea:" title="идея" height="18" width="18" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/bomb.gif" class="smiles" alt="@=" title="бомба" height="24" width="28" border="0"></a></span><span class="forum-smiles-item" style="height: 46px;"><a  name="smiles" style="margin-top: 11px;"><img src="/bitrix/images/forum/smile/wiki_go.gif" class="smiles" alt=":wikigo:" title="Пиши в словарь!" height="25" width="72" border="0"></a></span><span style="height:46px;" class="forum-smiles-item"><a style="margin-top:9px;" name="smiles" ><img width="34" height="28" border="0" title="обалдеть!" alt=":shock&amp;fall:" class="smiles" src="/bitrix/images/forum/smile/c110.gif"></a></span></div></div>'; 
-
-    var observer = new MutationObserver(function(mutations) {
-        if ($(TEXTAREA_COMMENT_FILTER).length === 0) return;
-        
-        $(TEXTAREA_COMMENT_FILTER).before(bbcodes);
-
-        $(FORUM_BBCODE_FILTER).on("mousedown", function (event) {
-            event.preventDefault();
-            var type = $(event.target).attr("id") || $(event.target).attr("class") ;
-            insertIntoTextarea(type, $(event.target).attr("alt"), TEXTAREA_COMMENT_FILTER);
-        });    
-        this.disconnect();
-    });
-    observer.observe($(DIV_COMMENT_WIDGET_FILTER)[0], {childList: true, subtree:true});
-}
-page.addForumFormToHP.nameForUser = 'Добавление BB-кодов и смайлов в комментариях НР';
-page.addForumFormToHP.mustBeLogged = true;
 
 // исправление ошибок сайта/Б+ с самопроизвольным переходом по страницам по Ctrl-Left-Rigth при редактировании iput, textarea
 // http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=191017&MID=2341244#message2341244
@@ -902,6 +878,8 @@ page.addHrefsToHP = function() {
     var BUTTON_SUBMIT_FILTER = ".button.submit-form";
     var A_PAGINATOR_FILTER = ".ui-pagination__item>a";
     var TIME_COMMENT_DAMAGED_FILTER = ".comment__time:contains('NaN')";
+    
+    if ($(DIV_COMMENT_WIDGET_FILTER).length===0) { return; }
     
     var observer = new MutationObserver(function(mutations) {
         
@@ -940,7 +918,7 @@ page.addHrefsToHP = function() {
     
     
 }
-page.addHrefsToHP.nameForUser = 'Цитата и имя в комментариях HP';
+page.addHrefsToHP.nameForUser = 'Добавлять в НР цитату и имя в комментариях';
 page.addHrefsToHP.mustMO = true;
 page.addHrefsToHP.mustBeLogged = true;
 
@@ -959,7 +937,7 @@ page.recollapseResponses = function() {
     var observer = new MutationObserver(doIt);
     observer.observe($(FILTER_DIV_RESPONCES_LIST)[0], { attributes: true });  
 }
-page.recollapseResponses.nameForUser = 'Разворачивать отзывы и ответы ПБ в НР';
+page.recollapseResponses.nameForUser = 'Разворачивать в НР отзывы и ответы ПБ';
 
 var FILTER_SECTION_BANK_RAITING = "#banks-rating-container";
 var FILTER_SECTION_WIDGET_TOP_BANKS = "section.widget:has(div[data-ajax-widget*='top-banks'])";
@@ -996,7 +974,7 @@ page.changeHrefToResponses = function() {
         observer2.observe($(FILTER_SECTION_WIDGET_TOP_BANKS)[0], {childList: true, subtree: true});
     }    
 }
-page.changeHrefToResponses.nameForUser = 'Всегда "все отзывы" в НР';
+page.changeHrefToResponses.nameForUser = 'Изменять везде ссылки на отзывы НР на "все отзывы"';
 page.changeHrefToResponses.mustMO = true;
 
 var FILTER_SECTION_PAGE_BODY_WRAPPER = ".page-body.wrapper";
@@ -1012,13 +990,13 @@ page.removeFeedbackButton = function() {
     });
     observer.observe($(FILTER_SECTION_PAGE_BODY_WRAPPER)[0], {childList: true });
 }
-page.removeFeedbackButton.nameForUser = 'Отключить кнопку отзыв об НР';
+page.removeFeedbackButton.nameForUser = 'Отключать в НР кнопку отзыв о новом дизайне';
 page.removeFeedbackButton.mustMO = true;
 
 page.addAdditionalSearchToResponces = function() {
     addAditionalSearch('responces');
 }
-page.addAdditionalSearchToResponces.nameForUser="Поиск по отзывам в НР";
+page.addAdditionalSearchToResponces.nameForUser="Добавлять в НР поиск по отзывам";
 
 // добавление ссылок на rss-каналы на отзывы и ответы ПБ в списке банков в НР
 page.addRSSToListOfBanks = function() {
@@ -1035,7 +1013,7 @@ page.addRSSToListOfBanks = function() {
         return oldhtml;
     });
 }
-page.addRSSToListOfBanks.nameForUser = 'RSS на отзывы и ответы ПБ в списке банков НР';
+page.addRSSToListOfBanks.nameForUser = 'Добавлять в НР в списке банков ссылки на RSS отзывов и ответов ПБ (временно не работает)';
 
 /** Исправление ошибки в ссылках в случае подписки http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2501456#message2501456  */
 page.repairPageHrefsIfSubscribe = function() {
@@ -1044,7 +1022,7 @@ page.repairPageHrefsIfSubscribe = function() {
         return val;
     });
 }
-page.repairPageHrefsIfSubscribe.nameForUser = 'Исправление ошибки в ссылках на страницы форума при подписке';
+page.repairPageHrefsIfSubscribe.nameForUser = 'Исправлять в форуме ошибку в ссылках после подписки на тему';
 
 
 var FILTER_DIV_LINKS = 'div.forum-action-links';
@@ -1139,7 +1117,7 @@ page.addLastVisit = function() {
         });
     });
 }
-page.addLastVisit.nameForUser = 'Статус присутствия на форуме';
+page.addLastVisit.nameForUser = 'Добавлять в форуме статус присутствия';
 
 // добавление пробелов в текст "Спасибо", чтобы достичь необходимых 20 символов 
 page.addSpacesToSmallThank = function() {
@@ -1148,7 +1126,7 @@ page.addSpacesToSmallThank = function() {
         return "$(this.parentNode).find('textarea.user-thank-change-reason').val(function (count, val) { for (i=20-val.length; i>0; i--) val=val+' '; return val;});" + val;
     });    
 }
-page.addSpacesToSmallThank.nameForUser="Спасибо в форуме с любым числом знаков";
+page.addSpacesToSmallThank.nameForUser="Разрешать в форуме спасибо с любым числом знаков";
 
 /** Возвращает выделенный текст в посте или весь пост, если ничего не выделено */
 function getSelectedTextInPost(post) {
@@ -1189,7 +1167,7 @@ page.addQuotesToClosedThemes = function() {
         selectAllIfNoSelection($('.'+CLASS_PRE_CITATE));
     });
 }
-page.addQuotesToClosedThemes.nameForUser = 'Цитата сообщений из закрытых тем'; 
+page.addQuotesToClosedThemes.nameForUser = 'Добавлять в форуме ссылку на цитату сообщения в закрытые темы'; 
 page.addQuotesToClosedThemes.mustBeLogged = true;
 
 
@@ -1209,17 +1187,17 @@ page.changeReplyHrefs = function() {
       });
     });
 }
-page.changeReplyHrefs.nameForUser = "Делать ссылки 'пишет' относительными по возможности"
+page.changeReplyHrefs.nameForUser = 'Изменять в форуме ссылки "Пишет"  на относительные';
 
 var A_FORUM_QUOTE_FILTER = ".forum-action-quote a";
-/** При цитировании в форуме выделять все сообщение, если ничего не было выделено */
+/** Выделять в форуме по умолчанию все сообщение при цитировании, если ничего не было выделено */
 page.addAllToQuotes = function() {
 
         var selectAllTextInMessage = 'var messages = $(this).parents("'+FILTER_TABLE_POST+'").find("'+FILTER_DIV_POST_TEXT+'"); var selection = document.getSelection(); if (selection.toString()=="") { $(".post_message")[0].hasfocus=false; var range = document.createRange(); range.selectNode(messages[0]);  selection.addRange(range); }';
         //var rewriteGetSelection = ' PostForm.GetSelection = function() { if (this.form["POST_MESSAGE"].hasfocus == true && typeof(this.form["POST_MESSAGE"].selectionStart) != "undefined") { return this.form["POST_MESSAGE"].value.substr(this.form["POST_MESSAGE"].selectionStart, this.form["POST_MESSAGE"].selectionEnd - this.form["POST_MESSAGE"].selectionStart); } else if (this.saveSelection) { return this.saveSelection; } else if (document.selection && document.selection.createRange) { return document.selection.createRange().text; } else if (document.getSelection) { return document.getSelection() + "";} else { return false; }}';    
         $(A_FORUM_QUOTE_FILTER).attr('onmousedown', function (i ,val) { return selectAllTextInMessage+val; });
     }
-page.addAllToQuotes.nameForUser = 'При цитировании в форуме выделять все сообщение'; 
+page.addAllToQuotes.nameForUser = 'Выделять в форуме по умолчанию все сообщение при цитировании'; 
 page.addAllToQuotes.mustBeLogged = true;
                                     
 /** Добавляет в функцию вызова цитаты ссылку на сообщение */
@@ -1239,7 +1217,7 @@ page.addPMwithQuotes = function() {
         setParam('citate_origin', temp.text);
     });        
 }
-page.addPMwithQuotes.nameForUser = 'Добавить ссылку на ЛС с цитатой сообщения в форуме';
+page.addPMwithQuotes.nameForUser = 'Добавлять в форуме ссылку на ЛС с цитатой сообщения';
 page.addPMwithQuotes.mustBeLogged  = true;
 
 // Добавляет ссылку на комментарии пользователя в теме
@@ -1250,7 +1228,7 @@ page.addUserPostSearch = function() {
         return "<span>Сообщения в теме: <span><a href='http://www.banki.ru/forum/?PAGE_NAME=user_post&UID="+user+"&topic="+themeName+"'>&gt;&gt;&gt;</a></span></span>";
     });
 }
-page.addUserPostSearch.nameForUser = 'Ссылка на поиск по сообщениям пользователя в теме форума';
+page.addUserPostSearch.nameForUser = 'Добавлять в форуме ссылку на поиск по сообщениям пользователя';
 
 
 // Добавляет коэффициент полезности сообщений в теме форума
@@ -1262,7 +1240,7 @@ page.addUserCoeffToForum = function() {
         return "<span>Полезность: <span style='color:black'>"+coeff+"%</span></span>";
     });
 }
-page.addUserCoeffToForum.nameForUser = 'Коэффициент полезности сообщений в теме форума';
+page.addUserCoeffToForum.nameForUser = 'Добавлять в форуме коэффициент полезности сообщений';
 
 page.addOpenCloseAllSpoilers = function() {
     var FILTER_POST = '.forum-cell-post';
@@ -1293,7 +1271,7 @@ page.addCutBBCodeToForum = function () {
     
     $(".forum-spoiler>thead>tr>th>div").css({"border-bottom-style":"dashed","border-bottom-width":"1px"});
 }
-page.addCutBBCodeToForum.nameForUser = 'Добавить BB-код CUT в форум'
+page.addCutBBCodeToForum.nameForUser = 'Добавлять в форуме  BB-код CUT'
 
 page.addLinksToHiddenUserInfo = function() {
  
@@ -1324,7 +1302,7 @@ page.addLinksToHiddenUserInfo = function() {
         element.insertBefore(oppThanksUserA, element.children[1]);
     });
 }
-page.addLinksToHiddenUserInfo.nameForUser = 'Дополнительные пункты в меню пользователя в форуме';
+page.addLinksToHiddenUserInfo.nameForUser = 'Добавлять в форуме дополнительные пункты в меню пользователя';
 page.addLinksToHiddenUserInfo.mustBeLogged = true;
 
 page.addHotKeysToForum = function()
@@ -1359,7 +1337,7 @@ page.addHotKeysToForum = function()
         }
     }    
 }
-page.addHotKeysToForum.nameForUser = 'Перемещение по страницам темы форума при помощи Ctrl <- ->';
+page.addHotKeysToForum.nameForUser = 'Добавлять в форуме переход по страницам по Ctrl <- ->';
 
 page.addGotoPage = function()
 {
@@ -1427,7 +1405,7 @@ page.addGotoPage = function()
         }
     }
 }
-page.addGotoPage.nameForUser = 'Поле для перехода на любую страницу в форуме';
+page.addGotoPage.nameForUser = 'Добавлять в форуме поле для перехода на любую страницу';
 
 // Поиск по названиям тем форума
 page.addThemeSearchToForum = function() {
@@ -1491,12 +1469,12 @@ page.addThemeSearchToForum = function() {
        searchFunction(null, fid, $("[name*='"+prefix+"input_search']").val(), null); 
     });
 }
-page.addThemeSearchToForum.nameForUser="Поиск по названию тем форума";
+page.addThemeSearchToForum.nameForUser="Добавлять в форуме поиск по названию темы";
 
 page.addAditionalSearchToForum = function() {
     addAditionalSearch('forum_search'); 
 }
-page.addAditionalSearchToForum.nameForUser="Поиск сообщений в темах форума";
+page.addAditionalSearchToForum.nameForUser="Добавлять в форуме поиск по теме";
 
 page.removeRedirect = function() {
     $('a[href*="banki.ru/redirect.php"]').attr('href', function(index, attr) {
@@ -1513,9 +1491,9 @@ page.removeRedirect = function() {
         return url;
     });
 }
-page.removeRedirect.nameForUser="Удаление редиректа из ссылок";
+page.removeRedirect.nameForUser="Удалять редирект из ссылок";
 
-/** Выбор раздела для поиске в шапке */
+/** Добавлять в поиск в шапке выбор раздела */
 page.addSelectToSearchInTop = function() {
     
     function changeSearchForm(action, inputName) {
@@ -1552,7 +1530,7 @@ page.addSelectToSearchInTop = function() {
     $('li.menu__item--last:not(.branded-search-wrapper) form.item__node.js-search-input-form').wrap('<div class="branded-search branded-search--color-90be19" />');
     $('li.menu__item--last:not(.branded-search-wrapper)').addClass('branded-search-wrapper');
 }    
-page.addSelectToSearchInTop.nameForUser="Выбор раздела для поиске в шапке";
+page.addSelectToSearchInTop.nameForUser="Добавлять в поиск в шапке выбор раздела";
 
 // удаление "автосохранения" комментария, если текущая страница != странице, где последний раз был сохранен комментарий       
 page.deleteAutoSave = function () {
@@ -1564,9 +1542,9 @@ page.deleteAutoSave = function () {
     if (typeof(localStorage)!='undefined') {
     // сохраняем адрес текущей страницы
     var autoSaveHref = localStorage.getItem('banki.ru.plus_autoSaveHref');
-            
+    
     $("textarea[role*='rich-textarea']").each(function (index, Element) {
-        if (autoSaveHref != href) { 
+        if (autoSaveHref !== href) { 
             localStorage.setItem('autoSaveComment',"");
             Element.value = ""; 
         }
@@ -1584,7 +1562,7 @@ page.deleteAutoSave = function () {
         });
     }          
 }
-page.deleteAutoSave.nameForUser = 'Отключить навязчивое автосохранение';
+page.deleteAutoSave.nameForUser = 'Отключать автосохранение';
 
 
 /** Добавляет пункты в "меню пользователя" */
@@ -1599,7 +1577,7 @@ page.addToUserMenu = function() {
     $(".spoiler__item>a:contains('Моя лента')")
     .parent().after('<li class="spoiler__item"><a href="http://www.banki.ru/profile/index.php?UID='+this.userId+'&action=activity">Моя активность</a></li>');
 }
-page.addToUserMenu.nameForUser='Дополнительные ссылки в меню пользователя'
+page.addToUserMenu.nameForUser='Добавлять в меню пользователя дополнительные ссылки '
 
 
 var BODY_FILTER = 'body';
@@ -1621,7 +1599,7 @@ page.removeUpButton = function() {
         });
     }    
 }    
-page.removeUpButton.nameForUser = 'Отключить кнопку наверх';
+page.removeUpButton.nameForUser = 'Отключать кнопку наверх';
 page.removeUpButton.firstRunIsFalse = false; 
 
 /** Вешает ссылки на разделы */                               
@@ -1630,7 +1608,7 @@ page.addLinkInMainMenu = function() {
             return "<a style='text-decoration:none' href='"+$(this).parent().find("a.list__link").first().attr('href')+"'>";
     });
 }    
-page.addLinkInMainMenu.nameForUser = 'Заголовки главного меню - ссылки на разделы';
+page.addLinkInMainMenu.nameForUser = 'Добавлять в заголовки главного меню ссылки на разделы';
 
 page.newsMessage = function () {
     var DIV_WN_TOP = 25;
@@ -1639,7 +1617,7 @@ page.newsMessage = function () {
     var isShown = getParam(MESSAGE);
     if (isShown===null) {
         setParam(MESSAGE,1); 
-        var whatsNewWindow = new ModalWindow('whatsNew', DIV_WN_TOP, 'Новости проекта',550);
+        var whatsNewWindow = new ModalWindow('whatsNew', DIV_WN_TOP, 'Показывать новости проекта',550);
         whatsNewWindow.changeInner("Добро пожаловать!<br><br>Cпасибо за установку Bancomas - неофициального дополнения для сайта banki.ru! Для удобного дальнейшего использования рекомендую изучить <a target='blank_' href='http://rebelion76.livejournal.com/2531.html'>FAQ</a>. По той же ссылке приветствуются вопросы, замечания и предложения.<br><br>Работа над дополнением продолжается. Дальше - больше! :-)<br><br>P.S. Для будущего развития проекта, прошу пройти <b><a href='http://rebelion76.livejournal.com/4047.html'>небольшой опрос</a></b> по использованию Bancomas.<br><br>С уважением, автор дополнения, <a href='mailto:rebelion76@gmail.com'>rebelion76</a>."); 
         MESSAGE = 'message_2015315';
         setParam(MESSAGE,1); 
@@ -1649,13 +1627,13 @@ page.newsMessage = function () {
         isShown = getParam(MESSAGE);
         if (isShown!==null) { return; }
         setParam(MESSAGE,1); 
-        var whatsNewWindow = new ModalWindow('whatsNew', DIV_WN_TOP, 'Новости проекта',540);
+        var whatsNewWindow = new ModalWindow('whatsNew', DIV_WN_TOP, 'Показывать новости проекта',540);
         whatsNewWindow.changeInner("<img align='right' src='http://l-userpic.livejournal.com/124712431/49594602'>Представляю вашему вниманию небольшие изменения стиля дополнения. С сегодняшнего <i>Банки.ру+</i> будет называться <i>Bancomas</i>.<br><br>Кроме очевидной ассоциации, название также несет в себе испанские слова <i>banco</i>-банк и <i><a href='http://translate.academic.ru/%D0%BF%D0%BB%D1%8E%D1%81/ru/es'>mas</a></i>-плюс. Прошу использовать данное название при публикации ссылок на дополнение, в т.ч. и для того, чтобы потом пользователям было проще найти информацию о Bancomas.<br><br>С уважением, автор дополнения, <a href='mailto:rebelion76@gmail.com'>rebelion76</a>.</div>"); 
     }
         
     runAfterScriptLoad(function() {whatsNewWindow.open();}, 'hor-not-fit-element.js', 100);
 }
-page.newsMessage.nameForUser = "Новости проекта";  
+page.newsMessage.nameForUser = "Показывать новости проекта";  
 
 
 // ------------------------------ Предварительные функции ----------------------------------------------
@@ -1755,22 +1733,36 @@ page.addOptionsWindow = function() {
     var DIV_OPTIONS_TOP = 25;
     
     var optionsWindow = new ModalWindow('options', DIV_OPTIONS_TOP, 'Настройки');
-    optionsWindow.changeInner('<div class="'+prefix+'options_reload" style="display:none">Изменения будут применены только после перезагрузки страницы. <a href="javascript:window.location.reload();">Перегрузить?</a><br/><br/></div><div class="'+prefix+'func_list"></div>');
+    optionsWindow.changeInner('<div class="'+prefix+'options_reload" style="display:none">Изменения будут применены только после перезагрузки страницы. <a href="javascript:window.location.reload();">Перегрузить?</a><br/><br/></div><b>Функции, доступные на данной странице</b></br><div class="'+prefix+'func_list"></div></br><b><span class="pseudo-link '+prefix+'func_all_link">Все остальные функции</span></b><div class="'+prefix+'func_all_list" style="display:none"></div>');
     
-    for (var key in page) {
-        if ((typeof page[key] == 'function') && ('nameForUser' in page[key])) {
-            $('<div>'+page[key].nameForUser+' <input type=checkbox id='+key+' class="'+prefix+'func_check"></div>').prependTo('.'+prefix+'func_list');
-            var isAllowed = getParam(key);
-            if (isAllowed === null) {
-                isAllowed = (typeof(page[key].firstRunIsFalse)==='undefined')? 1 : 0;
-                setParam(key, isAllowed); 
-            }
-            if (+isAllowed === 1) { $('#'+key).click(); }
-            $('#'+key).on('click', function() { setParam(this.id, +this.checked); $('.'+prefix+'options_reload').show(); });
+    
+    function run(functions, isAddress) {
+        for (var j=0; j<functions.length; j++) {
+            var key = functions[j];
+            if ('nameForUser' in page[key]) {
+                
+                var funcDivFilter = '';
+                if (isAddress) funcDivFilter = '.'+prefix+'func_list'
+                else funcDivFilter = '.'+prefix+'func_all_list';
+
+                $('<div>'+page[key].nameForUser+' <input type=checkbox id='+key+' class="'+prefix+'func_check"></div>').prependTo(funcDivFilter);
+                var isAllowed = getParam(key);
+                if (isAllowed === null) {
+                    isAllowed = (typeof(page[key].firstRunIsFalse)==='undefined')? 1 : 0;
+                    setParam(key, isAllowed); 
+                }
+                if (+isAllowed === 1) { $('#'+key).click(); }
+                $('#'+key).on('click', function() { setParam(this.id, +this.checked); $('.'+prefix+'options_reload').show(); });
+            }    
         }
+        return false;
     }
+    run(['showErrors'], true); // т.к. часть функций не запускается через список адресов и функций
+    page.iteratorFunctionsSequence(run);
+    
     
     $('#'+prefix+'options_popup_show').on('click', $.proxy(optionsWindow.open,optionsWindow));
+    $('.'+prefix+'func_all_link').on('click', function() { $('.'+prefix+'func_all_list').toggle();});
     
     $('body').on('keydown', function(e){
         if ((e.ctrlKey) && (e.shiftKey) && ((e.keyCode == 191) || (e.keyCode == 190))) {
@@ -1831,6 +1823,18 @@ function ModalWindow(name, top, title, width) {
     
     $('.'+this.CLASS_I_CLOSE).on("click", $.proxy(this.close, this));
     
+} 
+
+/** Перебор последовательности функций functionsSequence 
+*   и запуск функции run(<массив имен функций>, <должны ли запускаться функции на текущей странице>, <isLast>)
+*   если run возвращает true, то перебор функций прекращается
+*/
+page.iteratorFunctionsSequence = function(run) {
+    for (var i=0; i<functionsSequence.length; i++) {
+        var addressPattern = new RegExp(functionsSequence[i].address);
+        var functions = functionsSequence[i].functions.split(', ');
+        if (run(functions, addressPattern.test(page.href), functionsSequence[i].isLast)) break;
+    }    
 } 
 
 // общий конструктор для любой страницы
@@ -1895,22 +1899,25 @@ try {
         };
     } 
 
-    for (var i=0; i<functionsSequence.length; i++) {
-        var addressPattern = new RegExp(functionsSequence[i].address);
-        if (addressPattern.test(page.href)) {
-            var functions = functionsSequence[i].functions.split(', ');
-            for (var j=0; j<functions.length; j++) {
-                var canRun = getParam(functions[j]);
-                if ( (((canRun === null) && (typeof(page[functions[j]].firstRunIsFalse)==='undefined')) || (+canRun === 1))  
-                     && (page.MO || page[functions[j]].mustMO!==true)
-                     && (page.isLogged || page[functions[j]].mustBeLogged!==true)
-                     && (!page.oldDesign || page[functions[j]].mustNotOldDesign!==true)    
-                   ) 
-                page[functions[j]].apply(page);
-            }
-            if (functionsSequence[i].isLast) break;
+    function run(functions, isAddress, isLast) {
+        
+        if (!isAddress) return false;
+        
+        for (var j=0; j<functions.length; j++) {
+            var canRun = getParam(functions[j]);
+            if ( (((canRun === null) && (typeof(page[functions[j]].firstRunIsFalse)==='undefined')) || (+canRun === 1))  
+                 && (page.MO || page[functions[j]].mustMO!==true)
+                 && (page.isLogged || page[functions[j]].mustBeLogged!==true)
+                 && (!page.oldDesign || page[functions[j]].mustNotOldDesign!==true)    
+               ) 
+            page[functions[j]].apply(page);
         }
+        if (isLast) return true;
+        return false;
     }
+    
+    page.iteratorFunctionsSequence(run);
+    
     // т.к. необходимо, чтобы эта функция отработала в самом конце 
     // TODO избавится от этого костыля 
     var canRun = getParam('repairCtrlLeftRigth');
