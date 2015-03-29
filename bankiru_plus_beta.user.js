@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.0.1
+// @version        1.0.0.9
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -41,7 +41,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.0.1";
+var version = "1.0.0.9";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -1829,55 +1829,13 @@ function BankiruPage() {
 
 (function() {
     try {
-        // в jQuery, а вскоре всего и в других библиотеках, коллбэки будут запускаться через appply и call
-        // декорируем их, чтобы ловить исключения
-        /*Function.prototype.oldApply = Function.prototype.apply;
-        Function.prototype.apply = function(context, args) { 
-            try  { return this.oldApply(context, args); }
-            catch (err) {
-                page.showErrors(err, false);
-            }
-        }*/
-        /*Function.prototype.call = function(context) {
-            var args = [];
-            for(var i=1; i<arguments.length; i++) {
-                args[i-1] = arguments[i];
-            }
-            return this.apply(context, args); 
-        }*/
-        // декорируем MutationObserver, чтобы ловить исключения в его коллбэках
-        /*if (page.MO) {
-            oldMO = MutationObserver;
-            MutationObserver = function (f) {
-                return new oldMO(function() { f.apply(this, arguments); });
-            };
-        }*/ 
-          
-        for (var i=0; i<functionsSequence.length; i++) {
-            var addressPattern = new RegExp(functionsSequence[i].address);
-            if (addressPattern.test(page.href)) {
-                var functions = functionsSequence[i].functions.split(', ');
-                for (var j=0; j<functions.length; j++) {
-                    var canRun = getParam(functions[j]);
-                    if ( (((canRun === null) && (typeof(page[functions[j]].firstRunIsFalse)==='undefined')) || (+canRun === 1))  
-                         && (page.MO || page[functions[j]].mustMO!==true)
-                         && (page.isLogged || page[functions[j]].mustbeLogged!==true)
-                         && (!page.oldDesign || page[functions[j]].mustNotOldDesign!==true)    
-                       ) 
-                    page[functions[j]].apply(page);
-                }
-                if (functionsSequence[i].isLast) break;
-            }
-        }
-        // т.к. необходимо, чтобы эта функция отработала в самом конце 
-        // TODO избавится от этого костыля 
-        var canRun = getParam('repairCtrlLeftRigth');
-        if ( ((canRun === null) && (typeof(page.repairCtrlLeftRigth.firstRunIsFalse)==='undefined')) || (+canRun === 1)) 
-        page.repairCtrlLeftRigth.apply(page);
-    // заготовка для контекстного меню    
-    //$('.page-body').wrap('<section contextmenu="my-right-click-menu" class="temp"></section>');
-    //$('.page-body').append('<menu type="context" id="my-right-click-menu"><menuitem label="Не надо тырить картинки" icon="img/forbidden.png"></menuitem> <menuitem label="Facebook" onclick="goTo(\'//facebook.com/sharer/sharer.php?u=\' +window.location.href);"></menuitem><menuitem label="Обновить" onclick="window.location.reload()"></menuitem></menu>');
-    }
+   
+        var DIV_WN_TOP = 25;
+        var lastWindow = new ModalWindow('whatsNew', 25, 'Новости проекта',550);
+        lastWindow.changeInner("Добрый день!<br><br>Вы используете устаревшую версию Bancomas (экс Банки.ру+). Рекомендуется удалить все установленные копии скрипта, и установить его заново по ссылке <a href='http://rawgithub.com/rebelion76/bankiru_plus/master/bancomas.user.js'>http://rawgithub.com/rebelion76/bankiru_plus/master/bancomas.user.js</a>.<br><br>С уважением, автор дополнения, <a href='mailto:rebelion76@gmail.com'>rebelion76</a>."); 
+    
+        runAfterScriptLoad(function() {lastWindow.open();}, 'hor-not-fit-element.js', 100);
+    }    
     catch (err) { 
         page.showErrors(err, true); 
     }
