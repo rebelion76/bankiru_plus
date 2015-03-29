@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.0.9
+// @version        1.0.1.0
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -41,7 +41,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.0.9";
+var version = "1.0.1.0";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -1829,7 +1829,7 @@ function BankiruPage() {
 
 (function() {
     try {
-   
+        page.addUserScriptMenu();
         var DIV_WN_TOP = 25;
         var lastWindow = new ModalWindow('whatsNew', 25, 'Новости проекта',550);
         lastWindow.changeInner("Добрый день!<br><br>Вы используете устаревшую версию Bancomas (экс Банки.ру+). Рекомендуется удалить все установленные копии скрипта, и установить его заново по ссылке <a href='http://rawgithub.com/rebelion76/bankiru_plus/master/bancomas.user.js'>http://rawgithub.com/rebelion76/bankiru_plus/master/bancomas.user.js</a>.<br><br>С уважением, автор дополнения, <a href='mailto:rebelion76@gmail.com'>rebelion76</a>."); 
