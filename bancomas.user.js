@@ -50,7 +50,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.2.0";
+var version = "1.0.2.1";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
