@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.2.1
+// @version        1.0.2.2
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -50,7 +50,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.2.1";
+var version = "1.0.2.2";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -934,7 +934,7 @@ var FILTER_DIV_RESPONCES_LIST = 'div[data-responses-list]';
 // раскрытие "свернутых" отзывов и ответов ПБ
 page.recollapseResponses = function() {
     doIt = function() { 
-        $(FILTER_ARTICLE_EXPAND).attr('data-is-full', 'true');
+        $(FILTER_ARTICLE_EXPAND).attr('data-state', 'expanded');
     }
     doIt();
     
