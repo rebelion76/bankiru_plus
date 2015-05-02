@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.2.2
+// @version        1.0.2.3
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -50,7 +50,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.2.2";
+var version = "1.0.2.3";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -321,7 +321,7 @@ function addRSS(typeOfRSS)
             case 'qa' : bankId = getBankIdFromUrl(window.location.href); oldhtml += "&nbsp;<a title=\"Горячая линия\" href=\"http://pipes.yahoo.com/pipes/pipe.run?_id=c0131f2941e66ba399e563b7202d33f1&_render=rss&textinput2="+bankId+"\"><img src=\"/com/rss.gif\" alt=\"Горячая линия\" style=\"position: relative; top: 1px; z-index: 1;\"></a>&nbsp;"; break;
             // отзывы к конкретному банку в НР
             case 'responces' :  bankId = getBankIdFromUrlResponces(window.location.href); 
-            oldhtml += "&nbsp;<a title=\"Отзывы клиентов\" href=\"http://pipes.yahoo.com/pipes/pipe.run?_id=6717699aabb56f168884843eab60fb9d&_render=rss&numberinput1="+bankId+"\"><img src=\"/com/rss.gif\" alt=\"Отзывы клиентов\" style=\"position: relative; top: 1px; z-index: 1;\"></a>&nbsp;"+"<a title=\"Ответы представителей банка\" href=\"http://pipes.yahoo.com/pipes/pipe.run?_id=fb400833eda6b01d31a36ad5c5c6da83&_render=rss&numberinput1="+bankId+"\"><img src=\"/com/rss.gif\" alt=\"Ответы представителей банка\" style=\"position: relative; top: 1px; z-index: 1;\"></a>";   break;       
+            oldhtml += "&nbsp;<a title=\"Отзывы клиентов\" href=\"http://pipes.yahoo.com/pipes/pipe.run?_id=fb400833eda6b01d31a36ad5c5c6da83&_render=rss&type=all&numberinput1="+bankId+"\"><img src=\"/com/rss.gif\" alt=\"Отзывы клиентов\" style=\"position: relative; top: 1px; z-index: 1;\"></a>&nbsp;"+"<a title=\"Ответы представителей банка\" href=\"http://pipes.yahoo.com/pipes/pipe.run?_id=fb400833eda6b01d31a36ad5c5c6da83&_render=rss&type=is_with_bank_answer&numberinput1="+bankId+"\"><img src=\"/com/rss.gif\" alt=\"Ответы представителей банка\" style=\"position: relative; top: 1px; z-index: 1;\"></a>";   break;       
             // ленты новостей
             case 'lenta':
             case 'banknews':
@@ -349,7 +349,7 @@ function getBankIdFromUrl(url) {
 }
 
 function getBankIdFromUrlResponces(url) {
-    if (/\/bank\/(.*)\/$/.test(url))  return /\/bank\/(.*)\/$/.exec(url)[1]
+    if (/\/bank\/(.*?)\//.test(url))  return /\/bank\/(.*?)\//.exec(url)[1]
     else return null;
 }
 
@@ -839,19 +839,32 @@ page.changeLastVisit.nameForUser = 'Подменять дату и время п
 
 
 page.addRSSToResponces = function() {
-    return; // надо сначала починить RSS 
     addRSS('responces'); 
 }
-page.addRSSToResponces.nameForUser = "Добавлять в HP ссылки на RSS отзывов и ответов ПБ (временно не работает)";
+page.addRSSToResponces.nameForUser = "Добавлять в HP ссылки на RSS отзывов и ответов ПБ";
 
 /** Автоподписываться в НР, если пришли по ссылке из RSS (временно не работает)  */
 page.autoSubscribeInHP = function() {
     if (page.afterHash === prefix+'subscribe_on') { 
-        var FILTER_A_SUBSCRIBE = 'a#buttonResponseSubscribe:visible';
-        if ($(FILTER_A_SUBSCRIBE).length>0) runAfterScriptLoad(function() {var href=$(FILTER_A_SUBSCRIBE); href[0].click();}, 'forum.subscribe.js', 100);
+        if ($(DIV_COMMENT_WIDGET_FILTER).length===0) { return; }
+        
+        var FILTER_A_SUBSCRIBE = "span.pseudo-link:contains('Подписаться')";
+        var oneTime = false;
+        changeFunc = function() { 
+            if (oneTime) { return; }
+            else oneTime= true;
+            $(FILTER_A_SUBSCRIBE).click(); 
+        }
+        var observer = new MutationObserver(function(mutations) {
+             if ($(FILTER_A_SUBSCRIBE).length > 0) { 
+                changeFunc(); 
+                this.disconnect(); 
+            }
+        });
+        observer.observe($(DIV_COMMENT_WIDGET_FILTER)[0], {childList: true, subtree:true});
     }    
 } 
-page.autoSubscribeInHP.nameForUser = 'Автоподписываться в НР, если пришли по ссылке из RSS (временно не работает)';
+page.autoSubscribeInHP.nameForUser = 'Автоподписываться в НР, если пришли по ссылке из RSS';
 
 /** Форма коментариев в НР */
 var TEXTAREA_COMMENT_FILTER = ".comments__add-form__textarea:first";
@@ -1002,22 +1015,36 @@ page.addAdditionalSearchToResponces = function() {
 }
 page.addAdditionalSearchToResponces.nameForUser="Добавлять в НР поиск по отзывам";
 
+
+var FILTER_TD_WITH_HREF_TO_BANK_RESP = "td:has(a[href*='responses/bank'])"
 // добавление ссылок на rss-каналы на отзывы и ответы ПБ в списке банков в НР
 page.addRSSToListOfBanks = function() {
-    return; //  надо сначала починить RSS
-    // ориентируясь по имеющимся классам, выходим на поля в столбце название банка
-    $("td.solves").parent().find("td:first-child + td").html(function(index, oldhtml) {
-        // если это не последняя строка с итогами
-        if (/(.*)<a(.*)/.test(oldhtml)) {
-            // добавляем 2 ссылки на rss
+    
+    var oneTime = false;
+    changeFunc = function() { 
+        if (oneTime) { return; }
+        else oneTime= true;
+        
+        $(FILTER_TD_WITH_HREF_TO_BANK_RESP).html(function(index, oldhtml) {
+          
+            // если это не последняя строка с итогами
+           
             bankId = getBankIdFromUrlResponces($(oldhtml).attr('href'));
-            oldhtml += "<a title=\"Отзывы клиентов\" href=\"http://pipes.yahoo.com/pipes/pipe.run?_id=6717699aabb56f168884843eab60fb9d&_render=rss&numberinput1="+bankId+"\"><img src=\"/com/rss.gif\" alt=\"Отзывы клиентов\" style=\"position: relative; top: 1px; z-index: 1;\"></a>&nbsp;";        
-            oldhtml += "<a title=\"Ответы представителей банка\" href=\"http://pipes.yahoo.com/pipes/pipe.run?_id=fb400833eda6b01d31a36ad5c5c6da83&_render=rss&numberinput1="+bankId+"\"><img src=\"/com/rss.gif\" alt=\"Ответы представителей банка\" style=\"position: relative; top: 1px; z-index: 1;\"></a>";
-        }
-        return oldhtml;
-    });
+            oldhtml += "<a title=\"Отзывы клиентов\" href=\"http://pipes.yahoo.com/pipes/pipe.run?_id=fb400833eda6b01d31a36ad5c5c6da83&_render=rss&type=all&numberinput1="+bankId+"\"><img src=\"/com/rss.gif\" alt=\"Отзывы клиентов\" style=\"position: relative; top: 1px; z-index: 1;\"></a>&nbsp;";        
+            oldhtml += "<a title=\"Ответы представителей банка\" href=\"http://pipes.yahoo.com/pipes/pipe.run?_id=fb400833eda6b01d31a36ad5c5c6da83&_render=rss&type=is_with_bank_answer&numberinput1="+bankId+"\"><img src=\"/com/rss.gif\" alt=\"Ответы представителей банка\" style=\"position: relative; top: 1px; z-index: 1;\"></a>";
+
+            return oldhtml;
+        });
+    }
+    if ($(FILTER_SECTION_BANK_RAITING).length > 0) { 
+        var observer1 = new MutationObserver(function() {
+            changeFunc(); 
+            this.disconnect(); 
+        }); 
+        observer1.observe($(FILTER_SECTION_BANK_RAITING)[0], {attributes: true});
+    }
 }
-page.addRSSToListOfBanks.nameForUser = 'Добавлять в НР в списке банков ссылки на RSS отзывов и ответов ПБ (временно не работает)';
+page.addRSSToListOfBanks.nameForUser = 'Добавлять в НР в списке банков ссылки на RSS отзывов и ответов ПБ';
 
 /** Исправление ошибки в ссылках в случае подписки http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2501456#message2501456  */
 page.repairPageHrefsIfSubscribe = function() {
