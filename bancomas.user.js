@@ -72,7 +72,8 @@ var functionsSequence = [
        { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, newsMessage, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, changeHrefToResponses, repairMainMenuToggle', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/', functions: 'removeFeedbackButton', isLast: false },
-       { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks', isLast: true },
+       { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks, removeAdditionalInfo', isLast: true },
+       { address: 'banki\\.ru\\/services\\/responses\\/list\\/', functions: 'removeAdditionalInfo', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'addHrefsToHP, autoSubscribeInHP', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'addRSSToResponces, recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
        /* ВИО */ 
@@ -582,14 +583,21 @@ page.changeLinkToPM = function() {
    
     var CLASS_TEMP_DIV = prefix + 'tempHrefPM';
     var FILTER_PM_A = 'a:has(span.user__notification), a.b-userbar__mailCounter';
-    var FILTER_PM_SPAN = '.user__notification';
+    var FILTER_PM_SPAN = 'span.user__notification';
+    var FILTER_PM_IN_MENU = "li.menu__item:has(i.icon-16x16--message)";
+
     var CLASS_PMWAIT = prefix + 'pmWait';
    
     if ($(FILTER_PM_A).length>0) {
         $('body').append('<div class='+CLASS_TEMP_DIV+' style="display:none"></div>');
         $('<img src="'+waiticon+'">').insertAfter(FILTER_PM_SPAN).addClass(CLASS_PMWAIT);
-        $('.'+CLASS_TEMP_DIV).load('/forum/?PAGE_NAME=pm_list&FID=1 .forum-pmessage-new:last', function() {
-               $(FILTER_PM_A).attr('href', $('.'+CLASS_TEMP_DIV+'>a').attr('href'));
+        $('.'+CLASS_TEMP_DIV).load('/forum/?PAGE_NAME=pm_list&FID=1 .forum-pmessage-new', function() {
+               var num = $('.'+CLASS_TEMP_DIV+'>a').length; 
+               if (num !== 0) {
+                   $(FILTER_PM_A).attr('href', $('.'+CLASS_TEMP_DIV+'>a:last').attr('href'));
+                   $(FILTER_PM_SPAN).text(num);
+               }    
+               else { $(FILTER_PM_SPAN+', '+FILTER_PM_IN_MENU).remove(); }
                $('.'+CLASS_PMWAIT).hide();
         });
     }    
@@ -601,9 +609,9 @@ page.addRSSToDepositsSearch = function() {
     var CLASS_INPUT_DEPOSITE_PERCENT = prefix+'deposite_percents';
     var CLASS_A_DEPOSITE_RSS = prefix+'deposite_rss';
     var hrefPart1 = encodeURIComponent(page.href.split('?')[0]);
-    // console.log(hrefPart1);
+    
     var hrefPart2 = encodeURIComponent(page.href.split('?')[1]);
-    // console.log(hrefPart2);
+    
     $(FILTER_DIV_SEARCHED_COUNTS).append('<br><span><a class="'+CLASS_A_DEPOSITE_RSS+'" href="http://pipes.yahoo.com/pipes/pipe.run?_id=6dd465ea1c0852d0891c5aee029d62b7&_render=rss&numberinput1=&textinput1='+hrefPart1+'&textinput2='+hrefPart2+'"><img src="/com/rss.gif"></a> со  ставкой не ниже <input size="4" class='+CLASS_INPUT_DEPOSITE_PERCENT+'>% (разделитель строго точка).');
     $('.'+CLASS_INPUT_DEPOSITE_PERCENT).on("input", function () {
        var $percent = $(this).val();
@@ -621,59 +629,41 @@ page.repairMainMenuToggle.nameForUser = 'Исправлять ошибку с о
 
 // В новостях меняет ссылку на комментарии на форумскую и исправляет недоработку с #comments http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2451541#message2451541
 page.changeNewsCommentsHref = function() {
-    // исправляет недобработку
-    $(".b-pagination__list>li>a, .nav_page>span>a").attr('href', 
-        function(index, attr) {
-            return attr+'#comments';
-        });
-    // меняет и добаляет ссылку на комментарии в форуме
+  
     doIt = function() { // временно, потом надо поменять на загрузку блока!! 
-        var needLoadTheme = true; 
-        var themeHref = '';
-        var messageString = $(".date>a[href*='message']:first").attr('href');
-
-        if (/.*message(\d+)/.test(messageString))  {
-            needLoadTheme = false;
-            themeHref = '/forum/?PAGE_NAME=read&MID='+/.*message(\d+)/.exec(messageString)[1];
-        }
-
-        function addLinks(themeHref) { 
-            var $commentsHref = $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea'], .news__info>a[href*='reviewArea']:last, main .widget__info>a[href*='review']:last");
-            if ($commentsHref.length === 0) { 
-                $commentsHref = $("<a class='b-el-link' title='Комментарии' href='#comments'><i class='comments'></i>Комментарии</a><span class='delimiter'></span>")
-                                .insertBefore("span.b-el-link"); 
-                $commentsHref = $(".b-el-link[href*='comments']");        
+         // исправляет недобработку
+        $(".ui-pagination__list>li>a").attr('href', 
+            function(index, attr) {
+                return attr+'#comments';
             }
-            $commentsHref.attr('href', function(index, attr) { 
-                $(this).html(function (index, html) { return html+' в форуме'; }); 
-                return themeHref;
-            });
-            $("h2.comment").html(function(i, old) {
-                if (/\d+.*?<a/.test(old)) return old.replace(/(\d+.*?)<a/,'<a class="goForm" href="'+themeHref+'">$1 в форуме</a> • <a');
-                else if (/\d+.*$/.test(old)) return old.replace(/(\d+.*$)/,'<a class="goForm" href="'+themeHref+'">$1 в форуме</a>'); 
-                else return old;
-            });
-        }
+        );
+        // подменяет ссылку на комментарии в форуме
+        var themeHref = '';
+        var messageString = $("div.comment__content span>a[href*='message']:first").attr('href');
 
-
-        if (needLoadTheme) {
-            var searchUrl = '/forum/?PAGE_NAME=topic_search&do_search=Y&FID=35&search_template='+escape1251($(".b-el-h1, .b-el-article__h1").first().text()); //вызываемому скрипту обязательно нужна win-1251 escape 
-            $.get(searchUrl, function(responce) {
-                responce = themeSearchAfterLoadParce(responce);   
-                $("<div class='"+prefix+"search_temp' style='display:none'>").appendTo('body').html(responce);
-                var themeA = $('.'+prefix+'search_temp').find('.forum-info-box-inner>ol>li>a:first');
-                if (themeA.length !== 0) {
-                    var themeHref = '/forum/'+themeA.attr('href');
-                    $('.'+prefix+'search_temp').remove();
-                    addLinks(themeHref);
-                }
-            });       
+        if (/.*message(\d+)/.test(messageString)) { themeHref = '/forum/?PAGE_NAME=read&MID='+/.*message(\d+)/.exec(messageString)[1]; }
+        else return;
+    
+        var $commentsHref = $(".b-el-link[href*='comments'], .b-el-link[href*='reviewArea'], .news__info>a[href*='reviewArea']:last, main .widget__info>a[href*='review']:last");
+        if ($commentsHref.length === 0) { 
+            $commentsHref = $("<a class='b-el-link' title='Комментарии' href='#comments'><i class='comments'></i>Комментарии</a><span class='delimiter'></span>")
+                            .insertBefore("span.b-el-link"); 
+            $commentsHref = $(".b-el-link[href*='comments']");        
         }
-        else addLinks(themeHref); 
+        $commentsHref.attr('href', function(index, attr) { 
+            $(this).html(function (index, html) { return html+' в форуме'; }); 
+            return themeHref;
+        });
+        $("h2.comment").html(function(i, old) {
+            if (/\d+.*?<a/.test(old)) return old.replace(/(\d+.*?)<a/,'<a class="goForm" href="'+themeHref+'">$1 в форуме</a> • <a');
+            else if (/\d+.*$/.test(old)) return old.replace(/(\d+.*$)/,'<a class="goForm" href="'+themeHref+'">$1 в форуме</a>'); 
+            else return old;
+        });
     };
     
-    var FILTER_SECTION_COMMENTS = "section > .b-el-comment";        
+    var FILTER_SECTION_COMMENTS = "div#commentsWidget article[id*='message']";        
     var FILTER_MAIN = ".layout-column-center.news-item"; 
+   
     if ($(FILTER_MAIN).length===0) return;
     
     var observer = new MutationObserver(function(mutations) {
@@ -681,7 +671,7 @@ page.changeNewsCommentsHref = function() {
         doIt();
         this.disconnect();
     });
-    observer.observe($(FILTER_MAIN)[0], {childList: true });
+    observer.observe($(FILTER_MAIN)[0], {childList: true, subtree:true});
 }
 page.changeNewsCommentsHref.nameForUser = "Изменять в новостях ссылку на комментарии (на форум)";
 page.changeNewsCommentsHref.mustMO = true;
@@ -1015,6 +1005,12 @@ page.addAdditionalSearchToResponces = function() {
 }
 page.addAdditionalSearchToResponces.nameForUser="Добавлять в НР поиск по отзывам";
 
+// удаление лишней информации в списке отзывов (по просьбе 11..11..11)
+page.removeAdditionalInfo = function() {
+    $('div.responses__item__message').remove();
+}
+page.removeAdditionalInfo.nameForUser = 'Удалять лишнюю информацию в списке отзывов';
+page.removeAdditionalInfo.firstRunIsFalse = true;
 
 var FILTER_TD_WITH_HREF_TO_BANK_RESP = "td:has(a[href*='responses/bank'])"
 // добавление ссылок на rss-каналы на отзывы и ответы ПБ в списке банков в НР
@@ -1587,7 +1583,7 @@ page.removeUpButton = function() {
     }    
 }    
 page.removeUpButton.nameForUser = 'Отключать кнопку наверх';
-page.removeUpButton.firstRunIsFalse = false; 
+page.removeUpButton.firstRunIsFalse = true; 
 
 /** Вешает ссылки на разделы */                               
 page.addLinkInMainMenu = function() {
@@ -1734,11 +1730,13 @@ page.addOptionsWindow = function() {
 
                 $('<div>'+page[key].nameForUser+' <input type=checkbox id='+key+' class="'+prefix+'func_check"></div>').prependTo(funcDivFilter);
                 var isAllowed = getParam(key);
+                console.log(key, isAllowed);
                 if (isAllowed === null) {
                     isAllowed = (typeof(page[key].firstRunIsFalse)==='undefined')? 1 : 0;
+                    console.log('in', key, isAllowed);
                     setParam(key, isAllowed); 
                 }
-                if (+isAllowed === 1) { $('#'+key).click(); }
+                if (+isAllowed === 1) { $('#'+key).attr('checked', true); }
                 $('#'+key).on('click', function() { setParam(this.id, +this.checked); $('.'+prefix+'options_reload').show(); });
             }    
         }
