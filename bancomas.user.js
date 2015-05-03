@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.2.3
+// @version        1.0.2.4
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -50,7 +50,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.2.3";
+var version = "1.0.2.4";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -1005,9 +1005,17 @@ page.addAdditionalSearchToResponces = function() {
 }
 page.addAdditionalSearchToResponces.nameForUser="Добавлять в НР поиск по отзывам";
 
+var FILTER_RESPONCES_LIST = 'div[data-responses-list]';
 // удаление лишней информации в списке отзывов (по просьбе 11..11..11)
 page.removeAdditionalInfo = function() {
-    $('div.responses__item__message').remove();
+    doIt = function() {  $('div.responses__item__message').remove(); }
+    doIt();
+    if ($(FILTER_RESPONCES_LIST).length>0) {
+        var observer1 = new MutationObserver(function() {
+            doIt(); 
+        }); 
+        observer1.observe($(FILTER_RESPONCES_LIST)[0], {childList: true});
+    }
 }
 page.removeAdditionalInfo.nameForUser = 'Удалять лишнюю информацию в списке отзывов';
 page.removeAdditionalInfo.firstRunIsFalse = true;
