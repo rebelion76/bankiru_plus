@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.2.4
+// @version        1.0.2.5
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -50,7 +50,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.2.4";
+var version = "1.0.2.5";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -1738,10 +1738,8 @@ page.addOptionsWindow = function() {
 
                 $('<div>'+page[key].nameForUser+' <input type=checkbox id='+key+' class="'+prefix+'func_check"></div>').prependTo(funcDivFilter);
                 var isAllowed = getParam(key);
-                console.log(key, isAllowed);
                 if (isAllowed === null) {
                     isAllowed = (typeof(page[key].firstRunIsFalse)==='undefined')? 1 : 0;
-                    console.log('in', key, isAllowed);
                     setParam(key, isAllowed); 
                 }
                 if (+isAllowed === 1) { $('#'+key).attr('checked', true); }
