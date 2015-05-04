@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.2.5
+// @version        1.0.2.6
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -50,7 +50,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.2.5";
+var version = "1.0.2.6";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -74,7 +74,7 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/services\\/responses\\/', functions: 'removeFeedbackButton', isLast: false },
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks, removeAdditionalInfo', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/list\\/', functions: 'removeAdditionalInfo', isLast: true },
-       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'addHrefsToHP, autoSubscribeInHP', isLast: true },
+       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'addHrefsToHP, autoSubscribeInHP, rememberBBcodeOption', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'addRSSToResponces, recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
        /* ВИО */ 
        { address: 'banki\\.ru\\/services\\/questions-answers', functions: 'addRSSToQA', isLast: true },
@@ -120,6 +120,12 @@ function getParam(name) {
     else { return localStorage.getItem(prefix+name); }
 }
 
+/** Прочитать параметр, если он пустой, записать def */
+function getAndSetIfEmptyParam(name, def) {
+    var ret = getParam (name);
+    if (ret === null) { setParam(name, def); ret = def; }
+    return ret;
+}
 
 /** Записать параметр в cookie 'навсегда'
  * @param {string} cookie_name Имя параметра
@@ -873,6 +879,33 @@ page.repairCtrlLeftRigth = function () {
 }
 page.repairCtrlLeftRigth.nameForUser = 'Отмена переходов по страницам при редактировании'
 
+// Запоминать настройку BB-code
+page.rememberBBcodeOption = function() {
+
+    if ($(DIV_COMMENT_WIDGET_FILTER).length===0) { return; }
+    
+    var FILTER_DIV_BBCODE = 'div.wysibb-toolbar-btn.mswitch';
+    var FILTER_SPAN_BBCODE = 'span.btn-inner.modesw';
+    var bbcodeOptionName = 'hp_bbcode';
+    
+    var observer = new MutationObserver(function(mutations) {
+        
+        if ($(FILTER_DIV_BBCODE).length === 0) return;
+        $(FILTER_DIV_BBCODE).addClass(prefix);
+        
+        if (+getAndSetIfEmptyParam(bbcodeOptionName, 0) !== +$(FILTER_DIV_BBCODE).hasClass('on')) { $(FILTER_DIV_BBCODE).click(); }
+        $(FILTER_SPAN_BBCODE).on('click', function () { var param = !(+getParam(bbcodeOptionName)); setParam(bbcodeOptionName, +param); }); 
+
+        this.disconnect();
+    });
+    observer.observe($(DIV_COMMENT_WIDGET_FILTER)[0], {childList: true, subtree:true});
+}
+page.rememberBBcodeOption.nameForUser = 'Запоминать значение настройки BB-code в НР';
+page.rememberBBcodeOption.mustMO = true;
+page.rememberBBcodeOption.mustBeLogged = true;
+
+
+// Добавлять в НР цитату и имя в комментариях'
 page.addHrefsToHP = function() {
      
     
@@ -922,8 +955,6 @@ page.addHrefsToHP = function() {
         //this.disconnect();
     });
     observer.observe($(DIV_COMMENT_WIDGET_FILTER)[0], {childList: true, subtree:true});
-    
-    
 }
 page.addHrefsToHP.nameForUser = 'Добавлять в НР цитату и имя в комментариях';
 page.addHrefsToHP.mustMO = true;
@@ -1866,6 +1897,8 @@ function BankiruPage() {
 
 
 try {
+   // if ((typeof(InstallTrigger) !== 'undefined') && (typeof(GM_info) === 'undefined')) { alert('У вас Sriptish!'); }  
+    
     // в jQuery, а вскоре всего и в других библиотеках, коллбэки будут запускаться через appply и call
     // декорируем их, чтобы ловить исключения
     Function.prototype.oldApply = Function.prototype.apply;
