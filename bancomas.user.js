@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.2.6
+// @version        1.0.2.7
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -50,7 +50,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.2.6";
+var version = "1.0.2.7";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -671,7 +671,6 @@ page.changeNewsCommentsHref = function() {
     var FILTER_MAIN = ".layout-column-center.news-item"; 
    
     if ($(FILTER_MAIN).length===0) return;
-    
     var observer = new MutationObserver(function(mutations) {
         if ($(FILTER_SECTION_COMMENTS).length === 0) return;
         doIt();
@@ -851,6 +850,7 @@ page.autoSubscribeInHP = function() {
             else oneTime= true;
             $(FILTER_A_SUBSCRIBE).click(); 
         }
+        
         var observer = new MutationObserver(function(mutations) {
              if ($(FILTER_A_SUBSCRIBE).length > 0) { 
                 changeFunc(); 
@@ -861,6 +861,7 @@ page.autoSubscribeInHP = function() {
     }    
 } 
 page.autoSubscribeInHP.nameForUser = 'Автоподписываться в НР, если пришли по ссылке из RSS';
+page.autoSubscribeInHP.mustMO = true;
 
 /** Форма коментариев в НР */
 var TEXTAREA_COMMENT_FILTER = ".comments__add-form__textarea:first";
@@ -882,8 +883,7 @@ page.repairCtrlLeftRigth.nameForUser = 'Отмена переходов по с�
 // Запоминать настройку BB-code
 page.rememberBBcodeOption = function() {
 
-    if ($(DIV_COMMENT_WIDGET_FILTER).length===0) { return; }
-    
+    if ($(DIV_COMMENT_WIDGET_FILTER).length===0) return;     
     var FILTER_DIV_BBCODE = 'div.wysibb-toolbar-btn.mswitch';
     var FILTER_SPAN_BBCODE = 'span.btn-inner.modesw';
     var bbcodeOptionName = 'hp_bbcode';
@@ -919,6 +919,8 @@ page.addHrefsToHP = function() {
     var A_PAGINATOR_FILTER = ".ui-pagination__item>a";
     var TIME_COMMENT_DAMAGED_FILTER = ".comment__time:contains('NaN')";
     
+    var DIV_REQUEST_USER_NAME_FILTER = 'div.response-page__user';
+    
     if ($(DIV_COMMENT_WIDGET_FILTER).length===0) { return; }
     
     var observer = new MutationObserver(function(mutations) {
@@ -932,7 +934,22 @@ page.addHrefsToHP = function() {
                 return($(this).attr('datetime'));
             });
         });
+       
         
+        citateClick = function (event, node) {
+            var type = $(event.target).attr("type");
+            if ((type === 'name_quote')&&(node!==null)) { selectAllIfNoSelection($(node).find(DIV_COMMENT_TEXT_FILTER)[0]); }
+            insertIntoTextarea(type, $(event.target).attr("name"), TEXTAREA_COMMENT_FILTER);
+            $.scrollTo(TEXTAREA_COMMENT_FILTER);
+        };
+        
+        if ($(DIV_REQUEST_USER_NAME_FILTER+' '+SPAN_QUOTE_FILTER).length === 0) {
+            $(DIV_REQUEST_USER_NAME_FILTER).append(function() {
+               var nick = $(this).find("span[itemprop*='reviewer']").text(); 
+               return  '<span class="pseudo-link" type="name_quote" name="'+nick+'" alt="Цитировать" id="'+prefix+'quote"+>Цитировать</span>';
+            }).find(SPAN_QUOTE_FILTER).on("mousedown", function (event) { citateClick(event, null); });
+        }
+
         // 'докручиваем' до комментария
         // if (/respcomment/.test(page.afterHash)) { $.scrollTo('article#'+page.afterHash); }
       
@@ -944,13 +961,7 @@ page.addHrefsToHP = function() {
             $(article).find(DIV_COMMENT_LINKS_FILTER)
                 .css({'text-align':'right', 'valign':'center'})
                 .append('<span class="pseudo-link" type="name_quote" name="'+nick+'" alt="Цитировать" id="'+prefix+'quote"+>Цитировать</span>&nbsp;&nbsp;<span class="pseudo-link" title="Вставить в ответ имя" type="name" name="'+nick+'">Имя</span>') // &nbsp;&nbsp;<a href="'+page.beforeHash+'#'+id+'" onclick="prompt(\'Нажмите Ctrl-C, чтобы скопировать ссылку\', this.href); return false;">Ссылка</a>')    
-                .on("mousedown", function (event) {
-                    event.preventDefault();
-                    var type = $(event.target).attr("type");
-                    if (type === 'name_quote') { selectAllIfNoSelection($(article).find(DIV_COMMENT_TEXT_FILTER)[0]); }
-                    insertIntoTextarea(type, $(event.target).attr("name"), TEXTAREA_COMMENT_FILTER);
-                    $.scrollTo(TEXTAREA_COMMENT_FILTER);
-            });
+                .on("mousedown", function (event) { citateClick(event, article); });
         });
         //this.disconnect();
     });
@@ -967,6 +978,8 @@ var FILTER_DIV_RESPONCES_LIST = 'div[data-responses-list]';
 
 // раскрытие "свернутых" отзывов и ответов ПБ
 page.recollapseResponses = function() {
+    if ($(FILTER_DIV_RESPONCES_LIST).length===0) return;
+    
     doIt = function() { 
         $(FILTER_ARTICLE_EXPAND).attr('data-state', 'expanded');
     }
@@ -976,6 +989,7 @@ page.recollapseResponses = function() {
     observer.observe($(FILTER_DIV_RESPONCES_LIST)[0], { attributes: true });  
 }
 page.recollapseResponses.nameForUser = 'Разворачивать в НР отзывы и ответы ПБ';
+page.recollapseResponses.mustMO = true;
 
 var FILTER_SECTION_BANK_RAITING = "#banks-rating-container";
 var FILTER_SECTION_WIDGET_TOP_BANKS = "section.widget:has(div[data-ajax-widget*='top-banks'])";
@@ -1019,7 +1033,7 @@ var FILTER_SECTION_PAGE_BODY_WRAPPER = ".page-body.wrapper";
 var FILTER_DIV_FEEDBACK_PANEL = '.feedback-panel' 
 // удаляем кнопку отзыв об НР
 page.removeFeedbackButton = function() {
-    if ($(FILTER_SECTION_PAGE_BODY_WRAPPER).length == 0) return; 
+    if ($(FILTER_SECTION_PAGE_BODY_WRAPPER).length === 0) return; 
     
     var observer = new MutationObserver(function(mutations) {
         if ($(FILTER_DIV_FEEDBACK_PANEL).length === 0) return;
@@ -1050,6 +1064,7 @@ page.removeAdditionalInfo = function() {
 }
 page.removeAdditionalInfo.nameForUser = 'Удалять лишнюю информацию в списке отзывов';
 page.removeAdditionalInfo.firstRunIsFalse = true;
+page.removeAdditionalInfo.mustMO = true;
 
 var FILTER_TD_WITH_HREF_TO_BANK_RESP = "td:has(a[href*='responses/bank'])"
 // добавление ссылок на rss-каналы на отзывы и ответы ПБ в списке банков в НР
@@ -1080,6 +1095,7 @@ page.addRSSToListOfBanks = function() {
     }
 }
 page.addRSSToListOfBanks.nameForUser = 'Добавлять в НР в списке банков ссылки на RSS отзывов и ответов ПБ';
+page.addRSSToListOfBanks.mustMO = true;
 
 /** Исправление ошибки в ссылках в случае подписки http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2501456#message2501456  */
 page.repairPageHrefsIfSubscribe = function() {
