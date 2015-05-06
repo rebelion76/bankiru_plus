@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.2.7
+// @version        1.0.2.8
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -50,7 +50,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.2.7";
+var version = "1.0.2.8";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -838,7 +838,7 @@ page.addRSSToResponces = function() {
 }
 page.addRSSToResponces.nameForUser = "Добавлять в HP ссылки на RSS отзывов и ответов ПБ";
 
-/** Автоподписываться в НР, если пришли по ссылке из RSS (временно не работает)  */
+/** Автоподписываться в НР, если пришли по ссылке из RSS */
 page.autoSubscribeInHP = function() {
     if (page.afterHash === prefix+'subscribe_on') { 
         if ($(DIV_COMMENT_WIDGET_FILTER).length===0) { return; }
@@ -925,17 +925,6 @@ page.addHrefsToHP = function() {
     
     var observer = new MutationObserver(function(mutations) {
         
-        if ($(ARTICLE_COMMENT_FILTER).length === 0) return;
-               
-        // исправляем ошибку с NaN.NaN.NaN NaN:NaN вместо даты-времени комментария
-        $(TIME_COMMENT_DAMAGED_FILTER).each(function() {  
-            var TIME_COMMENT_DAMAGED_FILTER = ".comment__time:contains('NaN')"; 
-            $(TIME_COMMENT_DAMAGED_FILTER).text(function() {
-                return($(this).attr('datetime'));
-            });
-        });
-       
-        
         citateClick = function (event, node) {
             var type = $(event.target).attr("type");
             if ((type === 'name_quote')&&(node!==null)) { selectAllIfNoSelection($(node).find(DIV_COMMENT_TEXT_FILTER)[0]); }
@@ -949,7 +938,17 @@ page.addHrefsToHP = function() {
                return  '<span class="pseudo-link" type="name_quote" name="'+nick+'" alt="Цитировать" id="'+prefix+'quote"+>Цитировать</span>';
             }).find(SPAN_QUOTE_FILTER).on("mousedown", function (event) { citateClick(event, null); });
         }
-
+        
+        if ($(ARTICLE_COMMENT_FILTER).length === 0) return;
+               
+        // исправляем ошибку с NaN.NaN.NaN NaN:NaN вместо даты-времени комментария
+        $(TIME_COMMENT_DAMAGED_FILTER).each(function() {  
+            var TIME_COMMENT_DAMAGED_FILTER = ".comment__time:contains('NaN')"; 
+            $(TIME_COMMENT_DAMAGED_FILTER).text(function() {
+                return($(this).attr('datetime'));
+            });
+        });
+       
         // 'докручиваем' до комментария
         // if (/respcomment/.test(page.afterHash)) { $.scrollTo('article#'+page.afterHash); }
       
