@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.2.8
+// @version        1.0.2.9
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -50,7 +50,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.2.8";
+var version = "1.0.2.9";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -94,7 +94,7 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/forum\\/(\\?modern=\\d|#|$|.*?'+prefix+'theme_search.*|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?TOPIC_SUBSCRIBE=Y&.*', functions: 'repairPageHrefsIfSubscribe', isLast : false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
-       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLastVisit, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addQuotesToClosedThemes, addPMwithQuotes, addAllToQuotes, changeReplyHrefs', isLast: true }, 
+       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLastVisit, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addQuotesToClosedThemes, addPMwithQuotes, addAllToQuotes, changeReplyHrefs, repairPisyaPisya', isLast: true }, 
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM, addCitateFromForum', isLast: true },
        /* Поиск по депозитам */
        { address: 'banki\\.ru\\/products\\/deposits\\/search\\/', functions: 'addRSSToDepositsSearch', isLast : true },
@@ -1280,7 +1280,7 @@ page.addAllToQuotes = function() {
     }
 page.addAllToQuotes.nameForUser = 'Выделять в форуме по умолчанию все сообщение при цитировании'; 
 page.addAllToQuotes.mustBeLogged = true;
-                                    
+
 /** Добавляет в функцию вызова цитаты ссылку на сообщение */
 page.addPMwithQuotes = function() {
     var A_TEXT = 'ЛС с цитатой';
@@ -1300,6 +1300,19 @@ page.addPMwithQuotes = function() {
 }
 page.addPMwithQuotes.nameForUser = 'Добавлять в форуме ссылку на ЛС с цитатой сообщения';
 page.addPMwithQuotes.mustBeLogged  = true;
+
+/** исправляет ошибку с писей-писей http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=3810842#message3810842  */
+page.repairPisyaPisya = function() {
+    var PYSYA_TEXT = 'пїЅпїЅпїЅпїЅпїЅ';
+    var GOOD_TEXT = 'пишет';
+    var FILTER_A_PYSYA = 'a:contains('+PYSYA_TEXT+')';
+    $(FILTER_A_PYSYA).text(GOOD_TEXT);
+    $(A_FORUM_QUOTE_FILTER).attr('onmousedown', function (i ,val) { 
+        return val+'; $(".post_message").val(function(i, val) { return val.replace("'+PYSYA_TEXT+'","'+GOOD_TEXT+'"); });'; 
+    });
+}
+page.repairPisyaPisya.nameForUser = 'Исправлять ошибку с пїЅпїЅпїЅпїЅпїЅ';
+
 
 // Добавляет ссылку на комментарии пользователя в теме
 page.addUserPostSearch = function() {
