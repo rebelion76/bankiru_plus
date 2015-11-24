@@ -1908,7 +1908,6 @@ function BankiruPage() {
         this.userName = $(".user-name").text();
         this.userId = getUserIdFromUrl($("a.user-link").attr("href"));
     }
-    console.log(this.userId);    
     this.isLogged = (this.userName!="")&&(this.userId!==null);
      
     this.MO = (typeof(MutationObserver) !== 'undefined'); // есть поддержка MutationObserver
