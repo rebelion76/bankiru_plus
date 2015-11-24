@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.2.9
+// @version        1.0.3.0
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -50,7 +50,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.2.9";
+var version = "1.0.3.0";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -372,7 +372,7 @@ function getUserProfileHref(id1, id2, name)
 
 function getUserNameAndIdFromProfile(url)
 {
-    var userA = document.getElementsByClassName("nickName");
+    var userA = document.getElementsByClassName("userName");
     if (userA.length == 0) return false;
     var userName = userA[0].innerHTML;       
     var userId = getUserIdFromUrl(url);
@@ -1560,7 +1560,7 @@ page.addSelectToSearchInTop = function() {
     $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='search[type]' value='name'>");
     $("form.item__node.js-search-input-form").prepend("<input type='hidden' name='set_filter' value='Фильтровать'>");
         
-    $('<select name="where" style="margin-top:12px"><option value="0">по всему сайту</option><option value="'+prefix+'banks">в банках России</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option value="iblock_responses">в народном рейтинге</option><option value="'+prefix+'theme_search">в названиях тем</option><option value="forum">в форуме</option><option value="'+prefix+'users">в пользователях</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>')
+    $('<select name="where" style="margin-top:12px; width:50%;"><option value="0">по всему сайту</option><option value="'+prefix+'banks">в банках России</option><option value="iblock_banks">в банках</option><option value="iblock_news">в новостях</option><option value="iblock_responses">в народном рейтинге</option><option value="'+prefix+'theme_search">в названиях тем</option><option value="forum">в форуме</option><option value="'+prefix+'users">в пользователях</option><option value="iblock_wiki">в банковском словаре</option><option value="iblock_vacancy">в вакансиях</option><option value="iblock_resumes">в резюме</option></select>')
     .prependTo("form.item__node.js-search-input-form")
     .on("change", function() {
         var value = $(this).find('option:selected').attr('value');
@@ -1615,17 +1615,22 @@ page.deleteAutoSave = function () {
 page.deleteAutoSave.nameForUser = 'Отключать автосохранение';
 
 
+var USER_MENU_SCRIPT_FILTER = "li.menu__item.js-menu__item script:contains('Сообщения')";
 /** Добавляет пункты в "меню пользователя" */
 page.addToUserMenu = function() {
     $(".item__spoiler.item__spoiler--user").css({"width":"170", "padding-left":"20px"});
-    $(".spoiler__item>a:contains('Сообщения')")
-    .text("ЛС (входящие)")
-    .parent().after('<li class="spoiler__item"><a href="/forum/?PAGE_NAME=pm_list&amp;FID=2">ЛС (отправленные)</a></li>')
-    .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/index.php?PAGE_NAME=user_post&UID='+this.userId+'&mode=all">Мои сообщения в форуме</a></li>')
-    .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/index.php?PAGE_NAME=user_post&UID='+this.userId+'&mode=lta">Мои темы в форуме</a></li>')
-    .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/?PAGE_NAME=subscr_list">Подписки</a></li>');                  
-    $(".spoiler__item>a:contains('Моя лента')")
-    .parent().after('<li class="spoiler__item"><a href="http://www.banki.ru/profile/index.php?UID='+this.userId+'&action=activity">Моя активность</a></li>');
+    var userId = this.userId;
+    $(USER_MENU_SCRIPT_FILTER).html(function(i, old) {
+        
+        var result=$('<div>'+old+'</div>');
+        result.find("a:contains('Сообщения')").text("ЛС (входящие)").parent()  
+              .after('<li class="spoiler__item"><a href="/forum/?PAGE_NAME=pm_list&amp;FID=2">ЛС (отправленные)</a></li>')
+              .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/index.php?PAGE_NAME=user_post&UID='+userId+'&mode=all">Мои сообщения в форуме</a></li>')
+              .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/index.php?PAGE_NAME=user_post&UID='+userId+'&mode=lta">Мои темы в форуме</a></li>')
+              .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/?PAGE_NAME=subscr_list">Подписки</a></li>')
+        result.find("a:contains('Моя лента')").parent().after('<li class="spoiler__item"><a href="http://www.banki.ru/profile/index.php?UID='+this.userId+'&action=activity">Моя активность</a></li>');
+        return result.html();
+    });
 }
 page.addToUserMenu.nameForUser='Добавлять в меню пользователя дополнительные ссылки '
 
@@ -1694,18 +1699,18 @@ page.addUserScriptMenu = function() {
     .find("div").addClass(prefix+'menu_div').attr('isOpened',false)
     // меняем иконку
     .find('i').attr('class','icon-16x16').css({"background-image":'url('+favicon+')','width':25, 'height':25, 'vertical-align' : '-7px'})  
-    .end().end().find("li.spoiler__item").remove() //удаляем ссылки
-    .end().find("ul.item__spoiler") // добавляем ссылки
-        .append("<li class='spoiler__item'><a href='#' id="+prefix+"options_popup_show>Настройки</a></li>")
-        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2531.html'>FAQ & Поддержка</a></li>")
-        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/tag/bancomas%20changelog'>Что нового?</a></li>")
-        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/4047.html'>Опросы!</a></li>")
-        .append("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+">Последняя версия</a></li>")
-        .append("<li class='spoiler__item'>-----------------------</li>")
-        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3392.html'>RSS-ленты</a></li>")
-        .append("<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3801.html'>Подписка AdBlock+</a></li>")
-        .append("<li class='spoiler__item'>-----------------------</li>")
-        .append("<li class='spoiler__item'>Bancomas "+version+" </li>")
+    .end().end().find("script").html(
+    '<ul class="item__spoiler item__spoiler--width">' // добавляем ссылки
+    +"<li class='spoiler__item'><a href='#' id="+prefix+"options_popup_show>Настройки</a></li>"
+    +"<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/2531.html'>FAQ & Поддержка</a></li>"
+    +"<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/tag/bancomas%20changelog'>Что нового?</a></li>"
+    +"<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/4047.html'>Опросы!</a></li>"
+    +"<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+">Последняя версия</a></li>"
+    +"<li class='spoiler__item'>-----------------------</li>"
+    +"<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3392.html'>RSS-ленты</a></li>"
+    +"<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3801.html'>Подписка AdBlock+</a></li>"
+    +"<li class='spoiler__item'>-----------------------</li>"
+    +"<li class='spoiler__item'>Bancomas "+version+" </li></ul>")    
     .end().insertBefore(".menu__item.menu__item--right:not(."+prefix+"menu):first");
     if ((new_version!==null)&&(new_version>version)) { 
         $("."+prefix+"getlastversion").after("<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>").remove();
@@ -1900,9 +1905,10 @@ function BankiruPage() {
         this.userId = getUserIdFromUrl($("a.b-userbar__name").attr("href")); 
     }
     else {        
-        this.userName = $("div.header__bar span.link-with-icon__text").html();
-        this.userId = getUserIdFromUrl($("div.header__bar a.link-with-icon").attr("href"));
-    }    
+        this.userName = $(".user-name").text();
+        this.userId = getUserIdFromUrl($("a.user-link").attr("href"));
+    }
+    console.log(this.userId);    
     this.isLogged = (this.userName!="")&&(this.userId!==null);
      
     this.MO = (typeof(MutationObserver) !== 'undefined'); // есть поддержка MutationObserver
