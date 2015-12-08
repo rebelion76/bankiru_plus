@@ -1,7 +1,7 @@
 // ==UserScript==
 // @id             banki.ru_plus_beta
 // @name           Bancomas
-// @version        1.0.3.0
+// @version        1.0.3.1
 // @namespace      
 // @author         rebelion76@gmail.com
 // @description    Неофициальный скрипт, расширяющий возможности сайта banki.ru. Дальше - больше!
@@ -50,7 +50,7 @@ this.$ = this.jQuery = jQuery.noConflict(true); // для greasemonkey http://wi
 /** Префикс для переменных */
 var prefix = "banki_ru_plus_"; 
 /** Версия  */
-var version = "1.0.3.0";
+var version = "1.0.3.1";
 /** Новая версия */
 var new_version = getParam('new_version');
 /** Адрес обновления */
@@ -69,19 +69,21 @@ var waiticon = "data:image/gif;base64,R0lGODlhEAAQAMQAAP///+7u7t3d3bu7u6qqqpmZmY
  */
 var functionsSequence = [
        /* Все страницы */ 
-       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, newsMessage, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, changeHrefToResponses, repairMainMenuToggle', isLast : false },
+       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, newsMessage, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, changeHrefToResponses, changeMainMenuToggle', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/', functions: 'removeFeedbackButton', isLast: false },
-       { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'addRSSToListOfBanks, removeAdditionalInfo', isLast: true },
+       { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'removeAdditionalInfo', isLast: true },
+       // addRSSToListOfBanks,\n\
        { address: 'banki\\.ru\\/services\\/responses\\/list\\/', functions: 'removeAdditionalInfo', isLast: true },
        { address: 'banki\\.ru\\/services\\/responses\\/bank\\/response\\/.*', functions: 'addHrefsToHP, autoSubscribeInHP, rememberBBcodeOption', isLast: true },
-       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'addRSSToResponces, recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
+       { address: 'banki\\.ru\\/services\\/responses\\/bank\\/.*?', functions: 'recollapseResponses, hiddenResponse, addAdditionalSearchToResponces', isLast: true },
+       // addRSSToResponces, 
        /* ВИО */ 
-       { address: 'banki\\.ru\\/services\\/questions-answers', functions: 'addRSSToQA', isLast: true },
+       // { address: 'banki\\.ru\\/services\\/questions-answers', functions: 'addRSSToQA', isLast: true },
        /* Новости */
        { address: 'banki\\.ru(\\/.*?)*\\/news\\/.*?id=.*', functions: 'changeNewsCommentsHref', isLast: false },
-       { address: 'banki\\.ru\\/news\\/lenta\\/.+\\/', functions: 'addRSSToLenta', isLast: true },
-       { address: 'banki\\.ru\\/banks\\/bank\\/.*?\\/news\\/', functions: 'addRSSToBankNews', isLast: true },
+       //{ address: 'banki\\.ru\\/news\\/lenta\\/.+\\/', functions: 'addRSSToLenta', isLast: true },
+       //{ address: 'banki\\.ru\\/banks\\/bank\\/.*?\\/news\\/', functions: 'addRSSToBankNews', isLast: true },
        /* Профиль */
        { address: 'banki\\.ru\/profile\/\\?UID=\\d+#\\d', functions: 'filterThanksByUserId', isLast: false },
        { address: 'banki\\.ru\/profile\/\\?UID=\\d+', functions: 'addUserCoeffToProfile, addHrefsToProfile', isLast: true },
@@ -97,7 +99,7 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLastVisit, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addQuotesToClosedThemes, addPMwithQuotes, addAllToQuotes, changeReplyHrefs, repairPisyaPisya', isLast: true }, 
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM, addCitateFromForum', isLast: true },
        /* Поиск по депозитам */
-       { address: 'banki\\.ru\\/products\\/deposits\\/search\\/', functions: 'addRSSToDepositsSearch', isLast : true },
+       //{ address: 'banki\\.ru\\/products\\/deposits\\/search\\/', functions: 'addRSSToDepositsSearch', isLast : true },
     ];
 
 // ------------------- Вспомогательные функции ------------------------------------
@@ -626,12 +628,18 @@ page.addRSSToDepositsSearch = function() {
 }
 page.addRSSToDepositsSearch.nameForUser = 'Добавлять в поиске по вкладам ссылку на RSS';
 
-var NAV_MAIN_MENU_FILTER = "nav#mainMenu";
-var MAIN_MENU_CLASS = "main-menu";
-page.repairMainMenuToggle = function() {
-    if (!$(NAV_MAIN_MENU_FILTER).hasClass(MAIN_MENU_CLASS)) $(NAV_MAIN_MENU_FILTER).addClass(MAIN_MENU_CLASS); 
+var MAIN_MENU_TABS_FILTER = "a.main-menu__tabs--item";
+var NAV_MAIN_MENU_FILTER = "nav.main-menu";
+page.changeMainMenuToggle = function() {
+    $(MAIN_MENU_TABS_FILTER).removeAttr('href').on('click', function() {
+        $(NAV_MAIN_MENU_FILTER).attr("data-active-service", $(this).attr('data-service-tab'));
+    });
+    var nodes = document.querySelectorAll(MAIN_MENU_TABS_FILTER);
+    Array.prototype.forEach.call(nodes, function(element){
+        element.addEventListener('mouseover', function (event) { event.stopImmediatePropagation(); });
+    });
 }
-page.repairMainMenuToggle.nameForUser = 'Исправлять ошибку с отсутствием "показать меню"';
+page.changeMainMenuToggle.nameForUser = 'Переключение между табами основного меню только по клику';
 
 // В новостях меняет ссылку на комментарии на форумскую и исправляет недоработку с #comments http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2451541#message2451541
 page.changeNewsCommentsHref = function() {
