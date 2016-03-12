@@ -69,7 +69,7 @@ var waiticon = "data:image/gif;base64,R0lGODlhEAAQAMQAAP///+7u7t3d3bu7u6qqqpmZmY
  */
 var functionsSequence = [
        /* Все страницы */ 
-       { address : 'banki\\.ru\\/', functions : 'loadFilesEtc, updateUserScript, addUserScriptMenu, addOptionsWindow, newsMessage, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, changeHrefToResponses, changeMainMenuToggle', isLast : false },
+       { address : 'banki\\.ru\\/', functions : 'addUserScriptMenu, updateUserScript, addOptionsWindow, newsMessage, removeAdvertisingHole, addLinkInMainMenu, deleteAutoSave, removeRedirect, addSelectToSearchInTop, addToUserMenu, removeUpButton, changeLinkToPM, changeHrefToResponses, changeMainMenuToggle', isLast : false },
        /* НР */
        { address: 'banki\\.ru\\/services\\/responses\\/', functions: 'removeFeedbackButton', isLast: false },
        { address: 'banki\\.ru\\/services\\/responses\\/$', functions: 'removeAdditionalInfo', isLast: true },
@@ -96,7 +96,7 @@ var functionsSequence = [
        { address: 'banki\\.ru\\/forum\\/(\\?modern=\\d|#|$|.*?'+prefix+'theme_search.*|.*?PAGE_NAME=(list|forum).*)', functions: 'addThemeSearchToForum', isLast : true },
        { address: 'banki\\.ru\\/forum\\/.*?TOPIC_SUBSCRIBE=Y&.*', functions: 'repairPageHrefsIfSubscribe', isLast : false },
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=read&FID=10&TID=100712&banki_ru_plus_hidden_rid=.*', functions: 'addUrlToRecovery', isLast: false },
-       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLastVisit, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addQuotesToClosedThemes, addPMwithQuotes, addAllToQuotes, changeReplyHrefs, repairPisyaPisya', isLast: true }, 
+       { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=(read|message).*', functions: 'addOpenCloseAllSpoilers, addUserCoeffToForum, addLastVisit, addLinksToHiddenUserInfo, addHotKeysToForum, addGotoPage, addSpacesToSmallThank, addAditionalSearchToForum, addUserPostSearch, addQuotesToClosedThemes, addPMwithQuotes, addAllToQuotes, changeReplyHrefs', isLast: true }, 
        { address: 'banki\\.ru\\/forum\\/.*?PAGE_NAME=pm_edit.*', functions: 'enableSmilesInPM, addCitateFromForum', isLast: true },
        /* Поиск по депозитам */
        //{ address: 'banki\\.ru\\/products\\/deposits\\/search\\/', functions: 'addRSSToDepositsSearch', isLast : true },
@@ -340,8 +340,8 @@ function addRSS(typeOfRSS)
     });    
 }
 
-// автодобавление просьбы восстановить отзыв с responseID таким-то TODO
-page.addUrlToRecovery = function () {
+/* автодобавление просьбы восстановить отзыв с responseID таким-то TODO*/
+    page.addUrlToRecovery = function () {
     var responseId = /&banki_ru_plus_hidden_rid=(\d*)#/.exec(page.href)[1]; // заменить на выбор параметра
     $("textarea.post_message").val("Прошу восстановить скрытый отзыв http://www.banki.ru/services/responses/bank/?responseID="+responseId);
 }
@@ -639,11 +639,13 @@ page.changeMainMenuToggle = function() {
         element.addEventListener('mouseover', function (event) { event.stopImmediatePropagation(); });
     });
 }
-page.changeMainMenuToggle.nameForUser = 'Переключение между табами основного меню только по клику';
+page.changeMainMenuToggle.nameForUser = 'Переключать вкладки основного меню только по клику';
 
 // В новостях меняет ссылку на комментарии на форумскую и исправляет недоработку с #comments http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=51734&MID=2451541#message2451541
 page.changeNewsCommentsHref = function() {
   
+    $(".bitrix-component[data-name='custom:forum.topic.reviews']").attr('data-immediately','true');
+
     doIt = function() { // временно, потом надо поменять на загрузку блока!! 
          // исправляет недобработку
         $(".ui-pagination__list>li>a").attr('href', 
@@ -1309,19 +1311,6 @@ page.addPMwithQuotes = function() {
 page.addPMwithQuotes.nameForUser = 'Добавлять в форуме ссылку на ЛС с цитатой сообщения';
 page.addPMwithQuotes.mustBeLogged  = true;
 
-/** исправляет ошибку с писей-писей http://www.banki.ru/forum/index.php?PAGE_NAME=message&FID=10&TID=12&MID=3810842#message3810842  */
-page.repairPisyaPisya = function() {
-    var PYSYA_TEXT = 'пїЅпїЅпїЅпїЅпїЅ';
-    var GOOD_TEXT = 'пишет';
-    var FILTER_A_PYSYA = 'a:contains('+PYSYA_TEXT+')';
-    $(FILTER_A_PYSYA).text(GOOD_TEXT);
-    $(A_FORUM_QUOTE_FILTER).attr('onmousedown', function (i ,val) { 
-        return val+'; $(".post_message").val(function(i, val) { return val.replace("'+PYSYA_TEXT+'","'+GOOD_TEXT+'"); });'; 
-    });
-}
-page.repairPisyaPisya.nameForUser = 'Исправлять ошибку с пїЅпїЅпїЅпїЅпїЅ';
-
-
 // Добавляет ссылку на комментарии пользователя в теме
 page.addUserPostSearch = function() {
     var themeName = escape1251(this.themeName);
@@ -1626,7 +1615,7 @@ page.deleteAutoSave.nameForUser = 'Отключать автосохранени
 var USER_MENU_SCRIPT_FILTER = "li.menu__item.js-menu__item script:contains('Сообщения')";
 /** Добавляет пункты в "меню пользователя" */
 page.addToUserMenu = function() {
-    $(".item__spoiler.item__spoiler--user").css({"width":"170", "padding-left":"20px"});
+    
     var userId = this.userId;
     $(USER_MENU_SCRIPT_FILTER).html(function(i, old) {
         
@@ -1636,7 +1625,8 @@ page.addToUserMenu = function() {
               .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/index.php?PAGE_NAME=user_post&UID='+userId+'&mode=all">Мои сообщения в форуме</a></li>')
               .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/index.php?PAGE_NAME=user_post&UID='+userId+'&mode=lta">Мои темы в форуме</a></li>')
               .next().after('<li class="spoiler__item"><a href="http://www.banki.ru/forum/?PAGE_NAME=subscr_list">Подписки</a></li>')
-        result.find("a:contains('Моя лента')").parent().after('<li class="spoiler__item"><a href="http://www.banki.ru/profile/index.php?UID='+this.userId+'&action=activity">Моя активность</a></li>');
+        result.find("a:contains('Моя лента')").parent().after('<li class="spoiler__item"><a href="http://www.banki.ru/profile/index.php?UID='+userId+'&action=activity">Моя активность</a></li>');
+        result.find(".item__spoiler.item__spoiler--user").css({"width":"170", "padding-left":"20px"});
         return result.html();
     });
 }
@@ -1672,6 +1662,13 @@ page.addLinkInMainMenu = function() {
     });
 }    
 page.addLinkInMainMenu.nameForUser = 'Добавлять в заголовки главного меню ссылки на разделы';
+
+var FILTER_HEADER = 'header.header';
+page.removeAdvertisingHole = function() {
+   $(FILTER_HEADER).attr('style','margin-top:0!important'); 
+} 
+page.removeAdvertisingHole.nameForUser = 'Всегда сдвигать шапку сайта наверх (имеет смысл при отключенной рекламе)'
+page.removeAdvertisingHole.firstRunIsFalse = true; 
 
 page.newsMessage = function () {
     var DIV_WN_TOP = 25;
@@ -1715,7 +1712,6 @@ page.addUserScriptMenu = function() {
     +"<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/4047.html'>Опросы!</a></li>"
     +"<li class='spoiler__item "+prefix+"getlastversion'><a href="+UPDATE_URL+">Последняя версия</a></li>"
     +"<li class='spoiler__item'>-----------------------</li>"
-    +"<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3392.html'>RSS-ленты</a></li>"
     +"<li class='spoiler__item'><a href='http://rebelion76.livejournal.com/3801.html'>Подписка AdBlock+</a></li>"
     +"<li class='spoiler__item'>-----------------------</li>"
     +"<li class='spoiler__item'>Bancomas "+version+" </li></ul>")    
@@ -1728,13 +1724,13 @@ page.addUserScriptMenu = function() {
         var div = $(this).find('div'); 
         if (div.attr('isOpened') == 'false')  { div.addClass('item__node--expanded').attr('isOpened', true); }
         else { div.removeClass('item__node--expanded').attr('isOpened', false); }
+        $('#'+prefix+'options_popup_show').on('click', $.proxy(optionsWindow.open,optionsWindow));
         e.stopPropagation();
     });
     $('body').on('click', function () {
         $('.'+prefix+'menu_div.item__node--expanded').removeClass('item__node--expanded').attr('isOpened', false); 
     });
 }
-page.addUserScriptMenu.mustNotOldDesign = true;  
 
 /** Обновление скрипта */
 page.updateUserScript = function() {
@@ -1747,6 +1743,16 @@ page.updateUserScript = function() {
         setParam('dayCheckUpdate', today.toString()); 
     }
     else dayCheckUpdate = new Date(dayCheckUpdate);
+    
+    if (getParam('new_version')>version) {
+        $("."+prefix+"getlastversion").after("<li class='spoiler__item'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>").remove();
+        $("script:contains('"+prefix+"getlastversion')").html(function (i,old) {
+            
+            var result = $('<div>'+old+'</div>');
+            result.find("."+prefix+"getlastversion").after("<li class='spoiler__item'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>").remove();
+            return result.html();
+        });
+    }         
     
     if (dayCheckUpdate.getTime()>today.getTime()) return;  
     dayCheckUpdate = today;
@@ -1770,11 +1776,9 @@ page.updateUserScript = function() {
                 setParam('dayX', today.toString()); 
             }
             else dayX = new Date(dayX);
-    
+            
             if (new_version>version) {
-               
-                $("."+prefix+"getlastversion").after("<li class='spoiler__item'><a href="+UPDATE_URL+" style='color:red'>Новая версия ("+new_version+")</a></li>").remove();
-                
+                            
                 if (dayX.getTime()<=today.getTime()) {
                     dayX = today;
                     confirmed = window.confirm('Вышла новая версия Bancomas '+new_version+'(у вас установлена '+version+'). Хотите скачать и установить?');
@@ -1791,11 +1795,12 @@ page.updateUserScript = function() {
 } 
 
 /** Опции скрипта */
+var optionsWindow;
 page.addOptionsWindow = function() {
     
     var DIV_OPTIONS_TOP = 25;
     
-    var optionsWindow = new ModalWindow('options', DIV_OPTIONS_TOP, 'Настройки');
+    optionsWindow = new ModalWindow('options', DIV_OPTIONS_TOP, 'Настройки');
     optionsWindow.changeInner('<div class="'+prefix+'options_reload" style="display:none">Изменения будут применены только после перезагрузки страницы. <a href="javascript:window.location.reload();">Перегрузить?</a><br/><br/></div><b>Функции, доступные на данной странице</b></br><div class="'+prefix+'func_list"></div></br><b><span class="pseudo-link '+prefix+'func_all_link">Все остальные функции</span></b><div class="'+prefix+'func_all_list" style="display:none"></div>');
     
     
@@ -1822,9 +1827,7 @@ page.addOptionsWindow = function() {
     }
     run(['showErrors'], true); // т.к. часть функций не запускается через список адресов и функций
     page.iteratorFunctionsSequence(run);
-    
-    
-    $('#'+prefix+'options_popup_show').on('click', $.proxy(optionsWindow.open,optionsWindow));
+       
     $('.'+prefix+'func_all_link').on('click', function() { $('.'+prefix+'func_all_list').toggle();});
     
     $('body').on('keydown', function(e){
@@ -1832,11 +1835,6 @@ page.addOptionsWindow = function() {
            optionsWindow.open();
         }
     });
-}
-
-page.loadFilesEtc = function() {
-    //loadJsOrCssFile('/static/common/ui-elements/popup/popup.css','css');
-    //loadJsOrCssFile('/bitrix/templates/.default/components/bitrix/system.auth.form/redesign/style.css','css');
 }
 
 // ----------------------- Конструкторы ----------------------------------------------
@@ -1856,7 +1854,7 @@ function ModalWindow(name, top, title, width) {
     
     if ( $(this.FILTER_DIV_OVERLAY).length === 0) { $('body').prepend('<div class="'+this.CLASS_DIV_OVERLAY+'" style="display: none;"></div>'); }
     $('body')
-    .prepend('<div class="'+this.CLASS_DIV_MAIN+' ui-popup ui-popup_white" style="padding: 20px 27px 20px 22px; top: '+this.top+'px; opacity: 1; margin-top: 0px; display:none;"><span class="b-el-link b-el-link_popup"><i class="b-el-link__icon b-el-link__icon_close '+this.CLASS_I_CLOSE+'"></i></span><h2 class="b-loginPopup__title">'+this.title+'</h2><div class='+this.CLASS_DIV_INNER+'></div></div>')
+    .prepend('<div class="'+this.CLASS_DIV_MAIN+' ui-popup ui-popup_white" style="padding: 20px 27px 20px 22px; top: '+this.top+'px; opacity: 1; margin-top: 0px; display:none; background-color:white;"><span class="b-el-link b-el-link_popup"><i class="b-el-link__icon b-el-link__icon_close '+this.CLASS_I_CLOSE+'"></i></span><h2 class="b-loginPopup__title">'+this.title+'</h2><div class='+this.CLASS_DIV_INNER+'></div></div>')
     
     this.close = function() {
         $(this.FILTER_DIV_OVERLAY).removeClass(this.CLASS_DIV_OVERLAY_BLACK).hide();
@@ -1903,23 +1901,13 @@ page.iteratorFunctionsSequence = function(run) {
 // общий конструктор для любой страницы
 function BankiruPage() {
     
-    //определяем какой дизайн
-    if  ($(".b-to-new-design>a").length!=0) { this.oldDesign = true; }
-    else { this.oldDesign = false; }
-    
     // ищем имя пользователя и его id, на основании найденного решаем залогирован ли пользователь или нет
-    if (this.oldDesign) {
-        this.userName = $("a.b-userbar__name").html();
-        this.userId = getUserIdFromUrl($("a.b-userbar__name").attr("href")); 
-    }
-    else {        
-        this.userName = $(".user-name").text();
-        this.userId = getUserIdFromUrl($("a.user-link").attr("href"));
-    }
+    this.userName = $(".user-name").text();
+    this.userId = getUserIdFromUrl($("a.user-link").attr("href"));
     this.isLogged = (this.userName!="")&&(this.userId!==null);
      
     this.MO = (typeof(MutationObserver) !== 'undefined'); // есть поддержка MutationObserver
-       
+
     this.title=$("title").text(); 
       
     // делаем разбор строки get-параметров и сохраняем их в свойстве-массиве params
@@ -1973,7 +1961,7 @@ try {
             if ( (((canRun === null) && (typeof(page[functions[j]].firstRunIsFalse)==='undefined')) || (+canRun === 1))  
                  && (page.MO || page[functions[j]].mustMO!==true)
                  && (page.isLogged || page[functions[j]].mustBeLogged!==true)
-                 && (!page.oldDesign || page[functions[j]].mustNotOldDesign!==true)    
+                 && (page.adBlock || page[functions[j]].mustBeAdBlock!==true)    
                ) 
             page[functions[j]].apply(page);
         }
@@ -1988,9 +1976,10 @@ try {
     var canRun = getParam('repairCtrlLeftRigth');
     if ( ((canRun === null) && (typeof(page.repairCtrlLeftRigth.firstRunIsFalse)==='undefined')) || (+canRun === 1)) 
     page.repairCtrlLeftRigth.apply(page);
-// заготовка для контекстного меню    
-//$('.page-body').wrap('<section contextmenu="my-right-click-menu" class="temp"></section>');
-//$('.page-body').append('<menu type="context" id="my-right-click-menu"><menuitem label="Не надо тырить картинки" icon="img/forbidden.png"></menuitem> <menuitem label="Facebook" onclick="goTo(\'//facebook.com/sharer/sharer.php?u=\' +window.location.href);"></menuitem><menuitem label="Обновить" onclick="window.location.reload()"></menuitem></menu>');
+ 
+    // заготовка для контекстного меню, ждем поддержки от chrome    
+    //$('.page-body').wrap('<section contextmenu="my-right-click-menu" class="temp"></section>');
+    //$('.page-body').append('<menu type="context" id="my-right-click-menu"><menuitem label="Не надо тырить картинки" icon="img/forbidden.png"></menuitem> <menuitem label="Facebook" onclick="goTo(\'//facebook.com/sharer/sharer.php?u=\' +window.location.href);"></menuitem><menuitem label="Обновить" onclick="window.location.reload()"></menuitem></menu>');
 }
 catch (err) { 
     page.showErrors(err, true); 
